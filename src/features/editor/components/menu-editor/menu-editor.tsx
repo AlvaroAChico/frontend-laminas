@@ -8,9 +8,7 @@ import { Text } from "@styled-icons/remix-editor/Text";
 import { CardImage } from "@styled-icons/bootstrap/CardImage";
 import { listMockLaminas } from "./data-mock/data-mock";
 
-import ImageBase, {
-  ImageBaseProps,
-} from "../editor/components/image-base/image-base";
+import { ImageBaseProps } from "../editor/components/image-base/image-base";
 import { useAppDispatch } from "../../../../app/hooks";
 import {
   addImageBase,
@@ -187,7 +185,7 @@ const MenuEditor: React.FC = () => {
           <span>Texto</span>
         </ItemMenu>
       </ContainerOptionsMenu>
-      <ContainerBodyOptions isActive={statusOption == 1}>
+      {/* <ContainerBodyOptions isActive={statusOption == 1}>
         <ContainerGeneralItem>
           <div>
             <Cut />
@@ -206,7 +204,7 @@ const MenuEditor: React.FC = () => {
           </div>
           <span>Resize</span>
         </ContainerGeneralItem>
-      </ContainerBodyOptions>
+      </ContainerBodyOptions> */}
       <ContainerBodyOptions isActive={statusOption == 2}>
         <ButtonAddText onClick={handleAddText()}>Agregar texto</ButtonAddText>
       </ContainerBodyOptions>

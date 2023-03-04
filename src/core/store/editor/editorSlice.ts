@@ -8,6 +8,7 @@ export interface EditorState {
   listText: TextBaseProps[];
   statusModalEditor: boolean;
   statusDownloadPDF: boolean;
+  statusMobileMenu: boolean;
   imageCropper: string;
   currentImageId: string;
 }
@@ -17,6 +18,7 @@ const initialState: EditorState = {
   listText: [],
   statusModalEditor: false,
   statusDownloadPDF: false,
+  statusMobileMenu: false,
   imageCropper: "",
   currentImageId: "",
 };
@@ -43,6 +45,9 @@ export const editorSlice = createSlice({
     closeDownloadPDF: (state) => {
       state.statusDownloadPDF = false;
     },
+    changeStatusMobileMenu: (state) => {
+      state.statusMobileMenu = !state.statusMobileMenu;
+    },
     addImageBase: (state, action: PayloadAction<ImageBaseProps>) => {
       state.listImage.push(action.payload);
     },
@@ -68,6 +73,7 @@ export const {
   updateImageCropper,
   updateCurrentImage,
   deleteImage,
+  changeStatusMobileMenu,
 } = editorSlice.actions;
 
 export const getListImageBase = (state: RootState) => state.editor.listImage;
@@ -76,6 +82,8 @@ export const getStatusModalEditor = (state: RootState) =>
   state.editor.statusModalEditor;
 export const getStatusDownloadPDF = (state: RootState) =>
   state.editor.statusDownloadPDF;
+export const getStatusMobileMenu = (state: RootState) =>
+  state.editor.statusMobileMenu;
 export const getImageCropper = (state: RootState) => state.editor.imageCropper;
 export const getCurrentImage = (state: RootState) =>
   state.editor.currentImageId;

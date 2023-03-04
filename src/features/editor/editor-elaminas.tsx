@@ -7,6 +7,7 @@ import ImageBase, {
   ImageBaseProps,
 } from "./components/editor/components/image-base/image-base";
 import {
+  changeStatusMobileMenu,
   closeDownloadPDF,
   closeModalEditor,
   getCurrentImage,
@@ -14,6 +15,7 @@ import {
   getListImageBase,
   getListTextBase,
   getStatusDownloadPDF,
+  getStatusMobileMenu,
   getStatusModalEditor,
   showDownloadPDF,
 } from "../../core/store/editor/editorSlice";
@@ -28,6 +30,7 @@ import downloadLoadingImage from "../../assets/gif/painting_download_load.gif";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
 import { breakpoints } from "../../constants/breakpoints";
 import { Settings2Outline } from "@styled-icons/evaicons-outline/Settings2Outline";
+import MenuMobile from "./components/menu-editor/menu-mobile";
 
 const ContainerEditor = styled.div`
   display: flex;
@@ -195,7 +198,7 @@ const MenuMobileEditor = styled.div`
   height: 50px;
   box-sizing: border-box;
   border-radius: 50%;
-  background: red;
+  background: #fd6e67;
   color: white;
   padding: 0;
   margin: 0;
@@ -226,7 +229,6 @@ const MenuMobileEditor = styled.div`
 `;
 const EditorElaminas: React.FC = () => {
   const [activeSheetPanel, setActiveSheetPanel] = React.useState(1);
-  const [statusMobile, setStatusMobile] = React.useState(false);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
   const dispatch = useAppDispatch();
   const listImage = useAppSelector(getListImageBase);
@@ -235,8 +237,11 @@ const EditorElaminas: React.FC = () => {
   const imageCropper = useAppSelector(getImageCropper);
   const currentImageId = useAppSelector(getCurrentImage);
   const listText = useAppSelector(getListTextBase);
+  const statusMobileMenu = useAppSelector(getStatusMobileMenu);
   const handleCloseEditCropper = () => dispatch(closeModalEditor());
-  const handleShowMobile = () => setStatusMobile(!statusMobile);
+  const handleShowMobile = () => {
+    dispatch(changeStatusMobileMenu());
+  };
   const sizeSheet = [
     [210, 297],
     [220, 340],
@@ -301,6 +306,7 @@ const EditorElaminas: React.FC = () => {
   return (
     <>
       <ContainerEditor>
+        <MenuMobile />
         <MenuMobileEditor onClick={handleShowMobile}>
           <Settings2Outline />
         </MenuMobileEditor>
