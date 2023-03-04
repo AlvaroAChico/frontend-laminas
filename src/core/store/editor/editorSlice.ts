@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ImageBaseProps } from "../../../features/editor/components/editor/components/image-base/image-base";
 import { TextBaseProps } from "../../../features/editor/components/editor/components/text-base/text-base";
 import { RootState } from "../../store";
+import { LaminaDefaultProps } from "./editorAPI";
 
 export interface EditorState {
   listImage: ImageBaseProps[];
@@ -11,6 +12,7 @@ export interface EditorState {
   statusMobileMenu: boolean;
   imageCropper: string;
   currentImageId: string;
+  listImageMenu: LaminaDefaultProps[];
 }
 
 const initialState: EditorState = {
@@ -21,6 +23,7 @@ const initialState: EditorState = {
   statusMobileMenu: false,
   imageCropper: "",
   currentImageId: "",
+  listImageMenu: [],
 };
 
 export const editorSlice = createSlice({
@@ -60,6 +63,12 @@ export const editorSlice = createSlice({
       );
       state.listImage = newList;
     },
+    updateAllDataLaminas: (
+      state,
+      action: PayloadAction<LaminaDefaultProps[]>
+    ) => {
+      state.listImageMenu = action.payload;
+    },
   },
 });
 
@@ -74,10 +83,13 @@ export const {
   updateCurrentImage,
   deleteImage,
   changeStatusMobileMenu,
+  updateAllDataLaminas,
 } = editorSlice.actions;
 
 export const getListImageBase = (state: RootState) => state.editor.listImage;
 export const getListTextBase = (state: RootState) => state.editor.listText;
+export const getListImageMenu = (state: RootState) =>
+  state.editor.listImageMenu;
 export const getStatusModalEditor = (state: RootState) =>
   state.editor.statusModalEditor;
 export const getStatusDownloadPDF = (state: RootState) =>

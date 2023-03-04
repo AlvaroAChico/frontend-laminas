@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Cut } from "@styled-icons/ionicons-solid/Cut";
 import { Resize100Percent } from "@styled-icons/entypo/Resize100Percent";
 import { RotateRight } from "@styled-icons/boxicons-regular/RotateRight";
@@ -9,14 +9,21 @@ import { CardImage } from "@styled-icons/bootstrap/CardImage";
 import { listMockLaminas } from "./data-mock/data-mock";
 
 import { ImageBaseProps } from "../editor/components/image-base/image-base";
-import { useAppDispatch } from "../../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   addImageBase,
   addTextBase,
+  getListImageMenu,
+  updateAllDataLaminas,
 } from "../../../../core/store/editor/editorSlice";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { breakpoints } from "../../../../constants/breakpoints";
-import { useGetListLaminasQuery } from "../../../../core/store/editor/editorAPI";
+import {
+  LaminaDefaultProps,
+  LaminaResponse,
+  useGetListLaminasQuery,
+  usePostLaminasByWordMutation,
+} from "../../../../core/store/editor/editorAPI";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -133,12 +140,21 @@ const ContainerInputSearchStyle = styled.input`
   width: 100%;
   margin: 8px;
 `;
+const rotate = keyframes`
+0% {
+  transform: translate3d(-50%, -50%, 0) rotate(0deg);
+}
+100% {
+  transform: translate3d(-50%, -50%, 0) rotate(360deg);
+}
+`;
 
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(3);
   const [initialSearch, setInitialSearch] = React.useState("");
   const handleOption = (option: number) => () => setStatusOption(option);
   const dispatch = useAppDispatch();
+  const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
 
   const handleSelectImage = (image: string) => () => {
     const newImage: ImageBaseProps = {
@@ -156,13 +172,26 @@ const MenuEditor: React.FC = () => {
   };
   const handleChangeText = (value: string) => setInitialSearch(value);
 
-  const { data, error, isLoading } = useGetListLaminasQuery("1");
+  const { data, error, isLoading } = useGetListLaminasQuery("");
+  const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
 
   React.useEffect(() => {
-    console.log("DATA -> ", data);
-    console.log("ERROR -> ", error);
-    console.log("ISLOADING -> ", isLoading);
-  }, [data, error, isLoading]);
+    console.log("Result initData-> ", data);
+    dispatch(updateAllDataLaminas(data?.data || []));
+  }, [data]);
+
+  React.useEffect(() => {
+    console.log("Result Search -> ", resultSearch);
+    dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
+  }, [resultSearch]);
+
+  const handleKeyUp = (e: any) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      console.log("Search -> ", initialSearch);
+      searchLaminaByWord(initialSearch);
+    }
+  };
+
   return (
     <ContainerMenu>
       <ContainerOptionsMenu>
@@ -214,14 +243,22 @@ const MenuEditor: React.FC = () => {
             type="text"
             placeholder="Buscar lámina"
             defaultValue={initialSearch}
+            onKeyUp={handleKeyUp}
             onChange={(e: any) => handleChangeText(e.target.value)}
           />
         </ContainerSearch>
-        {listMockLaminas.map((lamina) => (
-          <ContainerLamina key={lamina.id}>
-            <img src={lamina.image} onClick={handleSelectImage(lamina.image)} />
-          </ContainerLamina>
-        ))}
+        {isLoading ? (
+          <>Buscando láminas...</>
+        ) : (
+          (laminas || []).map((lamina) => (
+            <ContainerLamina key={lamina.tbllmnanomb}>
+              <img
+                src={lamina.tbllmnaimgo}
+                onClick={handleSelectImage(lamina.tbllmnaimgo)}
+              />
+            </ContainerLamina>
+          ))
+        )}
       </ContainerBodyOptions>
     </ContainerMenu>
   );
