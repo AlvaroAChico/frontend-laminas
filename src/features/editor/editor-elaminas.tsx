@@ -7,12 +7,15 @@ import ImageBase, {
   ImageBaseProps,
 } from "./components/editor/components/image-base/image-base";
 import {
+  closeDownloadPDF,
   closeModalEditor,
   getCurrentImage,
   getImageCropper,
   getListImageBase,
   getListTextBase,
+  getStatusDownloadPDF,
   getStatusModalEditor,
+  showDownloadPDF,
 } from "../../core/store/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import TextBase, {
@@ -20,6 +23,9 @@ import TextBase, {
 } from "./components/editor/components/text-base/text-base";
 import { CropperRef, Cropper } from "react-advanced-cropper";
 import "react-advanced-cropper/dist/style.css";
+import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownload";
+import downloadLoadingImage from "../../assets/gif/painting_download_load.gif";
+import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
 
 const ContainerEditor = styled.div`
   display: flex;
@@ -27,6 +33,16 @@ const ContainerEditor = styled.div`
   gap: 10px;
   width: 100%;
   height: 100vh;
+  background-color: #e5e5f7;
+  opacity: 0.8;
+  background-image: linear-gradient(#ffffff 1px, transparent 1px),
+    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
+  background-size: 20px 20px;
+
+  * {
+    font-family: sans-serif;
+    box-sizing: border-box;
+  }
 `;
 const ContentPanelEditor = styled.div`
   position: relative;
@@ -69,12 +85,14 @@ const ContainerSheet = styled.div`
   padding: 10px;
   column-gap: 10px;
 `;
-const SheetItem = styled.div`
-  background: purple;
+const SheetItem = styled.div<{ active: boolean }>`
+  background: ${(p) => (p.active ? "#83af44" : "white")};
   padding: 10px 20px;
   border-radius: 5px;
-  color: white;
+  color: ${(p) => (p.active ? "white" : "#83af44")};
   cursor: pointer;
+  box-shadow: ${(p) => (p.active ? "0px 6px 12px 0px #a2c6718c" : "none")};
+  border: 1px solid #83af44;
 `;
 const ContainerDownloadButton = styled.div`
   position: fixed;
@@ -93,6 +111,18 @@ const ContainerModalImage = styled.div`
   justify-content: center;
   align-items: center;
 `;
+const ContainerDownloadPDF = styled.div`
+  position: fixed;
+  background: #21212187;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 const ModalEditImage = styled.div`
   width: 100%;
   height: auto;
@@ -100,17 +130,75 @@ const ModalEditImage = styled.div`
   margin: auto;
   background: white;
   padding: 15px;
-`;
 
+  > svg {
+    width: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+`;
+const ButtonDownload = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 6px 5px #ff7f956b;
+  cursor: pointer;
+
+  > svg {
+    width: 15px;
+  }
+`;
+const ContainerLoaded = styled.div`
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 20px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: fit-content;
+
+  > p {
+    font-family: cursive;
+  }
+  > img {
+    width: 100%;
+    max-width: 300px;
+  }
+`;
+const ButtonApplyCropper = styled.button`
+  gap: 5px;
+  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 6px 5px #ff7f956b;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
 const EditorElaminas: React.FC = () => {
   const [activeSheetPanel, setActiveSheetPanel] = React.useState(1);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
   const dispatch = useAppDispatch();
   const listImage = useAppSelector(getListImageBase);
   const statusModalEditor = useAppSelector(getStatusModalEditor);
+  const statusDownloadPDF = useAppSelector(getStatusDownloadPDF);
   const imageCropper = useAppSelector(getImageCropper);
   const currentImageId = useAppSelector(getCurrentImage);
   const listText = useAppSelector(getListTextBase);
+  const handleCloseEditCropper = () => dispatch(closeModalEditor());
   const sizeSheet = [
     [210, 297],
     [220, 340],
@@ -140,6 +228,7 @@ const EditorElaminas: React.FC = () => {
   };
 
   const handleDownloadPanel = () => {
+    dispatch(showDownloadPDF());
     const content = activeContentPanel();
     if (content != null) {
       html2canvas(content, {
@@ -156,44 +245,84 @@ const EditorElaminas: React.FC = () => {
           format: sizeSheet[activeSheetPanel - 1],
         });
         doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        dispatch(closeDownloadPDF());
         doc.save("aa.pdf");
       });
     }
   };
+
+  // Disabled Anticlick
+  // window.addEventListener(
+  //   "contextmenu",
+  //   (e: any) => {
+  //     e.preventDefault();
+  //   },
+  //   false
+  // );
+
   return (
     <>
       <ContainerEditor>
         <MenuEditor />
         <ContentPanelEditor>
           <ContainerSheet>
-            <SheetItem onClick={handleSelectSheet(1)}>A4</SheetItem>
-            <SheetItem onClick={handleSelectSheet(2)}>Oficio</SheetItem>
-            <SheetItem onClick={handleSelectSheet(3)}>A3</SheetItem>
+            <SheetItem
+              active={activeSheetPanel == 1}
+              onClick={handleSelectSheet(1)}
+            >
+              A4
+            </SheetItem>
+            <SheetItem
+              active={activeSheetPanel == 2}
+              onClick={handleSelectSheet(2)}
+            >
+              Oficio
+            </SheetItem>
+            <SheetItem
+              active={activeSheetPanel == 3}
+              onClick={handleSelectSheet(3)}
+            >
+              A3
+            </SheetItem>
           </ContainerSheet>
           <ContentEditor id="contentRef" activeSheetPanel={activeSheetPanel}>
             {listImage.map((item: ImageBaseProps) => (
               <ImageBase key={item.id} id={item.id} image={item.image} />
             ))}
             {listText.map((item: TextBaseProps) => (
-              <TextBase key={item.id} id={item.id} text={item.text} />
+              <TextBase key={item.id} id={item.id} />
             ))}
           </ContentEditor>
           <ContainerDownloadButton>
-            <button onClick={handleDownloadPanel}>Download</button>
+            <ButtonDownload onClick={handleDownloadPanel}>
+              Descargar
+              <ArrowDownload />
+            </ButtonDownload>
           </ContainerDownloadButton>
         </ContentPanelEditor>
       </ContainerEditor>
       {statusModalEditor && (
         <ContainerModalImage>
           <ModalEditImage>
+            <CloseOutline onClick={handleCloseEditCropper} />
             <Cropper
               src={imageCropper}
               onChange={onChange}
               className={"cropper"}
             />
-            <button onClick={handleApplyCropper()}>Aplicar</button>
+            <ButtonApplyCropper onClick={handleApplyCropper()}>
+              Aplicar
+            </ButtonApplyCropper>
           </ModalEditImage>
         </ContainerModalImage>
+      )}
+      {statusDownloadPDF && (
+        <ContainerDownloadPDF>
+          <ContainerLoaded>
+            <p>Estamos trabajando en tu descarga ...</p>
+            <img src={downloadLoadingImage} />
+          </ContainerLoaded>
+        </ContainerDownloadPDF>
       )}
     </>
   );

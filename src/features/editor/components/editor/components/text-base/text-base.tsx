@@ -5,7 +5,6 @@ import StarterKit from "@tiptap/starter-kit";
 import MenuBarText from "./menu-bar-text";
 import TextAlign from "@tiptap/extension-text-align";
 import { Color } from "@tiptap/extension-color";
-import { Settings } from "@styled-icons/fluentui-system-filled/Settings";
 
 const OptionsWrapperMain = styled.div<{
   sizeLetter: number;
@@ -37,33 +36,18 @@ const ContainerText = styled.div`
   max-width: 200px;
   height: auto;
 `;
-const WrapperSettings = styled.div`
-  position: absolute;
-  left: -15px;
-  bottom: 6px;
-  background: #8831fd;
-  width: 15px;
-  height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  color: white;
-  border-radius: 50%;
-`;
-
 export interface TextBaseProps {
   id: number;
-  text: string;
 }
 
-const TextBase: React.FC<TextBaseProps> = ({ id, text }) => {
+const TextBase: React.FC<TextBaseProps> = ({ id }) => {
   const [statusMenu, setStatusMenu] = React.useState(false);
   const [statusSettings, setStatusSettings] = React.useState(true);
   const [sizeLetter, setSizeLetter] = React.useState(10);
   const [fontFamily, setFontFamily] = React.useState("Arial");
 
-  const handleStatusMenu = () => setStatusMenu(!statusMenu);
+  const handleShowStatusMenu = () => setStatusMenu(true);
+  const handleHiddenStatusMenu = () => setStatusMenu(false);
   const handleStatusSettings = () => setStatusSettings(!statusSettings);
   const handleUpLetter = () => setSizeLetter(sizeLetter + 1);
   const handleDownLetter = () => setSizeLetter(sizeLetter - 1);
@@ -122,11 +106,22 @@ const TextBase: React.FC<TextBaseProps> = ({ id, text }) => {
         types: ["textStyle"],
       }),
     ],
-    content: "<p>Hello World!</p>",
+    content: "<p>Escribe aquí tu mensaje</p>",
   });
 
   return (
-    <ContainerText id={`text${id}`} onDoubleClick={handleStatusMenu}>
+    <ContainerText
+      id={`text${id}`}
+      onMouseOver={handleShowStatusMenu}
+      onMouseOut={handleHiddenStatusMenu}
+    >
+      <OptionsWrapperMain
+        sizeLetter={sizeLetter}
+        fontFamily={fontFamily}
+        onFocus={handleStatusSettings}
+      >
+        <EditorContentContainer editor={editor} />
+      </OptionsWrapperMain>
       {statusMenu && (
         <MenuBarText
           containerId={`text${id}`}
@@ -134,18 +129,9 @@ const TextBase: React.FC<TextBaseProps> = ({ id, text }) => {
           handleUpLetter={handleUpLetter}
           handleDownLetter={handleDownLetter}
           handleChangeFontFamily={handleChangeFontFamily}
+          onMouseOut={handleShowStatusMenu}
         />
       )}
-      <OptionsWrapperMain
-        sizeLetter={sizeLetter}
-        fontFamily={fontFamily}
-        onFocus={handleStatusSettings}
-      >
-        {/* <WrapperSettings> */}
-        {/* {statusSettings && <Settings onClick={handleStatusMenu} />} */}
-        {/* </WrapperSettings> */}
-        <EditorContentContainer editor={editor} />
-      </OptionsWrapperMain>
     </ContainerText>
   );
 };

@@ -1,0 +1,24 @@
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule . /index.html [L]
+# Security Headers
+<IfModule mod_headers.c>
+	Header set Age "216000
+	Header set X-XSS-Protection "1; mode=block"
+	Header set X-Frame-Options "SAMEORIGIN"
+	Header set X-Content-Type-Options "nosniff"
+	#Header set X-Permitted-Cross-Domain-Policies "none"
+	Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains;"
+	Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data:; connect-src 'self' https://www.google-analytics.com; font-src 'self' cdnjs.cloudflare.com fonts.gstatic.com data:;  frame-src 'self' www.google.com/recaptcha/; img-src * 'self' data:; media-src 'self'; object-src 'self'; script-src 'self' 'unsafe-inline' 'report-sample' www.google.com/recaptcha/ https://cdn.jsdelivr.net https://www.google-analytics.com https://www.gstatic.com/recaptcha/; style-src 'self' 'unsafe-eval' cdnjs.cloudflare.com fonts.googleapis.com 'unsafe-inline';"
+	Header set Referrer-Policy "same-origin"
+	Header set Permissions-Policy "geolocation=(self)"
+ 	Header always unset X-Powered-By
+ 	Header always unset Server
+  Header unset Server
+ 	Header unset X-Powered-By
+ 	Header append Vary "Accept-Encoding, User-Agent, Referer"	
+</IfModule>

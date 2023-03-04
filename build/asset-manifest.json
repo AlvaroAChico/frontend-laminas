@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.33d47523.css",
+    "main.js": "/static/js/main.5e78c8c8.js",
+    "static/js/703.630885d4.chunk.js": "/static/js/703.630885d4.chunk.js",
+    "static/js/13.ff0937c7.chunk.js": "/static/js/13.ff0937c7.chunk.js",
+    "static/media/L_017_vertientes-hidrograficas.jpg": "/static/media/L_017_vertientes-hidrograficas.736728cd3aca6cf5448a.jpg",
+    "static/media/L_015_hortalizas.jpg": "/static/media/L_015_hortalizas.5c949aacd8acbb20a606.jpg",
+    "static/media/L_019_organizacion-cultural.jpg": "/static/media/L_019_organizacion-cultural.2729b0ec6edc9288a4ad.jpg",
+    "static/media/L_016_mapa-hidrografico.jpg": "/static/media/L_016_mapa-hidrografico.e5ca6119465922932106.jpg",
+    "static/media/L_020_imperio-incaico.jpg": "/static/media/L_020_imperio-incaico.b706f005aa304a83e5a4.jpg",
+    "static/media/L_018_regiones-naturales.jpg": "/static/media/L_018_regiones-naturales.46a9b305745763e5c5dc.jpg",
+    "index.html": "/index.html",
+    "main.33d47523.css.map": "/static/css/main.33d47523.css.map",
+    "main.5e78c8c8.js.map": "/static/js/main.5e78c8c8.js.map",
+    "703.630885d4.chunk.js.map": "/static/js/703.630885d4.chunk.js.map",
+    "13.ff0937c7.chunk.js.map": "/static/js/13.ff0937c7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.33d47523.css",
+    "static/js/main.5e78c8c8.js"
+  ]
+}
