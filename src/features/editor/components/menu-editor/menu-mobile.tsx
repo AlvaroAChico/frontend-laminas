@@ -32,6 +32,7 @@ const ContainerMenuMobile = styled.div<{ active: boolean }>`
   width: ${(p) => (p.active ? "80%" : "0%")};
   height: 100%;
   z-index: 15;
+  display: ${(p) => (p.active ? "block" : "none")};
 `;
 
 const ContainerMenu = styled.div`
