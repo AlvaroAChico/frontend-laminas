@@ -1,0 +1,10 @@
+{
+    "app": {
+        "name": "E-Laminas"
+    },
+    "api": {
+        "laminas": "https://test.elaminas.com/api"
+    },
+    "i18nDebug": false,
+    "cloudEnv": "development"
+}

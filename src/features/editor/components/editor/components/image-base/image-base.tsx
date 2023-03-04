@@ -4,6 +4,7 @@ import styled from "styled-components";
 import "react-advanced-cropper/dist/style.css";
 import { useAppDispatch } from "../../../../../../app/hooks";
 import {
+  deleteImage,
   showModalEditor,
   updateCurrentImage,
   updateImageCropper,
@@ -15,11 +16,10 @@ import { ArrowRotateLeft } from "@styled-icons/fa-solid/ArrowRotateLeft";
 import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
 import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
 
-const ContainerImage = styled.div<{ rotate: number }>`
+const ContainerImage = styled.div`
   position: absolute;
   width: 250px;
   height: auto;
-  transform: rotate(${(p) => `${p.rotate}deg`});
 
   * {
     input[type="number"]::-webkit-inner-spin-button,
@@ -32,6 +32,13 @@ const ContainerImage = styled.div<{ rotate: number }>`
       -moz-appearance: textfield;
     }
   }
+`;
+const WrapperTransforms = styled.div`
+  position: relative;
+`;
+
+const WrapperRotate = styled.div<{ rotate: number }>`
+  transform: rotate(${(p) => `${p.rotate}deg`});
 `;
 
 const ImageBaseContainer = styled.img<{ rounded: number }>`
@@ -139,7 +146,7 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
   const [rounded, setRounded] = React.useState(0);
   // Methods
   const handleShowStatusMenu = () => setStatusMenu(true);
-  const handleHiddenStatusMenu = () => setStatusMenu(false);
+  const handleHiddenStatusMenu = () => setStatusMenu(true);
   const dispatch = useAppDispatch();
   // Manejador de estados de Opciones de edicion de imagen
   const [statusRounded, setStatusRounded] = React.useState(false);
@@ -152,7 +159,14 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
   const handleHiddenStatusRotate = () => setStatusRotate(false);
   const handleChangeStatusResize = () => setStatusResize(true);
   const handleHiddenStatusResize = () => setStatusResize(false);
-
+  const handleSelectedAction = (action: number) => {
+    handleHiddenStatusRounded();
+    handleHiddenStatusRotate();
+    handleHiddenStatusResize();
+    if (action == 1) handleChangeStatusResize();
+    if (action == 2) handleChangeStatusRotate();
+    if (action == 3) handleChangeStatusRounded();
+  };
   React.useEffect(() => {
     const imageId = document.getElementById(`image${id}`);
     let mousePosition;
@@ -249,130 +263,136 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
     const newValue = value != "" || parseInt(value) > 0 ? parseInt(value) : 0;
     setRounded(newValue);
   };
+  const handleDeleteImage = () => {
+    dispatch(deleteImage(id));
+  };
+
   return (
     <ContainerImage
       id={`image${id}`}
       onMouseOver={handleShowStatusMenu}
       onMouseOut={handleHiddenStatusMenu}
-      rotate={rotate}
     >
-      <ImageBaseContainer
-        src={image}
-        id={`image${id}_main`}
-        rounded={rounded}
-      />
-      {statusMenu && (
-        <WrapperOptions onMouseOver={handleShowStatusMenu}>
-          <ContainerOptions onClick={handleEdit()}>
-            <Cut />
-          </ContainerOptions>
-          <ContainerOptions
-            onClick={handleChangeStatusResize}
-            onMouseOver={handleShowStatusMenu}
-          >
-            <Resize />
-            {statusResize && (
-              <ContainerRedimensionarMenu
-                onMouseOver={() => {
-                  handleShowStatusMenu();
-                  handleChangeStatusResize();
-                }}
-                onMouseOut={handleHiddenStatusResize}
-              >
-                <ContainerInputStyle
-                  type="number"
-                  defaultValue={originalWidth}
-                  onChange={(e) => handleChangeWidth(e.target.value)}
-                />
-                <ContainerInputStyle
-                  type="number"
-                  defaultValue={originalHeight}
-                  onChange={(e) => handleChangeHeight(e.target.value)}
-                />
-                <ButtonApplyStyle onClick={handleResize}>
+      <WrapperTransforms>
+        <WrapperRotate rotate={rotate}>
+          <ImageBaseContainer
+            src={image}
+            id={`image${id}_main`}
+            rounded={rounded}
+          />
+        </WrapperRotate>
+        {statusMenu && (
+          <WrapperOptions onMouseOver={handleShowStatusMenu}>
+            <ContainerOptions onClick={handleEdit()}>
+              <Cut />
+            </ContainerOptions>
+            <ContainerOptions
+              onClick={() => handleSelectedAction(1)}
+              onMouseOver={handleShowStatusMenu}
+            >
+              <Resize />
+              {statusResize && (
+                <ContainerRedimensionarMenu
+                  onMouseOver={() => {
+                    handleShowStatusMenu();
+                    handleChangeStatusResize();
+                  }}
+                  onMouseOut={handleHiddenStatusResize}
+                >
+                  <ContainerInputStyle
+                    type="number"
+                    value={originalWidth}
+                    onChange={(e) => handleChangeWidth(e.target.value)}
+                  />
+                  <ContainerInputStyle
+                    type="number"
+                    value={originalHeight}
+                    onChange={(e) => handleChangeHeight(e.target.value)}
+                  />
+                  <ButtonApplyStyle onClick={handleResize}>
+                    Aplicar
+                  </ButtonApplyStyle>
+                </ContainerRedimensionarMenu>
+              )}
+            </ContainerOptions>
+            <ContainerOptions onClick={() => handleSelectedAction(2)}>
+              <ArrowRotateLeft />
+              {statusRotate && (
+                <ContainerRotarMenu
+                  onMouseOver={() => {
+                    handleShowStatusMenu();
+                    handleChangeStatusRotate();
+                  }}
+                  onMouseOut={handleHiddenStatusRotate}
+                >
+                  <ContainerInputStyle
+                    type="number"
+                    value={rotate}
+                    onChange={(e) => handleChangeRotate(e.target.value)}
+                  />
+                  <ButtonUpDownStyles
+                    onClick={() => {
+                      setRotate(rotate + 1);
+                    }}
+                  >
+                    <ChevronUp />
+                  </ButtonUpDownStyles>
+                  <ButtonUpDownStyles
+                    onClick={() => {
+                      if (rotate > 0) {
+                        setRotate(rotate - 1);
+                      }
+                    }}
+                  >
+                    <ChevronDown />
+                  </ButtonUpDownStyles>
+                  {/* <ButtonApplyStyle onClick={handleRotate}>
                   Aplicar
-                </ButtonApplyStyle>
-              </ContainerRedimensionarMenu>
-            )}
-          </ContainerOptions>
-          <ContainerOptions onClick={handleChangeStatusRotate}>
-            <ArrowRotateLeft />
-            {statusRotate && (
-              <ContainerRotarMenu
-                onMouseOver={() => {
-                  handleShowStatusMenu();
-                  handleChangeStatusRotate();
-                }}
-                onMouseOut={handleHiddenStatusRotate}
-              >
-                <ContainerInputStyle
-                  type="number"
-                  defaultValue={rotate}
-                  onChange={(e) => handleChangeRotate(e.target.value)}
-                />
-                <ButtonUpDownStyles
-                  onClick={() => {
-                    setRotate(rotate + 1);
+                </ButtonApplyStyle> */}
+                </ContainerRotarMenu>
+              )}
+            </ContainerOptions>
+            <ContainerOptions onClick={() => handleSelectedAction(3)}>
+              <RoundedCorner />
+              {statusRounded && (
+                <ContainerRedondearMenu
+                  onMouseOver={() => {
+                    handleShowStatusMenu();
+                    handleChangeStatusRounded();
                   }}
+                  onMouseOut={handleHiddenStatusRounded}
                 >
-                  <ChevronUp />
-                </ButtonUpDownStyles>
-                <ButtonUpDownStyles
-                  onClick={() => {
-                    if (rotate > 0) {
-                      setRotate(rotate - 1);
-                    }
-                  }}
-                >
-                  <ChevronDown />
-                </ButtonUpDownStyles>
-                <ButtonApplyStyle onClick={handleRotate}>
+                  <ContainerInputStyle
+                    type="number"
+                    value={rounded}
+                    onChange={(e) => handleChangeRounded(e.target.value)}
+                  />
+                  <ButtonUpDownStyles
+                    onClick={() => {
+                      setRounded(rounded + 1);
+                    }}
+                  >
+                    <ChevronUp />
+                  </ButtonUpDownStyles>
+                  <ButtonUpDownStyles
+                    onClick={() => {
+                      if (rounded > 0) {
+                        setRounded(rounded - 1);
+                      }
+                    }}
+                  >
+                    <ChevronDown />
+                  </ButtonUpDownStyles>
+                  {/* <ButtonApplyStyle onClick={handleRounded}>
                   Aplicar
-                </ButtonApplyStyle>
-              </ContainerRotarMenu>
-            )}
-          </ContainerOptions>
-          <ContainerOptions onClick={handleChangeStatusRounded}>
-            <RoundedCorner />
-            {statusRounded && (
-              <ContainerRedondearMenu
-                onMouseOver={() => {
-                  handleShowStatusMenu();
-                  handleChangeStatusRounded();
-                }}
-                onMouseOut={handleHiddenStatusRounded}
-              >
-                <ContainerInputStyle
-                  type="number"
-                  defaultValue={rounded}
-                  onChange={(e) => handleChangeRounded(e.target.value)}
-                />
-                <ButtonUpDownStyles
-                  onClick={() => {
-                    console.log("3");
-                    setRounded(rounded + 1);
-                  }}
-                >
-                  <ChevronUp />
-                </ButtonUpDownStyles>
-                <ButtonUpDownStyles
-                  onClick={() => {
-                    console.log("1");
-                    if (rounded > 0) {
-                      setRounded(rounded - 1);
-                    }
-                  }}
-                >
-                  <ChevronDown />
-                </ButtonUpDownStyles>
-                <ButtonApplyStyle onClick={handleRounded}>
-                  Aplicar
-                </ButtonApplyStyle>
-              </ContainerRedondearMenu>
-            )}
-          </ContainerOptions>
-        </WrapperOptions>
-      )}
+                </ButtonApplyStyle> */}
+                </ContainerRedondearMenu>
+              )}
+            </ContainerOptions>
+            <ContainerOptions onClick={handleDeleteImage}>X</ContainerOptions>
+          </WrapperOptions>
+        )}
+      </WrapperTransforms>
     </ContainerImage>
   );
 };

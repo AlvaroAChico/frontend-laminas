@@ -49,6 +49,12 @@ export const editorSlice = createSlice({
     addTextBase: (state, action: PayloadAction<TextBaseProps>) => {
       state.listText.push(action.payload);
     },
+    deleteImage: (state, action: PayloadAction<number>) => {
+      const newList = state.listImage.filter(
+        (item) => item.id != action.payload
+      );
+      state.listImage = newList;
+    },
   },
 });
 
@@ -61,6 +67,7 @@ export const {
   closeDownloadPDF,
   updateImageCropper,
   updateCurrentImage,
+  deleteImage,
 } = editorSlice.actions;
 
 export const getListImageBase = (state: RootState) => state.editor.listImage;

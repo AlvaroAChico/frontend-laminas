@@ -18,6 +18,7 @@ import {
 } from "../../../../core/store/editor/editorSlice";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { breakpoints } from "../../../../constants/breakpoints";
+import { useGetListLaminasQuery } from "../../../../core/store/editor/editorAPI";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -156,6 +157,14 @@ const MenuEditor: React.FC = () => {
     dispatch(addTextBase(newText));
   };
   const handleChangeText = (value: string) => setInitialSearch(value);
+
+  const { data, error, isLoading } = useGetListLaminasQuery("1");
+
+  React.useEffect(() => {
+    console.log("DATA -> ", data);
+    console.log("ERROR -> ", error);
+    console.log("ISLOADING -> ", isLoading);
+  }, [data, error, isLoading]);
   return (
     <ContainerMenu>
       <ContainerOptionsMenu>

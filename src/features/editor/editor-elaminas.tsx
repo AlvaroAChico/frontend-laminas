@@ -26,6 +26,8 @@ import "react-advanced-cropper/dist/style.css";
 import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownload";
 import downloadLoadingImage from "../../assets/gif/painting_download_load.gif";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
+import { breakpoints } from "../../constants/breakpoints";
+import { Settings2Outline } from "@styled-icons/evaicons-outline/Settings2Outline";
 
 const ContainerEditor = styled.div`
   display: flex;
@@ -188,8 +190,43 @@ const ButtonApplyCropper = styled.button`
   margin-top: 10px;
   margin-bottom: 10px;
 `;
+const MenuMobileEditor = styled.div`
+  width: 50px;
+  height: 50px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: red;
+  color: white;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0px 4px 13px 4px #45454582;
+  display: none;
+
+  > svg {
+    width: 25px;
+  }
+
+  ${breakpoints.tabletL} {
+    display: none;
+  }
+  ${breakpoints.tabletS} {
+    display: none;
+  }
+  ${breakpoints.phoneL} {
+    display: flex;
+  }
+`;
 const EditorElaminas: React.FC = () => {
   const [activeSheetPanel, setActiveSheetPanel] = React.useState(1);
+  const [statusMobile, setStatusMobile] = React.useState(false);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
   const dispatch = useAppDispatch();
   const listImage = useAppSelector(getListImageBase);
@@ -199,6 +236,7 @@ const EditorElaminas: React.FC = () => {
   const currentImageId = useAppSelector(getCurrentImage);
   const listText = useAppSelector(getListTextBase);
   const handleCloseEditCropper = () => dispatch(closeModalEditor());
+  const handleShowMobile = () => setStatusMobile(!statusMobile);
   const sizeSheet = [
     [210, 297],
     [220, 340],
@@ -263,6 +301,9 @@ const EditorElaminas: React.FC = () => {
   return (
     <>
       <ContainerEditor>
+        <MenuMobileEditor onClick={handleShowMobile}>
+          <Settings2Outline />
+        </MenuMobileEditor>
         <MenuEditor />
         <ContentPanelEditor>
           <ContainerSheet>
