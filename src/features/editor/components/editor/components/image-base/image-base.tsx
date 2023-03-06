@@ -146,7 +146,7 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
   const [rounded, setRounded] = React.useState(0);
   // Methods
   const handleShowStatusMenu = () => setStatusMenu(true);
-  const handleHiddenStatusMenu = () => setStatusMenu(true);
+  const handleHiddenStatusMenu = () => setStatusMenu(false);
   const dispatch = useAppDispatch();
   // Manejador de estados de Opciones de edicion de imagen
   const [statusRounded, setStatusRounded] = React.useState(false);
@@ -167,48 +167,31 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
     if (action == 2) handleChangeStatusRotate();
     if (action == 3) handleChangeStatusRounded();
   };
-  React.useEffect(() => {
-    const imageId = document.getElementById(`image${id}`);
-    let mousePosition;
-    let offset = [0, 0];
-    let isDown = false;
-
-    imageId!.addEventListener(
-      "mousedown",
-      function (e) {
-        isDown = true;
-        offset = [
-          imageId!.offsetLeft - e.clientX,
-          imageId!.offsetTop - e.clientY,
-        ];
-      },
-      true
-    );
-
-    imageId!.addEventListener(
-      "mouseup",
-      function () {
-        isDown = false;
-      },
-      true
-    );
-
-    imageId!.addEventListener(
-      "mousemove",
-      function (event) {
-        event.preventDefault();
-        if (isDown) {
-          mousePosition = {
-            x: event.clientX,
-            y: event.clientY,
-          };
-          imageId!.style.left = mousePosition.x + offset[0] + "px";
-          imageId!.style.top = mousePosition.y + offset[1] + "px";
-        }
-      },
-      true
-    );
-  });
+  const imageId = document.getElementById(`image${id}`);
+  let mousePosition;
+  let offset = [0, 0];
+  let isDown = false;
+  const handleMouseDown = (event: any) => {
+    isDown = true;
+    offset = [
+      imageId!.offsetLeft - event.clientX,
+      imageId!.offsetTop - event.clientY,
+    ];
+  };
+  const handleMouseUp = () => {
+    isDown = false;
+  };
+  const handleMouseMove = (event: any) => {
+    event.preventDefault();
+    if (isDown) {
+      mousePosition = {
+        x: event.clientX,
+        y: event.clientY,
+      };
+      imageId!.style.left = mousePosition.x + offset[0] + "px";
+      imageId!.style.top = mousePosition.y + offset[1] + "px";
+    }
+  };
 
   const handleEdit = () => () => {
     dispatch(updateCurrentImage(`image${id}_main`));
@@ -272,6 +255,9 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
       id={`image${id}`}
       onMouseOver={handleShowStatusMenu}
       onMouseOut={handleHiddenStatusMenu}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
     >
       <WrapperTransforms>
         <WrapperRotate rotate={rotate}>

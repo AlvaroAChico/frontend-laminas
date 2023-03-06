@@ -33,7 +33,7 @@ export const laminasApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
-      const token = "4|0i0rBahxncLmZ5yUDjtLxtVCcOqdtuMyE9iJVRHx";
+      const token = "9|wNGdQYaz4BPxXKQ9C9puidkDgAFtpienXELn24E2";
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
         headers.set("Content-Type", "application/json");

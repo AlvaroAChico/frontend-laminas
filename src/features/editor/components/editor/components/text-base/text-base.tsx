@@ -5,6 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import MenuBarText from "./menu-bar-text";
 import TextAlign from "@tiptap/extension-text-align";
 import { Color } from "@tiptap/extension-color";
+import { Move } from "@styled-icons/boxicons-regular/Move";
 
 const OptionsWrapperMain = styled.div<{
   sizeLetter: number;
@@ -36,6 +37,20 @@ const ContainerText = styled.div`
   max-width: 200px;
   height: auto;
 `;
+const WrapperMove = styled.div`
+  position: absolute;
+  background: #aeaeae;
+  width: 20px;
+  height: 20px;
+  top: 0;
+  right: -20px;
+  border-radius: 50%;
+  padding: 2px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 export interface TextBaseProps {
   id: number;
 }
@@ -53,48 +68,32 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
   const handleDownLetter = () => setSizeLetter(sizeLetter - 1);
   const handleChangeFontFamily = (font: string) => setFontFamily(font);
 
-  React.useEffect(() => {
-    const textId = document.getElementById(`text${id}`);
-    let mousePosition;
-    let offset = [0, 0];
-    let isDown = false;
+  const textId = document.getElementById(`text${id}`);
+  let mousePosition;
+  let offset = [0, 0];
+  let isDown = false;
 
-    textId!.addEventListener(
-      "mousedown",
-      function (e) {
-        isDown = true;
-        offset = [
-          textId!.offsetLeft - e.clientX,
-          textId!.offsetTop - e.clientY,
-        ];
-      },
-      true
-    );
-
-    textId!.addEventListener(
-      "mouseup",
-      function () {
-        isDown = false;
-      },
-      true
-    );
-
-    textId!.addEventListener(
-      "mousemove",
-      function (event) {
-        event.preventDefault();
-        if (isDown) {
-          mousePosition = {
-            x: event.clientX,
-            y: event.clientY,
-          };
-          textId!.style.left = mousePosition.x + offset[0] + "px";
-          textId!.style.top = mousePosition.y + offset[1] + "px";
-        }
-      },
-      true
-    );
-  });
+  const handleMouseDown = (event: any) => {
+    isDown = true;
+    offset = [
+      textId!.offsetLeft - event.clientX,
+      textId!.offsetTop - event.clientY,
+    ];
+  };
+  const handleMouseUp = () => {
+    isDown = false;
+  };
+  const handleMouseMove = (event: any) => {
+    event.preventDefault();
+    if (isDown) {
+      mousePosition = {
+        x: event.clientX,
+        y: event.clientY,
+      };
+      textId!.style.left = mousePosition.x + offset[0] + "px";
+      textId!.style.top = mousePosition.y + offset[1] + "px";
+    }
+  };
 
   const editor = useEditor({
     extensions: [
@@ -114,7 +113,11 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
       id={`text${id}`}
       onMouseOver={handleShowStatusMenu}
       onMouseOut={handleHiddenStatusMenu}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseDown={handleMouseDown}
     >
+      {/* onMouseDown={} */}
       <OptionsWrapperMain
         sizeLetter={sizeLetter}
         fontFamily={fontFamily}
@@ -122,6 +125,11 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
       >
         <EditorContentContainer editor={editor} />
       </OptionsWrapperMain>
+      {statusMenu && (
+        <WrapperMove onMouseOut={handleShowStatusMenu}>
+          <Move />
+        </WrapperMove>
+      )}
       {statusMenu && (
         <MenuBarText
           containerId={`text${id}`}

@@ -7,6 +7,7 @@ import ImageBase, {
   ImageBaseProps,
 } from "./components/editor/components/image-base/image-base";
 import {
+  addTextBase,
   changeStatusMobileMenu,
   closeDownloadPDF,
   closeModalEditor,
@@ -31,15 +32,14 @@ import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
 import { breakpoints } from "../../constants/breakpoints";
 import { Settings2Outline } from "@styled-icons/evaicons-outline/Settings2Outline";
 import MenuMobile from "./components/menu-editor/menu-mobile";
+import { Text } from "@styled-icons/evaicons-solid/Text";
 
 const ContainerEditor = styled.div`
   display: flex;
   flex-wrap: nowrap;
-  gap: 10px;
   width: 100%;
   height: 100vh;
   background-color: #e5e5f7;
-  opacity: 0.8;
   background-image: linear-gradient(#ffffff 1px, transparent 1px),
     linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
   background-size: 20px 20px;
@@ -48,6 +48,9 @@ const ContainerEditor = styled.div`
     font-family: sans-serif;
     box-sizing: border-box;
   }
+
+  // gap: 10px;
+  // opacity: 0.8;
 `;
 const ContentPanelEditor = styled.div`
   position: relative;
@@ -58,8 +61,9 @@ const ContentPanelEditor = styled.div`
   justify-content: center;
   overflow: hidden;
 `;
-const ContentEditor = styled.div<{ activeSheetPanel: number }>`
-  overflow: hidden;
+const ContentEditor = styled.div<{
+  activeSheetPanel: number;
+}>`
   background: white;
   box-shadow: 0px 4px 20px 8px #a2a2a2b8;
   transition: 0.5s;
@@ -78,6 +82,40 @@ const ContentEditor = styled.div<{ activeSheetPanel: number }>`
       ? "459px"
       : "567px"};
 `;
+const WrapperTransformScale = styled.div<{ valueScale: number }>`
+  background: white;
+  transition: 0.5s;
+  transform: ${(p) =>
+    p.valueScale < 2
+      ? `scale(${p.valueScale}) translate(0%, 0%)`
+      : `scale(${p.valueScale}) translate(30%, 30%)`};
+  overflow: ${(p) => (p.valueScale < 2 ? "inherit" : "auto")};
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e5f7;
+  background-image: linear-gradient(#ffffff 1px, transparent 1px),
+    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
+  background-size: 20px 20px;
+`;
+
+const WrapperPositionItems = styled.div`
+  position: relative;
+  overflow: hidden;
+`;
+const HiddenWrapper = styled.div`
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  background-color: #e5e5f7;
+  background-image: linear-gradient(#ffffff 1px, transparent 1px),
+    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
+  background-size: 20px 20px;
+`;
+
 const ContainerSheet = styled.div`
   position: absolute;
   top: 0;
@@ -89,6 +127,7 @@ const ContainerSheet = styled.div`
   justify-content: center;
   padding: 10px;
   column-gap: 10px;
+  z-index: 6;
 `;
 const SheetItem = styled.div<{ active: boolean }>`
   background: ${(p) => (p.active ? "#83af44" : "white")};
@@ -103,6 +142,7 @@ const ContainerDownloadButton = styled.div`
   position: fixed;
   bottom: 20px;
   right: 20px;
+  z-index: 6;
 `;
 const ContainerModalImage = styled.div`
   position: fixed;
@@ -141,6 +181,29 @@ const ModalEditImage = styled.div`
     margin-top: 10px;
     margin-bottom: 10px;
     cursor: pointer;
+  }
+`;
+const ContainerTextButton = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+`;
+const ButtonText = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 6px 5px #ff7f956b;
+  cursor: pointer;
+
+  > svg {
+    width: 15px;
   }
 `;
 const ButtonDownload = styled.button`
@@ -229,6 +292,7 @@ const MenuMobileEditor = styled.div`
 `;
 const EditorElaminas: React.FC = () => {
   const [activeSheetPanel, setActiveSheetPanel] = React.useState(1);
+  const [valueScale, setValueScale] = React.useState(1);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
   const dispatch = useAppDispatch();
   const listImage = useAppSelector(getListImageBase);
@@ -271,6 +335,18 @@ const EditorElaminas: React.FC = () => {
   };
 
   const handleDownloadPanel = () => {
+    setValueScale(1);
+    setTimeout(() => downloadPanel(), 800);
+  };
+
+  const handleTextPanel = () => {
+    const newText: TextBaseProps = {
+      id: Date.now(),
+    };
+    dispatch(addTextBase(newText));
+  };
+
+  const downloadPanel = () => {
     dispatch(showDownloadPDF());
     const content = activeContentPanel();
     if (content != null) {
@@ -281,7 +357,7 @@ const EditorElaminas: React.FC = () => {
       }).then((canvas) => {
         const imgWidth = sizeSheet[activeSheetPanel - 1][0];
         const imgHeight = sizeSheet[activeSheetPanel - 1][1];
-        const imgData = canvas.toDataURL("image/png", 1.0);
+        const imgData = canvas.toDataURL("image/png");
         const doc = new jsPDF({
           orientation: "portrait",
           unit: "mm",
@@ -293,7 +369,6 @@ const EditorElaminas: React.FC = () => {
       });
     }
   };
-
   // Disabled Anticlick
   // window.addEventListener(
   //   "contextmenu",
@@ -302,6 +377,17 @@ const EditorElaminas: React.FC = () => {
   //   },
   //   false
   // );
+
+  const handleDownZoom = () => {
+    if (valueScale > 1) {
+      setValueScale(valueScale - 1);
+    }
+  };
+  const handleUpZoom = () => {
+    if (valueScale <= 10) {
+      setValueScale(valueScale + 1);
+    }
+  };
 
   return (
     <>
@@ -312,6 +398,12 @@ const EditorElaminas: React.FC = () => {
         </MenuMobileEditor>
         <MenuEditor />
         <ContentPanelEditor>
+          <ContainerTextButton>
+            <ButtonText onClick={handleTextPanel}>
+              Texto
+              <Text />
+            </ButtonText>
+          </ContainerTextButton>
           <ContainerSheet>
             <SheetItem
               active={activeSheetPanel == 1}
@@ -332,15 +424,28 @@ const EditorElaminas: React.FC = () => {
               A3
             </SheetItem>
           </ContainerSheet>
-          <ContentEditor id="contentRef" activeSheetPanel={activeSheetPanel}>
-            {listImage.map((item: ImageBaseProps) => (
-              <ImageBase key={item.id} id={item.id} image={item.image} />
-            ))}
-            {listText.map((item: TextBaseProps) => (
-              <TextBase key={item.id} id={item.id} />
-            ))}
-          </ContentEditor>
+          <HiddenWrapper>
+            <WrapperTransformScale valueScale={valueScale}>
+              <ContentEditor
+                id="contentRef"
+                activeSheetPanel={activeSheetPanel}
+              >
+                {listImage.map((item: ImageBaseProps) => (
+                  <ImageBase key={item.id} id={item.id} image={item.image} />
+                ))}
+                {listText.map((item: TextBaseProps) => (
+                  <TextBase key={item.id} id={item.id} />
+                ))}
+              </ContentEditor>
+            </WrapperTransformScale>
+          </HiddenWrapper>
           <ContainerDownloadButton>
+            <div>
+              <button onClick={handleDownZoom}>Menos</button>
+            </div>
+            <div>
+              <button onClick={handleUpZoom}>Mas</button>
+            </div>
             <ButtonDownload onClick={handleDownloadPanel}>
               Descargar
               <ArrowDownload />

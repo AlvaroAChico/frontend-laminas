@@ -55,6 +55,7 @@ const ContainerBodyOptions = styled.div<{ isActive: boolean }>`
   width: 100%;
   background: #ffffff;
   padding: 10px;
+  overflow: auto;
   display: ${(p) => (p.isActive ? "block" : "none")};
 
   ${breakpoints.phoneL} {
@@ -207,12 +208,12 @@ const MenuEditor: React.FC = () => {
           </div>
           <span>Láminas</span>
         </ItemMenu>
-        <ItemMenu onClick={handleOption(2)} isActive={statusOption == 2}>
+        {/* <ItemMenu onClick={handleOption(2)} isActive={statusOption == 2}>
           <div>
             <Text />
           </div>
           <span>Texto</span>
-        </ItemMenu>
+        </ItemMenu> */}
       </ContainerOptionsMenu>
       {/* <ContainerBodyOptions isActive={statusOption == 1}>
         <ContainerGeneralItem>
@@ -234,9 +235,9 @@ const MenuEditor: React.FC = () => {
           <span>Resize</span>
         </ContainerGeneralItem>
       </ContainerBodyOptions> */}
-      <ContainerBodyOptions isActive={statusOption == 2}>
+      {/* <ContainerBodyOptions isActive={statusOption == 2}>
         <ButtonAddText onClick={handleAddText()}>Agregar texto</ButtonAddText>
-      </ContainerBodyOptions>
+      </ContainerBodyOptions> */}
       <ContainerBodyOptions isActive={statusOption == 3}>
         <ContainerSearch>
           <ContainerInputSearchStyle
@@ -247,6 +248,11 @@ const MenuEditor: React.FC = () => {
             onChange={(e: any) => handleChangeText(e.target.value)}
           />
         </ContainerSearch>
+        {listMockLaminas.map((image) => (
+          <ContainerLamina key={image.id}>
+            <img src={image.image} onClick={handleSelectImage(image.image)} />
+          </ContainerLamina>
+        ))}
         {isLoading ? (
           <>Buscando láminas...</>
         ) : (
