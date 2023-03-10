@@ -36,8 +36,7 @@ const EditorContentContainer = styled(EditorContent)`
 
 const ContainerText = styled.div`
   position: absolute;
-  width: 100%;
-  max-width: 200px;
+  width: fit-content;
   height: auto;
 `;
 const WrapperMove = styled.div`

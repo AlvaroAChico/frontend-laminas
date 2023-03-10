@@ -13,6 +13,7 @@ export interface EditorState {
   imageCropper: string;
   currentImageId: string;
   listImageMenu: LaminaDefaultProps[];
+  generalSatusControl: boolean;
 }
 
 const initialState: EditorState = {
@@ -24,6 +25,7 @@ const initialState: EditorState = {
   imageCropper: "",
   currentImageId: "",
   listImageMenu: [],
+  generalSatusControl: true,
 };
 
 export const editorSlice = createSlice({
@@ -69,6 +71,12 @@ export const editorSlice = createSlice({
     ) => {
       state.listImageMenu = action.payload;
     },
+    showStatusControls: (state) => {
+      state.generalSatusControl = true;
+    },
+    hiddenStatusControls: (state) => {
+      state.generalSatusControl = false;
+    },
   },
 });
 
@@ -84,6 +92,8 @@ export const {
   deleteImage,
   changeStatusMobileMenu,
   updateAllDataLaminas,
+  showStatusControls,
+  hiddenStatusControls,
 } = editorSlice.actions;
 
 export const getListImageBase = (state: RootState) => state.editor.listImage;
@@ -99,5 +109,7 @@ export const getStatusMobileMenu = (state: RootState) =>
 export const getImageCropper = (state: RootState) => state.editor.imageCropper;
 export const getCurrentImage = (state: RootState) =>
   state.editor.currentImageId;
+export const getGeneralStatusControl = (state: RootState) =>
+  state.editor.generalSatusControl;
 
 export default editorSlice.reducer;

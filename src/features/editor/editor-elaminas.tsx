@@ -18,7 +18,9 @@ import {
   getStatusDownloadPDF,
   getStatusMobileMenu,
   getStatusModalEditor,
+  hiddenStatusControls,
   showDownloadPDF,
+  showStatusControls,
 } from "../../core/store/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import TextBase, {
@@ -33,6 +35,8 @@ import { breakpoints } from "../../constants/breakpoints";
 import { Settings2Outline } from "@styled-icons/evaicons-outline/Settings2Outline";
 import MenuMobile from "./components/menu-editor/menu-mobile";
 import { Text } from "@styled-icons/evaicons-solid/Text";
+import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
+import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
 
 const ContainerEditor = styled.div`
   display: flex;
@@ -143,6 +147,28 @@ const ContainerDownloadButton = styled.div`
   bottom: 20px;
   right: 20px;
   z-index: 6;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+`;
+const ButtonZoom = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0px 4px 6px 5px #ff7f956b;
+  cursor: pointer;
+
+  > svg {
+    width: 15px;
+  }
 `;
 const ContainerModalImage = styled.div`
   position: fixed;
@@ -335,6 +361,7 @@ const EditorElaminas: React.FC = () => {
   };
 
   const handleDownloadPanel = () => {
+    dispatch(hiddenStatusControls());
     setValueScale(1);
     setTimeout(() => downloadPanel(), 800);
   };
@@ -368,6 +395,7 @@ const EditorElaminas: React.FC = () => {
         doc.save("aa.pdf");
       });
     }
+    dispatch(showStatusControls());
   };
   // Disabled Anticlick
   // window.addEventListener(
@@ -440,12 +468,12 @@ const EditorElaminas: React.FC = () => {
             </WrapperTransformScale>
           </HiddenWrapper>
           <ContainerDownloadButton>
-            <div>
-              <button onClick={handleDownZoom}>Menos</button>
-            </div>
-            <div>
-              <button onClick={handleUpZoom}>Mas</button>
-            </div>
+            <ButtonZoom onClick={handleDownZoom}>
+              <ZoomOut />
+            </ButtonZoom>
+            <ButtonZoom onClick={handleUpZoom}>
+              <ZoomIn />
+            </ButtonZoom>
             <ButtonDownload onClick={handleDownloadPanel}>
               Descargar
               <ArrowDownload />
