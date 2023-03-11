@@ -34,7 +34,9 @@ export const laminasApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
-      const token = Cookies.get('jwt_token');
+      console.log(Cookies.get("jwt_token"));
+      const token = Cookies.get("jwt_token");
+      console.log(token);
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
         headers.set("Content-Type", "application/json");
