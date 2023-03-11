@@ -36,6 +36,8 @@ export const laminasApi = createApi({
     prepareHeaders: (headers) => {
       console.log(Cookies.get("jwt_token"));
       const token = Cookies.get("jwt_token");
+      const activeCanva = localStorage.getItem("jwt_token");
+      console.log(activeCanva)
       console.log(token);
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
