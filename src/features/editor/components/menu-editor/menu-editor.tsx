@@ -1,9 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import styled, { keyframes } from "styled-components";
-import { Cut } from "@styled-icons/ionicons-solid/Cut";
-import { Resize100Percent } from "@styled-icons/entypo/Resize100Percent";
-import { RotateRight } from "@styled-icons/boxicons-regular/RotateRight";
-import { ImageEdit } from "@styled-icons/fluentui-system-regular/ImageEdit";
+import styled from "styled-components";
 import { Text } from "@styled-icons/remix-editor/Text";
 import { CardImage } from "@styled-icons/bootstrap/CardImage";
 import { listMockLaminas } from "./data-mock/data-mock";
@@ -15,15 +12,20 @@ import {
   addTextBase,
   getListImageMenu,
   updateAllDataLaminas,
+  updateInputColor,
+  updateSizeLetterDOWN,
+  updateSizeLetterUP,
+  updateTypography,
 } from "../../../../core/store/editor/editorSlice";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { breakpoints } from "../../../../constants/breakpoints";
 import {
   LaminaDefaultProps,
-  LaminaResponse,
   useGetListLaminasQuery,
   usePostLaminasByWordMutation,
 } from "../../../../core/store/editor/editorAPI";
+import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
+import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -75,30 +77,6 @@ const ItemMenu = styled.div<{ isActive: boolean }>`
     max-width: 40px;
   }
 `;
-const ContainerGeneralItem = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: left
-  align-items: center;
-  background: white;
-  padding: 5px;
-  cursor: pointer;
-  transition: .5s;
-
-  :hover{
-    background: red;
-  }
-
-  > div svg {
-    max-width: 35px;
-    width: 100%;
-  }
-  > span{
-    font-size: 20px;
-    font-weight: regular;
-    margin: auto;
-  }
-`;
 
 const ContainerLamina = styled.div`
   width: 100%;
@@ -141,13 +119,53 @@ const ContainerInputSearchStyle = styled.input`
   width: 100%;
   margin: 8px;
 `;
-const rotate = keyframes`
-0% {
-  transform: translate3d(-50%, -50%, 0) rotate(0deg);
-}
-100% {
-  transform: translate3d(-50%, -50%, 0) rotate(360deg);
-}
+
+const ContainerTextGeneralOptions = styled.div``;
+
+const ContainerTypography = styled.div`
+  > p {
+    padding: 6px;
+    border-bottom: 0.5px solid #cdcdcd;
+    width: 100%;
+    transition: 0.5s;
+    cursor: pointer;
+
+    :hover {
+      background: #f0cad3;
+    }
+  }
+`;
+const ContainerItemOption = styled.div`
+  border: 0.5px solid #4949e6;
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: "#0020ff9e";
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  cursor: pointer;
+
+  > svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  > input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border: 0;
+  }
+`;
+const ContainerOptionsText = styled.div`
+  display: flex;
+  flex-direction: row;
+  jusfity-content: left;
+  align-items: center;
+  column-gap: 2px;
 `;
 
 const MenuEditor: React.FC = () => {
@@ -168,76 +186,120 @@ const MenuEditor: React.FC = () => {
   const handleAddText = () => () => {
     const newText: TextBaseProps = {
       id: Date.now(),
+      inputColor: "#000000",
+      sizeLetter: 10,
+      typography: "Arial",
     };
     dispatch(addTextBase(newText));
   };
   const handleChangeText = (value: string) => setInitialSearch(value);
 
-  const { data, error, isLoading } = useGetListLaminasQuery("");
+  const { data, isLoading } = useGetListLaminasQuery("");
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
 
   React.useEffect(() => {
-    console.log("Result initData-> ", data);
     dispatch(updateAllDataLaminas(data?.data || []));
   }, [data]);
 
   React.useEffect(() => {
-    console.log("Result Search -> ", resultSearch);
     dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
   }, [resultSearch]);
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      console.log("Search -> ", initialSearch);
       searchLaminaByWord(initialSearch);
     }
   };
 
+  const handleSelectNewTypography = (fontFamily: string) => () => {
+    dispatch(updateTypography(fontFamily));
+  };
+
+  const handleInputColor = () => {
+    const color: HTMLInputElement = document.getElementById(
+      "input_color_main"
+    ) as HTMLInputElement;
+    dispatch(updateInputColor(color!.value));
+  };
+
+  const handleUpClick = () => dispatch(updateSizeLetterUP());
+  const handleDownClick = () => dispatch(updateSizeLetterDOWN());
+
   return (
     <ContainerMenu>
       <ContainerOptionsMenu>
-        {/* <ItemMenu onClick={handleOption(1)} isActive={statusOption == 1}>
-          <div>
-            <ImageEdit />
-          </div>
-          <span>General</span>
-        </ItemMenu> */}
         <ItemMenu onClick={handleOption(3)} isActive={statusOption == 3}>
           <div>
             <CardImage />
           </div>
           <span>Láminas</span>
         </ItemMenu>
-        {/* <ItemMenu onClick={handleOption(2)} isActive={statusOption == 2}>
+        <ItemMenu onClick={handleOption(2)} isActive={statusOption == 2}>
           <div>
             <Text />
           </div>
           <span>Texto</span>
-        </ItemMenu> */}
+        </ItemMenu>
       </ContainerOptionsMenu>
-      {/* <ContainerBodyOptions isActive={statusOption == 1}>
-        <ContainerGeneralItem>
-          <div>
-            <Cut />
-          </div>
-          <span>Cortar</span>
-        </ContainerGeneralItem>
-        <ContainerGeneralItem>
-          <div>
-            <Resize100Percent />
-          </div>
-          <span>Rotar</span>
-        </ContainerGeneralItem>
-        <ContainerGeneralItem>
-          <div>
-            <RotateRight />
-          </div>
-          <span>Resize</span>
-        </ContainerGeneralItem>
-      </ContainerBodyOptions> */}
-      {/* <ContainerBodyOptions isActive={statusOption == 2}>
+      <ContainerBodyOptions isActive={statusOption == 2}>
         <ButtonAddText onClick={handleAddText()}>Agregar texto</ButtonAddText>
-      </ContainerBodyOptions> */}
+        <ContainerTextGeneralOptions>
+          <ContainerOptionsText>
+            <ContainerItemOption>
+              <input
+                id="input_color_main"
+                type="color"
+                onInput={handleInputColor}
+              />
+            </ContainerItemOption>
+            <ContainerItemOption onClick={handleUpClick}>
+              <ChevronUp />
+            </ContainerItemOption>
+            <ContainerItemOption onClick={handleDownClick}>
+              <ChevronDown />
+            </ContainerItemOption>
+          </ContainerOptionsText>
+          <ContainerTypography>
+            <p onClick={handleSelectNewTypography("Arial")}>Arial</p>
+            <p onClick={handleSelectNewTypography("Arial Black")}>
+              Arial Black
+            </p>
+            <p onClick={handleSelectNewTypography("Verdana")}>Verdana</p>
+            <p onClick={handleSelectNewTypography("Tahoma")}>Tahoma</p>
+            <p onClick={handleSelectNewTypography("Trebuchet MS")}>
+              Trebuchet MS
+            </p>
+            <p onClick={handleSelectNewTypography("Impact")}>Impact</p>
+            <p onClick={handleSelectNewTypography("Times New Roman")}>
+              Times New Roman
+            </p>
+            <p onClick={handleSelectNewTypography("Georgia")}>Georgia</p>
+            <p onClick={handleSelectNewTypography("American Typewriter")}>
+              American Typewriter
+            </p>
+            <p onClick={handleSelectNewTypography("Andale Mono")}>
+              Andale Mono
+            </p>
+            <p onClick={handleSelectNewTypography("Courier")}>Courier</p>
+            <p onClick={handleSelectNewTypography("Lucida Console")}>
+              Lucida Console
+            </p>
+            <p onClick={handleSelectNewTypography("Monaco")}>Monaco</p>
+            <p onClick={handleSelectNewTypography("Bradley Hand")}>
+              Bradley Hand
+            </p>
+            <p onClick={handleSelectNewTypography("Brush Script MT")}>
+              Brush Script MT
+            </p>
+            <p onClick={handleSelectNewTypography("Luminari")}>Luminari</p>
+            <p onClick={handleSelectNewTypography("Comic Sans MS")}>
+              Comic Sans MS
+            </p>
+            <p onClick={handleSelectNewTypography("Helvetica")}>Helvetica</p>
+            <p onClick={handleSelectNewTypography("Cambria")}>Cambria</p>
+          </ContainerTypography>
+        </ContainerTextGeneralOptions>
+      </ContainerBodyOptions>
       <ContainerBodyOptions isActive={statusOption == 3}>
         <ContainerSearch>
           <ContainerInputSearchStyle

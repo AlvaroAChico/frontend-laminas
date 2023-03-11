@@ -14,6 +14,7 @@ import {
   deleteText,
   getActiveText,
   getGeneralStatusControl,
+  updateActiveEditor,
   updateTextActive,
 } from "../../../../../../core/store/editor/editorSlice";
 
@@ -41,10 +42,10 @@ const EditorContentContainer = styled(EditorContent)`
   }
 `;
 
-const ContainerText = styled.div`
+const ContainerText = styled.div<{ colorText: string }>`
   position: absolute;
-  width: fit-content;
   height: auto;
+  color: ${(p) => (p.color = p.colorText)};
 `;
 const WrapperMove = styled.div`
   position: absolute;
@@ -62,6 +63,8 @@ const WrapperMove = styled.div`
 `;
 
 const ContainerMain = styled.div<{ active: boolean }>`
+  position: relative;
+
   .moveable-control-box {
     ${(p) =>
       !p.active ? "visibility: hidden !important" : "visibility: visible;"};
@@ -90,7 +93,7 @@ const ContainerDelete = styled.div`
   align-items: center;
   border-radius: 50%;
   padding: 10px;
-  top: -25px;
+  left: -25px;
   right: -25px;
   color: white;
   background: #de2b2b;
@@ -99,9 +102,17 @@ const ContainerDelete = styled.div`
 
 export interface TextBaseProps {
   id: number;
+  typography: string;
+  sizeLetter: number;
+  inputColor: string;
 }
 
-const TextBase: React.FC<TextBaseProps> = ({ id }) => {
+const TextBase: React.FC<TextBaseProps> = ({
+  id,
+  typography,
+  sizeLetter,
+  inputColor,
+}) => {
   const [target, setTarget] = React.useState<any>();
   const [statusControls, setStatusControls] = React.useState(false);
   const [topValue, setTopValue] = React.useState(0);
@@ -109,19 +120,13 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
   const [scaleValueX, setScaleX] = React.useState(1);
   const [scaleValueY, setScaleY] = React.useState(1);
   const [rotateValue, setRotateValue] = React.useState(0);
-  const [widthValue, setWidthValue] = React.useState(250);
-  const [heightValue, setHeightValue] = React.useState(200);
+  const textId = document.getElementById(`editor_main${id}`);
+  const [widthValue, setWidthValue] = React.useState(textId?.clientWidth);
+  const [heightValue, setHeightValue] = React.useState(50);
   const dispatch: any = useAppDispatch();
   const statusGeneralControl = useAppSelector(getGeneralStatusControl);
   const textActiveControls = useAppSelector(getActiveText);
   const handleDeleteText = () => dispatch(deleteText(id));
-
-  const [sizeLetter, setSizeLetter] = React.useState(10);
-  const [fontFamily, setFontFamily] = React.useState("Arial");
-
-  const handleUpLetter = () => setSizeLetter(sizeLetter + 1);
-  const handleDownLetter = () => setSizeLetter(sizeLetter - 1);
-  const handleChangeFontFamily = (font: string) => setFontFamily(font);
 
   const frame = new Frame({
     width: `${widthValue}px`,
@@ -161,6 +166,7 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
 
   const handleChangeActive = () => {
     dispatch(updateTextActive(id));
+    dispatch(updateActiveEditor(editor));
     setStatusControls(!statusControls);
   };
 
@@ -169,30 +175,30 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
       <ContainerMain
         id={`image_id${id}`}
         className="container"
-        active={statusControls && statusGeneralControl}
+        active={
+          statusControls && statusGeneralControl && textActiveControls == id
+        }
         onClick={handleChangeActive}
       >
-        <ContainerText id={`text${id}`} className={`target${id}`}>
-          {statusControls &&
-            statusGeneralControl &&
-            textActiveControls == id && (
-              <ContainerDelete onClick={handleDeleteText}>x</ContainerDelete>
-            )}
-          <OptionsWrapperMain sizeLetter={sizeLetter} fontFamily={fontFamily}>
-            <EditorContentContainer editor={editor} />
-          </OptionsWrapperMain>
-          {statusControls &&
-            statusGeneralControl &&
-            textActiveControls == id && (
-              <MenuBarText
-                containerId={`text${id}`}
-                editor={editor}
-                handleUpLetter={handleUpLetter}
-                handleDownLetter={handleDownLetter}
-                handleChangeFontFamily={handleChangeFontFamily}
-              />
-            )}
-        </ContainerText>
+        <div>
+          <ContainerText
+            id={`text${id}`}
+            className={`target${id}`}
+            colorText={inputColor}
+          >
+            {statusControls &&
+              statusGeneralControl &&
+              textActiveControls == id && (
+                <ContainerDelete onClick={handleDeleteText}>x</ContainerDelete>
+              )}
+            <OptionsWrapperMain sizeLetter={sizeLetter} fontFamily={typography}>
+              <EditorContentContainer id={`editor_main${id}`} editor={editor} />
+            </OptionsWrapperMain>
+            {statusControls &&
+              statusGeneralControl &&
+              textActiveControls == id && <MenuBarText editor={editor} />}
+          </ContainerText>
+        </div>
         <Moveable
           target={target}
           resizable={true}
@@ -206,24 +212,31 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
           onRotate={({ target, beforeDelta }) => {
             const deg =
               parseFloat(frame.get("transform", "rotate")) + beforeDelta;
-            frame.set("transform", "rotate", `${deg}deg`);
+            // frame.set("transform", "rotate", `${deg}deg`);
+            setRotateValue(deg);
             setTransform(target);
           }}
           onScale={({ target, delta }) => {
             const scaleX = frame.get("transform", "scaleX") * delta[0];
             const scaleY = frame.get("transform", "scaleY") * delta[1];
-            frame.set("transform", "scaleX", scaleX);
-            frame.set("transform", "scaleY", scaleY);
+            // frame.set("transform", "scaleX", scaleX);
+            // frame.set("transform", "scaleY", scaleY);
+            setScaleX(scaleX);
+            setScaleY(scaleY);
             setTransform(target);
           }}
           onDrag={({ target, top, left }) => {
-            frame.set("left", `${left}px`);
-            frame.set("top", `${top}px`);
+            // frame.set("left", `${left}px`);
+            // frame.set("top", `${top}px`);
+            setLeftValue(left);
+            setTopValue(top);
             setTransform(target);
           }}
           onResize={({ target, width, height }) => {
             frame.set("width", `${width}px`);
             frame.set("height", `${height}px`);
+            setWidthValue(width);
+            setHeightValue(height);
             setTransform(target);
           }}
         />

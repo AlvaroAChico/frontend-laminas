@@ -369,6 +369,9 @@ const EditorElaminas: React.FC = () => {
   const handleTextPanel = () => {
     const newText: TextBaseProps = {
       id: Date.now(),
+      inputColor: "#000000",
+      sizeLetter: 10,
+      typography: "Arial",
     };
     dispatch(addTextBase(newText));
   };
@@ -426,12 +429,12 @@ const EditorElaminas: React.FC = () => {
         </MenuMobileEditor>
         <MenuEditor />
         <ContentPanelEditor>
-          <ContainerTextButton>
+          {/* <ContainerTextButton>
             <ButtonText onClick={handleTextPanel}>
               Texto
               <Text />
             </ButtonText>
-          </ContainerTextButton>
+          </ContainerTextButton> */}
           <ContainerSheet>
             <SheetItem
               active={activeSheetPanel == 1}
@@ -462,7 +465,13 @@ const EditorElaminas: React.FC = () => {
                   <ImageBase key={item.id} id={item.id} image={item.image} />
                 ))}
                 {listText.map((item: TextBaseProps) => (
-                  <TextBase key={item.id} id={item.id} />
+                  <TextBase
+                    key={item.id}
+                    id={item.id}
+                    inputColor={item.inputColor}
+                    typography={item.typography}
+                    sizeLetter={item.sizeLetter}
+                  />
                 ))}
               </ContentEditor>
             </WrapperTransformScale>

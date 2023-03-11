@@ -14,7 +14,6 @@ import {
   updateImageCropper,
 } from "../../../../../../core/store/editor/editorSlice";
 import { Cut } from "@styled-icons/boxicons-regular/Cut";
-import { RoundedCorner } from "@styled-icons/material-outlined/RoundedCorner";
 
 import { Square } from "@styled-icons/bootstrap/Square";
 import { SquareRounded } from "@styled-icons/boxicons-solid/SquareRounded";

@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { EditorContentProps } from "@tiptap/react";
+import { EditorProps } from "prosemirror-view";
 import { ImageBaseProps } from "../../../features/editor/components/editor/components/image-base/image-base";
 import { TextBaseProps } from "../../../features/editor/components/editor/components/text-base/text-base";
 import { RootState } from "../../store";
@@ -16,6 +18,7 @@ export interface EditorState {
   generalSatusControl: boolean;
   activeImage: number;
   activeText: number;
+  activeEditor: EditorProps;
 }
 
 const initialState: EditorState = {
@@ -30,12 +33,16 @@ const initialState: EditorState = {
   generalSatusControl: true,
   activeImage: 0,
   activeText: 0,
+  activeEditor: {},
 };
 
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
+    updateActiveEditor: (state, action: PayloadAction<any>) => {
+      state.activeEditor = action.payload;
+    },
     updateCurrentImage: (state, action: PayloadAction<string>) => {
       state.currentImageId = action.payload;
     },
@@ -93,10 +100,54 @@ export const editorSlice = createSlice({
     hiddenStatusControls: (state) => {
       state.generalSatusControl = false;
     },
+    // Fragmento para editor de texto
+    updateTypography: (state, action: PayloadAction<string>) => {
+      const newListText = state.listText.map((item) => {
+        if (item.id == state.activeText) {
+          item.typography = action.payload;
+        }
+        return item;
+      });
+      state.listText = newListText;
+    },
+    updateSizeLetterUP: (state) => {
+      const newListText = state.listText.map((item) => {
+        if (item.id == state.activeText) {
+          item.sizeLetter = item.sizeLetter + 1;
+        }
+        return item;
+      });
+      state.listText = newListText;
+    },
+    updateSizeLetterDOWN: (state) => {
+      const newListText = state.listText.map((item) => {
+        if (item.id == state.activeText) {
+          if (item.sizeLetter > 0) {
+            item.sizeLetter = item.sizeLetter - 1;
+          }
+        }
+        return item;
+      });
+      state.listText = newListText;
+    },
+    updateInputColor: (state, action: PayloadAction<string>) => {
+      const newListText = state.listText.map((item) => {
+        if (item.id == state.activeText) {
+          item.inputColor = action.payload;
+        }
+        return item;
+      });
+      state.listText = newListText;
+    },
   },
 });
 
 export const {
+  updateActiveEditor,
+  updateTypography,
+  updateSizeLetterUP,
+  updateSizeLetterDOWN,
+  updateInputColor,
   addImageBase,
   addTextBase,
   showModalEditor,
@@ -132,5 +183,6 @@ export const getGeneralStatusControl = (state: RootState) =>
   state.editor.generalSatusControl;
 export const getActiveImage = (state: RootState) => state.editor.activeImage;
 export const getActiveText = (state: RootState) => state.editor.activeText;
+export const getActiveEditor = (state: RootState) => state.editor.activeText;
 
 export default editorSlice.reducer;

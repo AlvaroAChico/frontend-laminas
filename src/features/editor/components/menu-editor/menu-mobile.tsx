@@ -9,9 +9,15 @@ import {
   addTextBase,
   changeStatusMobileMenu,
   getStatusMobileMenu,
+  updateInputColor,
+  updateSizeLetterDOWN,
+  updateSizeLetterUP,
+  updateTypography,
 } from "../../../../core/store/editor/editorSlice";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { ImageBaseProps } from "../editor/components/image-base/image-base";
+import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
+import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
 
 const ContainerBackdrop = styled.div<{ active: boolean }>`
   position: absolute;
@@ -125,6 +131,54 @@ const ContainerClose = styled.div<{ active: boolean }>`
   cursor: pointer;
 `;
 
+const ContainerTextGeneralOptions = styled.div``;
+
+const ContainerTypography = styled.div`
+  > p {
+    padding: 6px;
+    border-bottom: 0.5px solid #cdcdcd;
+    width: 100%;
+    transition: 0.5s;
+    cursor: pointer;
+
+    :hover {
+      background: #f0cad3;
+    }
+  }
+`;
+const ContainerItemOption = styled.div`
+  border: 0.5px solid #4949e6;
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: "#0020ff9e";
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  cursor: pointer;
+
+  > svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  > input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border: 0;
+  }
+`;
+const ContainerOptionsText = styled.div`
+  display: flex;
+  flex-direction: row;
+  jusfity-content: left;
+  align-items: center;
+  column-gap: 2px;
+`;
+
 const MenuMobile: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(3);
   const [initialSearch, setInitialSearch] = React.useState("");
@@ -135,6 +189,9 @@ const MenuMobile: React.FC = () => {
   const handleAddText = () => () => {
     const newText: TextBaseProps = {
       id: Date.now(),
+      inputColor: "#000000",
+      sizeLetter: 10,
+      typography: "Arial",
     };
     dispatch(addTextBase(newText));
   };
@@ -150,6 +207,20 @@ const MenuMobile: React.FC = () => {
   const handleChangeText = (value: string) => setInitialSearch(value);
 
   const handleCloseMenuMobile = () => dispatch(changeStatusMobileMenu());
+
+  const handleSelectNewTypography = (fontFamily: string) => () => {
+    dispatch(updateTypography(fontFamily));
+  };
+
+  const handleInputColor = () => {
+    const color: HTMLInputElement = document.getElementById(
+      "input_color_main"
+    ) as HTMLInputElement;
+    dispatch(updateInputColor(color!.value));
+  };
+
+  const handleUpClick = () => dispatch(updateSizeLetterUP());
+  const handleDownClick = () => dispatch(updateSizeLetterDOWN());
 
   return (
     <ContainerBackdrop active={statusMenuMobile}>
@@ -182,6 +253,64 @@ const MenuMobile: React.FC = () => {
             <ButtonAddText onClick={handleAddText()}>
               Agregar texto
             </ButtonAddText>
+            <ContainerTextGeneralOptions>
+              <ContainerOptionsText>
+                <ContainerItemOption>
+                  <input
+                    id="input_color_main"
+                    type="color"
+                    onInput={handleInputColor}
+                  />
+                </ContainerItemOption>
+                <ContainerItemOption onClick={handleUpClick}>
+                  <ChevronUp />
+                </ContainerItemOption>
+                <ContainerItemOption onClick={handleDownClick}>
+                  <ChevronDown />
+                </ContainerItemOption>
+              </ContainerOptionsText>
+              <ContainerTypography>
+                <p onClick={handleSelectNewTypography("Arial")}>Arial</p>
+                <p onClick={handleSelectNewTypography("Arial Black")}>
+                  Arial Black
+                </p>
+                <p onClick={handleSelectNewTypography("Verdana")}>Verdana</p>
+                <p onClick={handleSelectNewTypography("Tahoma")}>Tahoma</p>
+                <p onClick={handleSelectNewTypography("Trebuchet MS")}>
+                  Trebuchet MS
+                </p>
+                <p onClick={handleSelectNewTypography("Impact")}>Impact</p>
+                <p onClick={handleSelectNewTypography("Times New Roman")}>
+                  Times New Roman
+                </p>
+                <p onClick={handleSelectNewTypography("Georgia")}>Georgia</p>
+                <p onClick={handleSelectNewTypography("American Typewriter")}>
+                  American Typewriter
+                </p>
+                <p onClick={handleSelectNewTypography("Andale Mono")}>
+                  Andale Mono
+                </p>
+                <p onClick={handleSelectNewTypography("Courier")}>Courier</p>
+                <p onClick={handleSelectNewTypography("Lucida Console")}>
+                  Lucida Console
+                </p>
+                <p onClick={handleSelectNewTypography("Monaco")}>Monaco</p>
+                <p onClick={handleSelectNewTypography("Bradley Hand")}>
+                  Bradley Hand
+                </p>
+                <p onClick={handleSelectNewTypography("Brush Script MT")}>
+                  Brush Script MT
+                </p>
+                <p onClick={handleSelectNewTypography("Luminari")}>Luminari</p>
+                <p onClick={handleSelectNewTypography("Comic Sans MS")}>
+                  Comic Sans MS
+                </p>
+                <p onClick={handleSelectNewTypography("Helvetica")}>
+                  Helvetica
+                </p>
+                <p onClick={handleSelectNewTypography("Cambria")}>Cambria</p>
+              </ContainerTypography>
+            </ContainerTextGeneralOptions>
           </ContainerBodyOptions>
           <ContainerBodyOptions
             isActive={statusOption == 3}
