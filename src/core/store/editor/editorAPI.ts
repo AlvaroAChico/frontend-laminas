@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Cookies from "js-cookie";
 
 const baseURLLaminas = "https://test.elaminas.com/api";
 // const baseURLLaminasLocal = "http://127.0.0.1:8000";
@@ -33,7 +34,7 @@ export const laminasApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
-      const token = "9|wNGdQYaz4BPxXKQ9C9puidkDgAFtpienXELn24E2";
+      const token = Cookies.get('jwt_token');
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
         headers.set("Content-Type", "application/json");
