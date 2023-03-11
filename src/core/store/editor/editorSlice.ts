@@ -14,6 +14,8 @@ export interface EditorState {
   currentImageId: string;
   listImageMenu: LaminaDefaultProps[];
   generalSatusControl: boolean;
+  activeImage: number;
+  activeText: number;
 }
 
 const initialState: EditorState = {
@@ -26,6 +28,8 @@ const initialState: EditorState = {
   currentImageId: "",
   listImageMenu: [],
   generalSatusControl: true,
+  activeImage: 0,
+  activeText: 0,
 };
 
 export const editorSlice = createSlice({
@@ -65,6 +69,18 @@ export const editorSlice = createSlice({
       );
       state.listImage = newList;
     },
+    deleteText: (state, action: PayloadAction<number>) => {
+      const newList = state.listText.filter(
+        (item) => item.id != action.payload
+      );
+      state.listText = newList;
+    },
+    updateImageActive: (state, action: PayloadAction<number>) => {
+      state.activeImage = action.payload;
+    },
+    updateTextActive: (state, action: PayloadAction<number>) => {
+      state.activeText = action.payload;
+    },
     updateAllDataLaminas: (
       state,
       action: PayloadAction<LaminaDefaultProps[]>
@@ -90,10 +106,13 @@ export const {
   updateImageCropper,
   updateCurrentImage,
   deleteImage,
+  deleteText,
+  updateImageActive,
   changeStatusMobileMenu,
   updateAllDataLaminas,
   showStatusControls,
   hiddenStatusControls,
+  updateTextActive,
 } = editorSlice.actions;
 
 export const getListImageBase = (state: RootState) => state.editor.listImage;
@@ -111,5 +130,7 @@ export const getCurrentImage = (state: RootState) =>
   state.editor.currentImageId;
 export const getGeneralStatusControl = (state: RootState) =>
   state.editor.generalSatusControl;
+export const getActiveImage = (state: RootState) => state.editor.activeImage;
+export const getActiveText = (state: RootState) => state.editor.activeText;
 
 export default editorSlice.reducer;

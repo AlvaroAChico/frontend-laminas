@@ -9,6 +9,13 @@ import MenuBarText from "./menu-bar-text";
 import TextAlign from "@tiptap/extension-text-align";
 import { Color } from "@tiptap/extension-color";
 import { Move } from "@styled-icons/boxicons-regular/Move";
+import { useAppDispatch, useAppSelector } from "../../../../../../app/hooks";
+import {
+  deleteText,
+  getActiveText,
+  getGeneralStatusControl,
+  updateTextActive,
+} from "../../../../../../core/store/editor/editorSlice";
 
 const OptionsWrapperMain = styled.div<{
   sizeLetter: number;
@@ -73,34 +80,58 @@ const ContainerImage = styled.div`
     display: none;
   }
 `;
+
+const ContainerDelete = styled.div`
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  padding: 10px;
+  top: -25px;
+  right: -25px;
+  color: white;
+  background: #de2b2b;
+  cursor: pointer;
+`;
+
 export interface TextBaseProps {
   id: number;
 }
 
 const TextBase: React.FC<TextBaseProps> = ({ id }) => {
   const [target, setTarget] = React.useState<any>();
-  const [statusMenu, setStatusMenu] = React.useState(false);
-  const [statusSettings, setStatusSettings] = React.useState(true);
+  const [statusControls, setStatusControls] = React.useState(false);
+  const [topValue, setTopValue] = React.useState(0);
+  const [leftValue, setLeftValue] = React.useState(0);
+  const [scaleValueX, setScaleX] = React.useState(1);
+  const [scaleValueY, setScaleY] = React.useState(1);
+  const [rotateValue, setRotateValue] = React.useState(0);
+  const [widthValue, setWidthValue] = React.useState(250);
+  const [heightValue, setHeightValue] = React.useState(200);
+  const dispatch: any = useAppDispatch();
+  const statusGeneralControl = useAppSelector(getGeneralStatusControl);
+  const textActiveControls = useAppSelector(getActiveText);
+  const handleDeleteText = () => dispatch(deleteText(id));
+
   const [sizeLetter, setSizeLetter] = React.useState(10);
   const [fontFamily, setFontFamily] = React.useState("Arial");
 
-  const handleShowStatusMenu = () => setStatusMenu(true);
-  const handleHiddenStatusMenu = () => setStatusMenu(false);
-  const handleStatusSettings = () => setStatusSettings(!statusSettings);
   const handleUpLetter = () => setSizeLetter(sizeLetter + 1);
   const handleDownLetter = () => setSizeLetter(sizeLetter - 1);
   const handleChangeFontFamily = (font: string) => setFontFamily(font);
 
-  const [statusControls, setStatusControls] = React.useState(false);
   const frame = new Frame({
-    width: "250px",
-    height: "200px",
-    left: "0px",
-    top: "0px",
+    width: `${widthValue}px`,
+    height: `${heightValue}px`,
+    left: `${leftValue}px`,
+    top: `${topValue}px`,
     transform: {
-      rotate: "0deg",
-      scaleX: 1,
-      scaleY: 1,
+      rotate: `${rotateValue}deg`,
+      scaleX: scaleValueX,
+      scaleY: scaleValueY,
       matrix3d: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
     },
   });
@@ -111,10 +142,6 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
 
   const setTransform = (target: any) => {
     target.style.cssText = frame.toCSS();
-  };
-
-  const handleMoveImage = () => {
-    setStatusControls(!statusControls);
   };
 
   // Config text
@@ -131,38 +158,40 @@ const TextBase: React.FC<TextBaseProps> = ({ id }) => {
     content: "<p>Escribe aquí tu mensaje</p>",
   });
   // Config text
+
+  const handleChangeActive = () => {
+    dispatch(updateTextActive(id));
+    setStatusControls(!statusControls);
+  };
+
   return (
     <>
       <ContainerMain
         id={`image_id${id}`}
         className="container"
-        active={statusControls}
-        onDoubleClick={handleMoveImage}
+        active={statusControls && statusGeneralControl}
+        onClick={handleChangeActive}
       >
         <ContainerText id={`text${id}`} className={`target${id}`}>
-          {/* onMouseDown={} */}
-          <OptionsWrapperMain
-            sizeLetter={sizeLetter}
-            fontFamily={fontFamily}
-            onFocus={handleStatusSettings}
-          >
+          {statusControls &&
+            statusGeneralControl &&
+            textActiveControls == id && (
+              <ContainerDelete onClick={handleDeleteText}>x</ContainerDelete>
+            )}
+          <OptionsWrapperMain sizeLetter={sizeLetter} fontFamily={fontFamily}>
             <EditorContentContainer editor={editor} />
           </OptionsWrapperMain>
-          {statusMenu && (
-            <WrapperMove onMouseOut={handleShowStatusMenu}>
-              <Move />
-            </WrapperMove>
-          )}
-          {statusMenu && (
-            <MenuBarText
-              containerId={`text${id}`}
-              editor={editor}
-              handleUpLetter={handleUpLetter}
-              handleDownLetter={handleDownLetter}
-              handleChangeFontFamily={handleChangeFontFamily}
-              onMouseOut={handleShowStatusMenu}
-            />
-          )}
+          {statusControls &&
+            statusGeneralControl &&
+            textActiveControls == id && (
+              <MenuBarText
+                containerId={`text${id}`}
+                editor={editor}
+                handleUpLetter={handleUpLetter}
+                handleDownLetter={handleDownLetter}
+                handleChangeFontFamily={handleChangeFontFamily}
+              />
+            )}
         </ContainerText>
         <Moveable
           target={target}

@@ -6,8 +6,18 @@ import { Frame } from "scenejs";
 import { useAppDispatch, useAppSelector } from "../../../../../../app/hooks";
 import {
   deleteImage,
+  getActiveImage,
   getGeneralStatusControl,
+  showModalEditor,
+  updateCurrentImage,
+  updateImageActive,
+  updateImageCropper,
 } from "../../../../../../core/store/editor/editorSlice";
+import { Cut } from "@styled-icons/boxicons-regular/Cut";
+import { RoundedCorner } from "@styled-icons/material-outlined/RoundedCorner";
+
+import { Square } from "@styled-icons/bootstrap/Square";
+import { SquareRounded } from "@styled-icons/boxicons-solid/SquareRounded";
 
 const ContainerMain = styled.div<{ active: boolean }>`
   position: relative;
@@ -43,6 +53,39 @@ const ContainerDelete = styled.div`
   right: -25px;
   color: white;
   background: #de2b2b;
+  cursor: pointer;
+`;
+
+const ContainerOptions = styled.div`
+  position: absolute;
+  bottom: -28px;
+  left: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+`;
+
+const ItemOption = styled.div`
+  background: #fc4c2f;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  padding: 4px;
+
+  > svg {
+    width: 15px;
+    height: 15px;
+    color: white;
+  }
+`;
+const ImageMain = styled.img<{ border: number }>`
+  border-radius: ${(p) => `${p.border}px`};
 `;
 export interface ImageBaseProps {
   id: number;
@@ -57,13 +100,19 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
   const [scaleValueX, setScaleX] = React.useState(1);
   const [scaleValueY, setScaleY] = React.useState(1);
   const [rotateValue, setRotateValue] = React.useState(0);
+  const [borderValue, setBorderValue] = React.useState(0);
+  const imageId = document.getElementById(`image${id}_main`);
   const [widthValue, setWidthValue] = React.useState(250);
-  const [heightValue, setHeightValue] = React.useState(200);
+  const [heightValue, setHeightValue] = React.useState(imageId?.clientHeight);
   const dispatch: any = useAppDispatch();
   const statusGeneralControl = useAppSelector(getGeneralStatusControl);
-  const handleChangeActive = () => setStatusControls(!statusControls);
+  const imageActiveControls = useAppSelector(getActiveImage);
   const handleDeleteImage = () => dispatch(deleteImage(id));
-  const handleMoveImage = () => setStatusControls(!statusControls);
+
+  const handleChangeActive = () => {
+    dispatch(updateImageActive(id));
+    setStatusControls(!statusControls);
+  };
 
   const frame = new Frame({
     width: `${widthValue}px`,
@@ -82,8 +131,31 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
     setTarget(document.querySelector(`.target${id}`)!);
   }, []);
 
+  React.useEffect(() => {
+    setStatusControls(imageActiveControls == id);
+  }, [imageActiveControls]);
+
   const setTransform = (target: any) => {
     target.style.cssText = frame.toCSS();
+  };
+
+  const handleCutOption = () => {
+    dispatch(updateCurrentImage(`image_mainID${id}`));
+    dispatch(updateImageCropper(image));
+    dispatch(showModalEditor());
+  };
+
+  const handleSquareOption = () => {
+    setTimeout(() => {
+      setStatusControls(true);
+      setBorderValue(borderValue > 0 ? borderValue - 1 : 0);
+    }, 10);
+  };
+  const handleRoundedOption = () => {
+    setTimeout(() => {
+      setStatusControls(true);
+      setBorderValue(borderValue + 1);
+    }, 10);
   };
 
   return (
@@ -92,14 +164,34 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
         id={`image_id${id}`}
         className="container"
         active={statusControls && statusGeneralControl}
-        onDoubleClick={handleMoveImage}
         onClick={handleChangeActive}
       >
-        <ContainerImage className={`target${id}`}>
-          {statusControls && statusGeneralControl && (
-            <ContainerDelete onClick={handleDeleteImage}>x</ContainerDelete>
-          )}
-          <img src={image} />
+        <ContainerImage id={`image${id}_main`} className={`target${id}`}>
+          {statusControls &&
+            statusGeneralControl &&
+            imageActiveControls == id && (
+              <ContainerDelete onClick={handleDeleteImage}>x</ContainerDelete>
+            )}
+          <ImageMain
+            id={`image_mainID${id}`}
+            src={image}
+            border={borderValue}
+          />
+          {statusControls &&
+            statusGeneralControl &&
+            imageActiveControls == id && (
+              <ContainerOptions>
+                <ItemOption onClick={handleCutOption}>
+                  <Cut />
+                </ItemOption>
+                <ItemOption onClick={handleSquareOption}>
+                  <Square />
+                </ItemOption>
+                <ItemOption onClickCapture={handleRoundedOption}>
+                  <SquareRounded />
+                </ItemOption>
+              </ContainerOptions>
+            )}
         </ContainerImage>
         <Moveable
           target={target}

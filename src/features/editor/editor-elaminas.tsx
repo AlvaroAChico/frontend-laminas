@@ -32,7 +32,7 @@ import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownloa
 import downloadLoadingImage from "../../assets/gif/painting_download_load.gif";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
 import { breakpoints } from "../../constants/breakpoints";
-import { Settings2Outline } from "@styled-icons/evaicons-outline/Settings2Outline";
+import { Edit } from "@styled-icons/fluentui-system-filled/Edit";
 import MenuMobile from "./components/menu-editor/menu-mobile";
 import { Text } from "@styled-icons/evaicons-solid/Text";
 import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
@@ -422,7 +422,7 @@ const EditorElaminas: React.FC = () => {
       <ContainerEditor>
         <MenuMobile />
         <MenuMobileEditor onClick={handleShowMobile}>
-          <Settings2Outline />
+          <Edit />
         </MenuMobileEditor>
         <MenuEditor />
         <ContentPanelEditor>

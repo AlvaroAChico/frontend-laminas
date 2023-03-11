@@ -49,7 +49,6 @@ const ContainerSelect = styled.select`
 interface IOwnProps {
   editor: any;
   containerId: string;
-  onMouseOut: () => void;
   handleUpLetter: () => void;
   handleDownLetter: () => void;
   handleChangeFontFamily: (font: string) => void;
@@ -60,7 +59,6 @@ const MenuBarText: React.FC<IOwnProps> = ({
   handleUpLetter,
   handleDownLetter,
   handleChangeFontFamily,
-  onMouseOut,
 }) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -76,7 +74,7 @@ const MenuBarText: React.FC<IOwnProps> = ({
   };
 
   return (
-    <ContainerOptions onMouseOut={onMouseOut}>
+    <ContainerOptions>
       <ContainerItem
         onMouseOut={() => {
           const containerTextId = document.getElementById(containerId);
