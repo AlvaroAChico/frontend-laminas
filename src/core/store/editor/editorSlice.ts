@@ -18,7 +18,6 @@ export interface EditorState {
   activeImage: number;
   activeText: number;
   activeSheetPanel: number;
-  editor: Editor | null;
 }
 
 const initialState: EditorState = {
@@ -34,7 +33,6 @@ const initialState: EditorState = {
   activeImage: 0,
   activeText: 0,
   activeSheetPanel: 1,
-  editor: null,
 };
 
 export const editorSlice = createSlice({
@@ -140,15 +138,20 @@ export const editorSlice = createSlice({
       });
       state.listText = newListText;
     },
-    updateEditorTipTap: (state, action: PayloadAction<Editor>) => {
-      const editor: Editor = action.payload as Editor;
-      // state.editor = null;
+    updateEditortext: (state, action: PayloadAction<string>) => {
+      const newListText = state.listText.map((item) => {
+        if (item.id == state.activeText) {
+          item.textAlign = action.payload;
+        }
+        return item;
+      });
+      state.listText = newListText;
     },
   },
 });
 
 export const {
-  updateEditorTipTap,
+  updateEditortext,
   updateTypography,
   updateSizeLetterUP,
   updateSizeLetterDOWN,

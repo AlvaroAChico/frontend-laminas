@@ -199,6 +199,7 @@ const EditorElaminas: React.FC = () => {
                     inputColor={item.inputColor}
                     typography={item.typography}
                     sizeLetter={item.sizeLetter}
+                    textAlign={item.textAlign}
                   />
                 ))}
               </ContentEditor>

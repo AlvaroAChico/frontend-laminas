@@ -14,6 +14,7 @@ import {
   getListImageMenu,
   updateActiveSheetPanel,
   updateAllDataLaminas,
+  updateEditortext,
   updateInputColor,
   updateSizeLetterDOWN,
   updateSizeLetterUP,
@@ -34,6 +35,10 @@ import menuEditorProduction from "../../../../config/environments/production.jso
 import a4IMG from "../../../../assets/img/a4.png";
 import oficioIMG from "../../../../assets/img/oficio.png";
 import a3IMG from "../../../../assets/img/a3.png";
+import { TextLeft } from "@styled-icons/bootstrap/TextLeft";
+import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
+import { TextRight } from "@styled-icons/bootstrap/TextRight";
+import { Justify } from "@styled-icons/bootstrap/Justify";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -204,6 +209,29 @@ const ItemPaper = styled.div<{ active: boolean }>`
   }
 `;
 
+const ContainerItem = styled.div<{ active?: boolean; customPadding?: string }>`
+  border: 0.5px solid #4949e6;
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #6db2de61;
+  color: black;
+  padding: 4px;
+
+  > svg {
+    width: 12px;
+  }
+
+  > input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border: 0;
+  }
+`;
+
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
@@ -226,6 +254,7 @@ const MenuEditor: React.FC = () => {
       inputColor: "#000000",
       sizeLetter: 10,
       typography: "Arial",
+      textAlign: "left",
     };
     dispatch(addTextBase(newText));
   };
@@ -335,6 +364,40 @@ const MenuEditor: React.FC = () => {
             <ContainerItemOption onClick={handleDownClick}>
               <ChevronDown />
             </ContainerItemOption>
+            {/* ------------------------------------------------------------ */}
+            <ContainerItem
+              onClick={() => {
+                console.log("1");
+                dispatch(updateEditortext("left"));
+              }}
+            >
+              <TextLeft />
+            </ContainerItem>
+            <ContainerItem
+              onClick={() => {
+                console.log("2");
+                dispatch(updateEditortext("center"));
+              }}
+            >
+              <TextCenter />
+            </ContainerItem>
+            <ContainerItem
+              onClick={() => {
+                console.log("3");
+                dispatch(updateEditortext("right"));
+              }}
+            >
+              <TextRight />
+            </ContainerItem>
+            <ContainerItem
+              onClick={() => {
+                console.log("4");
+                dispatch(updateEditortext("justify"));
+              }}
+            >
+              <Justify />
+            </ContainerItem>
+            {/* ------------------------------------------------------------ */}
           </ContainerOptionsText>
           <ContainerTypography>
             <p onClick={handleSelectNewTypography("Arial")}>Arial</p>

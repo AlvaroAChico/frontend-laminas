@@ -8,13 +8,11 @@ import StarterKit from "@tiptap/starter-kit";
 import MenuBarText from "./menu-bar-text";
 import TextAlign from "@tiptap/extension-text-align";
 import { Color } from "@tiptap/extension-color";
-import { Move } from "@styled-icons/boxicons-regular/Move";
 import { useAppDispatch, useAppSelector } from "../../../../../../app/hooks";
 import {
   deleteText,
   getActiveText,
   getGeneralStatusControl,
-  updateEditorTipTap,
   updateTextActive,
 } from "../../../../../../core/store/editor/editorSlice";
 
@@ -22,11 +20,24 @@ const OptionsWrapperMain = styled.div<{
   sizeLetter: number;
   fontFamily: string;
   colorText: string;
+  textAlign: string;
 }>`
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+
   > div div p {
     font-size: ${(p) => `${p.sizeLetter}px`};
     font-family: ${(p) => p.fontFamily};
     color: ${(p) => p.colorText};
+    text-align: ${(p) => p.textAlign};
+  }
+
+  > textarea {
+    font-size: ${(p) => `${p.sizeLetter}px`};
+    font-family: ${(p) => p.fontFamily};
+    color: ${(p) => p.colorText};
+    text-align: ${(p) => p.textAlign};
   }
 `;
 
@@ -100,12 +111,20 @@ const ContainerDelete = styled.div`
   background: #de2b2b;
   cursor: pointer;
 `;
-
+const ContainerTextarea = styled.textarea`
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  resize: none;
+`;
 export interface TextBaseProps {
   id: number;
   typography: string;
   sizeLetter: number;
   inputColor: string;
+  textAlign: string;
 }
 
 const TextBase: React.FC<TextBaseProps> = ({
@@ -113,6 +132,7 @@ const TextBase: React.FC<TextBaseProps> = ({
   typography,
   sizeLetter,
   inputColor,
+  textAlign,
 }) => {
   const [target, setTarget] = React.useState<any>();
   const [statusControls, setStatusControls] = React.useState(false);
@@ -180,6 +200,9 @@ const TextBase: React.FC<TextBaseProps> = ({
           statusControls && statusGeneralControl && textActiveControls == id
         }
         onClick={handleChangeActive}
+        onDoubleClick={() => {
+          document.getElementById(`textarea_base${id}`)?.focus();
+        }}
       >
         <div>
           <ContainerText id={`text${id}`} className={`target${id}`}>
@@ -192,12 +215,17 @@ const TextBase: React.FC<TextBaseProps> = ({
               sizeLetter={sizeLetter}
               fontFamily={typography}
               colorText={inputColor}
+              textAlign={textAlign}
             >
-              <EditorContentContainer id={`editor_main${id}`} editor={editor} />
+              {/* <EditorContentContainer id={`editor_main${id}`} editor={editor} /> */}
+              <ContainerTextarea
+                id={`textarea_base${id}`}
+                defaultValue={"Escribe aqui"}
+              />
             </OptionsWrapperMain>
-            {statusControls &&
+            {/* {statusControls &&
               statusGeneralControl &&
-              textActiveControls == id && <MenuBarText editor={editor} />}
+              textActiveControls == id && <MenuBarText editor={editor} />} */}
           </ContainerText>
         </div>
         <Moveable

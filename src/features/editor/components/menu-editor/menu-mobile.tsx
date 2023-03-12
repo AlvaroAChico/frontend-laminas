@@ -192,6 +192,7 @@ const MenuMobile: React.FC = () => {
       inputColor: "#000000",
       sizeLetter: 10,
       typography: "Arial",
+      textAlign: "left",
     };
     dispatch(addTextBase(newText));
   };
