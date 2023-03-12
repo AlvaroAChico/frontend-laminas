@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { EditorContentProps } from "@tiptap/react";
-import { EditorProps } from "prosemirror-view";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Editor } from "@tiptap/react";
 import { ImageBaseProps } from "../../../features/editor/components/editor/components/image-base/image-base";
 import { TextBaseProps } from "../../../features/editor/components/editor/components/text-base/text-base";
 import { RootState } from "../../store";
@@ -18,7 +17,8 @@ export interface EditorState {
   generalSatusControl: boolean;
   activeImage: number;
   activeText: number;
-  activeEditor: EditorProps;
+  activeSheetPanel: number;
+  editor: Editor | null;
 }
 
 const initialState: EditorState = {
@@ -33,16 +33,14 @@ const initialState: EditorState = {
   generalSatusControl: true,
   activeImage: 0,
   activeText: 0,
-  activeEditor: {},
+  activeSheetPanel: 1,
+  editor: null,
 };
 
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    updateActiveEditor: (state, action: PayloadAction<any>) => {
-      state.activeEditor = action.payload;
-    },
     updateCurrentImage: (state, action: PayloadAction<string>) => {
       state.currentImageId = action.payload;
     },
@@ -100,6 +98,9 @@ export const editorSlice = createSlice({
     hiddenStatusControls: (state) => {
       state.generalSatusControl = false;
     },
+    updateActiveSheetPanel: (state, action: PayloadAction<number>) => {
+      state.activeSheetPanel = action.payload;
+    },
     // Fragmento para editor de texto
     updateTypography: (state, action: PayloadAction<string>) => {
       const newListText = state.listText.map((item) => {
@@ -139,11 +140,15 @@ export const editorSlice = createSlice({
       });
       state.listText = newListText;
     },
+    updateEditorTipTap: (state, action: PayloadAction<Editor>) => {
+      const editor: Editor = action.payload as Editor;
+      // state.editor = null;
+    },
   },
 });
 
 export const {
-  updateActiveEditor,
+  updateEditorTipTap,
   updateTypography,
   updateSizeLetterUP,
   updateSizeLetterDOWN,
@@ -164,6 +169,7 @@ export const {
   showStatusControls,
   hiddenStatusControls,
   updateTextActive,
+  updateActiveSheetPanel,
 } = editorSlice.actions;
 
 export const getListImageBase = (state: RootState) => state.editor.listImage;
@@ -184,5 +190,7 @@ export const getGeneralStatusControl = (state: RootState) =>
 export const getActiveImage = (state: RootState) => state.editor.activeImage;
 export const getActiveText = (state: RootState) => state.editor.activeText;
 export const getActiveEditor = (state: RootState) => state.editor.activeText;
+export const getActiveSheetPanel = (state: RootState) =>
+  state.editor.activeSheetPanel;
 
 export default editorSlice.reducer;

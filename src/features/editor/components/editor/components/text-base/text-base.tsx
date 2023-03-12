@@ -14,17 +14,19 @@ import {
   deleteText,
   getActiveText,
   getGeneralStatusControl,
-  updateActiveEditor,
+  updateEditorTipTap,
   updateTextActive,
 } from "../../../../../../core/store/editor/editorSlice";
 
 const OptionsWrapperMain = styled.div<{
   sizeLetter: number;
   fontFamily: string;
+  colorText: string;
 }>`
   > div div p {
     font-size: ${(p) => `${p.sizeLetter}px`};
     font-family: ${(p) => p.fontFamily};
+    color: ${(p) => p.colorText};
   }
 `;
 
@@ -42,10 +44,9 @@ const EditorContentContainer = styled(EditorContent)`
   }
 `;
 
-const ContainerText = styled.div<{ colorText: string }>`
+const ContainerText = styled.div`
   position: absolute;
   height: auto;
-  color: ${(p) => (p.color = p.colorText)};
 `;
 const WrapperMove = styled.div`
   position: absolute;
@@ -165,8 +166,8 @@ const TextBase: React.FC<TextBaseProps> = ({
   // Config text
 
   const handleChangeActive = () => {
+    // dispatch(updateEditorTipTap(editor));
     dispatch(updateTextActive(id));
-    dispatch(updateActiveEditor(editor));
     setStatusControls(!statusControls);
   };
 
@@ -181,17 +182,17 @@ const TextBase: React.FC<TextBaseProps> = ({
         onClick={handleChangeActive}
       >
         <div>
-          <ContainerText
-            id={`text${id}`}
-            className={`target${id}`}
-            colorText={inputColor}
-          >
+          <ContainerText id={`text${id}`} className={`target${id}`}>
             {statusControls &&
               statusGeneralControl &&
               textActiveControls == id && (
                 <ContainerDelete onClick={handleDeleteText}>x</ContainerDelete>
               )}
-            <OptionsWrapperMain sizeLetter={sizeLetter} fontFamily={typography}>
+            <OptionsWrapperMain
+              sizeLetter={sizeLetter}
+              fontFamily={typography}
+              colorText={inputColor}
+            >
               <EditorContentContainer id={`editor_main${id}`} editor={editor} />
             </OptionsWrapperMain>
             {statusControls &&

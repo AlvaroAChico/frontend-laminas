@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
+import productionJSON from "../../../config/environments/production.json";
 
 const baseURLLaminas = "https://test.elaminas.com/api";
 // const baseURLLaminasLocal = "http://127.0.0.1:8000";
@@ -34,11 +35,9 @@ export const laminasApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
-      console.log(Cookies.get("jwt_token"));
-      const token = Cookies.get("jwt_token");
-      const activeCanva = localStorage.getItem("jwt_token");
-      console.log(activeCanva)
-      console.log(token);
+      const token = productionJSON.app.mocks
+        ? "15|QLnP7JXKu1yCu5Y0PeHO6TcFvE81X3twkBvkQMNK  "
+        : Cookies.get("jwt_token");
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
         headers.set("Content-Type", "application/json");
@@ -49,6 +48,13 @@ export const laminasApi = createApi({
     },
   }),
   endpoints: (build) => ({
+    getStatusUserDownloads: build.query<LaminaResponse, any>({
+      query: () => ({
+        url: `/auth/descargas`,
+        method: "GET",
+      }),
+      transformResponse: (response: LaminaResponse) => response,
+    }),
     getListLaminas: build.query<LaminaResponse, any>({
       query: () => ({
         url: `/laminas?sort=tbllmnacdgo&render=paginate`,
@@ -63,8 +69,19 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
+    postLaminasByUUID: build.mutation<LaminaResponse, string>({
+      query: (uuid) => ({
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnauuid]=${uuid}`,
+        method: "GET",
+      }),
+      transformResponse: (response: LaminaResponse) => response,
+    }),
   }),
 });
 
-export const { useGetListLaminasQuery, usePostLaminasByWordMutation } =
-  laminasApi;
+export const {
+  useGetStatusUserDownloadsQuery,
+  useGetListLaminasQuery,
+  usePostLaminasByWordMutation,
+  usePostLaminasByUUIDMutation,
+} = laminasApi;

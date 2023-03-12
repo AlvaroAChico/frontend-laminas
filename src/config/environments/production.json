@@ -1,6 +1,8 @@
 {
     "app": {
-        "name": "E-Laminas"
+        "name": "E-Laminas",
+        "blocked": false,
+        "mocks": false
     },
     "api": {
         "laminas": "https://test.elaminas.com/api"

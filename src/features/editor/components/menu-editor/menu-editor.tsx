@@ -10,7 +10,9 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   addImageBase,
   addTextBase,
+  getActiveSheetPanel,
   getListImageMenu,
+  updateActiveSheetPanel,
   updateAllDataLaminas,
   updateInputColor,
   updateSizeLetterDOWN,
@@ -22,10 +24,16 @@ import { breakpoints } from "../../../../constants/breakpoints";
 import {
   LaminaDefaultProps,
   useGetListLaminasQuery,
+  useGetStatusUserDownloadsQuery,
   usePostLaminasByWordMutation,
 } from "../../../../core/store/editor/editorAPI";
 import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
 import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
+import { Settings } from "@styled-icons/fluentui-system-filled/Settings";
+import menuEditorProduction from "../../../../config/environments/production.json";
+import a4IMG from "../../../../assets/img/a4.png";
+import oficioIMG from "../../../../assets/img/oficio.png";
+import a3IMG from "../../../../assets/img/a3.png";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -168,12 +176,41 @@ const ContainerOptionsText = styled.div`
   column-gap: 2px;
 `;
 
+const ContainerPapers = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const ItemPaper = styled.div<{ active: boolean }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin: 15px 10px;
+  cursor: pointer;
+  column-gap: 10px;
+  ${(p) =>
+    p.active
+      ? `margin: 15px 10px;
+        border: 1px solid #3dc94b;
+        border-radius: 10px;
+        padding: 5px;`
+      : ""}
+
+  > img {
+    max-width: 60px;
+  }
+`;
+
 const MenuEditor: React.FC = () => {
-  const [statusOption, setStatusOption] = React.useState(3);
+  const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
   const handleOption = (option: number) => () => setStatusOption(option);
   const dispatch = useAppDispatch();
   const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
+  const activeSheetPanel = useAppSelector(getActiveSheetPanel);
 
   const handleSelectImage = (image: string) => () => {
     const newImage: ImageBaseProps = {
@@ -195,11 +232,20 @@ const MenuEditor: React.FC = () => {
   const handleChangeText = (value: string) => setInitialSearch(value);
 
   const { data, isLoading } = useGetListLaminasQuery("");
+  const {
+    data: dataDownload,
+    error: isErrorDownload,
+    isLoading: isLoadingDownload,
+  } = useGetStatusUserDownloadsQuery("");
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(data?.data || []));
   }, [data]);
+
+  React.useEffect(() => {
+    dispatch(updateAllDataLaminas(dataDownload?.data || []));
+  }, [dataDownload]);
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
@@ -215,19 +261,25 @@ const MenuEditor: React.FC = () => {
     dispatch(updateTypography(fontFamily));
   };
 
-  const handleInputColor = () => {
-    const color: HTMLInputElement = document.getElementById(
-      "input_color_main"
-    ) as HTMLInputElement;
-    dispatch(updateInputColor(color!.value));
+  const handleInputColor = (e: any) => {
+    dispatch(updateInputColor(e.target.value));
   };
 
   const handleUpClick = () => dispatch(updateSizeLetterUP());
   const handleDownClick = () => dispatch(updateSizeLetterDOWN());
 
+  const handleSelectSheet = (selected: number) => () =>
+    dispatch(updateActiveSheetPanel(selected));
+
   return (
     <ContainerMenu>
       <ContainerOptionsMenu>
+        <ItemMenu onClick={handleOption(1)} isActive={statusOption == 1}>
+          <div>
+            <Settings />
+          </div>
+          <span>General</span>
+        </ItemMenu>
         <ItemMenu onClick={handleOption(3)} isActive={statusOption == 3}>
           <div>
             <CardImage />
@@ -241,6 +293,31 @@ const MenuEditor: React.FC = () => {
           <span>Texto</span>
         </ItemMenu>
       </ContainerOptionsMenu>
+      <ContainerBodyOptions isActive={statusOption == 1}>
+        <ContainerPapers>
+          <ItemPaper
+            active={activeSheetPanel == 1}
+            onClick={handleSelectSheet(1)}
+          >
+            <img src={a4IMG} />
+            <p>Tamaño A4</p>
+          </ItemPaper>
+          <ItemPaper
+            active={activeSheetPanel == 2}
+            onClick={handleSelectSheet(2)}
+          >
+            <img src={oficioIMG} />
+            <p>Tamaño Oficio</p>
+          </ItemPaper>
+          <ItemPaper
+            active={activeSheetPanel == 3}
+            onClick={handleSelectSheet(3)}
+          >
+            <img src={a3IMG} />
+            <p>Tamaño A3</p>
+          </ItemPaper>
+        </ContainerPapers>
+      </ContainerBodyOptions>
       <ContainerBodyOptions isActive={statusOption == 2}>
         <ButtonAddText onClick={handleAddText()}>Agregar texto</ButtonAddText>
         <ContainerTextGeneralOptions>
@@ -310,11 +387,12 @@ const MenuEditor: React.FC = () => {
             onChange={(e: any) => handleChangeText(e.target.value)}
           />
         </ContainerSearch>
-        {listMockLaminas.map((image) => (
-          <ContainerLamina key={image.id}>
-            <img src={image.image} onClick={handleSelectImage(image.image)} />
-          </ContainerLamina>
-        ))}
+        {menuEditorProduction.app.mocks &&
+          listMockLaminas.map((image) => (
+            <ContainerLamina key={image.id}>
+              <img src={image.image} onClick={handleSelectImage(image.image)} />
+            </ContainerLamina>
+          ))}
         {isLoading ? (
           <>Buscando láminas...</>
         ) : (

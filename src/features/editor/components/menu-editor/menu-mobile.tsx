@@ -324,14 +324,14 @@ const MenuMobile: React.FC = () => {
                 onChange={(e: any) => handleChangeText(e.target.value)}
               />
             </ContainerSearch>
-            {listMockLaminas.map((lamina) => (
+            {/* {listMockLaminas.map((lamina) => (
               <ContainerLamina key={lamina.id}>
                 <img
                   src={lamina.image}
                   onClick={handleSelectImage(lamina.image)}
                 />
               </ContainerLamina>
-            ))}
+            ))} */}
           </ContainerBodyOptions>
         </ContainerMenu>
       </ContainerMenuMobile>

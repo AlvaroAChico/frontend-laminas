@@ -1,22 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { jsPDF } from "jspdf";
 import React from "react";
-import styled from "styled-components";
 import MenuEditor from "./components/menu-editor/menu-editor";
 import html2canvas from "html2canvas";
 import ImageBase, {
   ImageBaseProps,
 } from "./components/editor/components/image-base/image-base";
 import {
-  addTextBase,
+  addImageBase,
   changeStatusMobileMenu,
   closeDownloadPDF,
   closeModalEditor,
+  getActiveSheetPanel,
   getCurrentImage,
   getImageCropper,
   getListImageBase,
   getListTextBase,
   getStatusDownloadPDF,
-  getStatusMobileMenu,
   getStatusModalEditor,
   hiddenStatusControls,
   showDownloadPDF,
@@ -31,293 +31,39 @@ import "react-advanced-cropper/dist/style.css";
 import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownload";
 import downloadLoadingImage from "../../assets/gif/painting_download_load.gif";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
-import { breakpoints } from "../../constants/breakpoints";
 import { Edit } from "@styled-icons/fluentui-system-filled/Edit";
 import MenuMobile from "./components/menu-editor/menu-mobile";
-import { Text } from "@styled-icons/evaicons-solid/Text";
 import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
 import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
+import Cookies from "js-cookie";
+import { usePostLaminasByUUIDMutation } from "../../core/store/editor/editorAPI";
+import envProduction from "../../config/environments/production.json";
+import {
+  ContainerEditor,
+  ContentPanelEditor,
+  ContentEditor,
+  WrapperTransformScale,
+  HiddenWrapper,
+  ContainerDownloadButton,
+  ButtonZoom,
+  ContainerModalImage,
+  ContainerDownloadPDF,
+  ModalEditImage,
+  ButtonDownload,
+  ContainerLoaded,
+  ButtonApplyCropper,
+  MenuMobileEditor,
+} from "./editor-laminas.styles";
 
-const ContainerEditor = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  width: 100%;
-  height: 100vh;
-  background-color: #e5e5f7;
-  background-image: linear-gradient(#ffffff 1px, transparent 1px),
-    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
-  background-size: 20px 20px;
-
-  * {
-    font-family: sans-serif;
-    box-sizing: border-box;
-  }
-
-  // gap: 10px;
-  // opacity: 0.8;
-`;
-const ContentPanelEditor = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-`;
-const ContentEditor = styled.div<{
-  activeSheetPanel: number;
-}>`
-  background: white;
-  box-shadow: 0px 4px 20px 8px #a2a2a2b8;
-  transition: 0.5s;
-
-  width: ${(p) =>
-    p.activeSheetPanel == 1
-      ? "283.5px"
-      : p.activeSheetPanel == 2
-      ? "297px"
-      : "400.95px"};
-
-  height: ${(p) =>
-    p.activeSheetPanel == 1
-      ? "400.95px"
-      : p.activeSheetPanel == 2
-      ? "459px"
-      : "567px"};
-`;
-const WrapperTransformScale = styled.div<{ valueScale: number }>`
-  background: white;
-  transition: 0.5s;
-  transform: ${(p) =>
-    p.valueScale < 2
-      ? `scale(${p.valueScale}) translate(0%, 0%)`
-      : `scale(${p.valueScale}) translate(30%, 30%)`};
-  overflow: ${(p) => (p.valueScale < 2 ? "inherit" : "auto")};
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e5e5f7;
-  background-image: linear-gradient(#ffffff 1px, transparent 1px),
-    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
-  background-size: 20px 20px;
-`;
-
-const WrapperPositionItems = styled.div`
-  position: relative;
-  overflow: hidden;
-`;
-const HiddenWrapper = styled.div`
-  overflow: auto;
-  width: 100%;
-  height: 100%;
-  background-color: #e5e5f7;
-  background-image: linear-gradient(#ffffff 1px, transparent 1px),
-    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
-  background-size: 20px 20px;
-`;
-
-const ContainerSheet = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 10px;
-  column-gap: 10px;
-  z-index: 6;
-`;
-const SheetItem = styled.div<{ active: boolean }>`
-  background: ${(p) => (p.active ? "#83af44" : "white")};
-  padding: 10px 20px;
-  border-radius: 5px;
-  color: ${(p) => (p.active ? "white" : "#83af44")};
-  cursor: pointer;
-  box-shadow: ${(p) => (p.active ? "0px 6px 12px 0px #a2c6718c" : "none")};
-  border: 1px solid #83af44;
-`;
-const ContainerDownloadButton = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 6;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 10px;
-`;
-const ButtonZoom = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-  border-radius: 50%;
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  box-shadow: 0px 4px 6px 5px #ff7f956b;
-  cursor: pointer;
-
-  > svg {
-    width: 15px;
-  }
-`;
-const ContainerModalImage = styled.div`
-  position: fixed;
-  background: #21212187;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ContainerDownloadPDF = styled.div`
-  position: fixed;
-  background: #21212187;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ModalEditImage = styled.div`
-  width: 100%;
-  height: auto;
-  max-width: 300px;
-  margin: auto;
-  background: white;
-  padding: 15px;
-
-  > svg {
-    width: 20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
-`;
-const ContainerTextButton = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 100;
-`;
-const ButtonText = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  box-shadow: 0px 4px 6px 5px #ff7f956b;
-  cursor: pointer;
-
-  > svg {
-    width: 15px;
-  }
-`;
-const ButtonDownload = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  box-shadow: 0px 4px 6px 5px #ff7f956b;
-  cursor: pointer;
-
-  > svg {
-    width: 15px;
-  }
-`;
-const ContainerLoaded = styled.div`
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  border-radius: 20px;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  width: fit-content;
-
-  > p {
-    font-family: cursive;
-  }
-  > img {
-    width: 100%;
-    max-width: 300px;
-  }
-`;
-const ButtonApplyCropper = styled.button`
-  gap: 5px;
-  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  box-shadow: 0px 4px 6px 5px #ff7f956b;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-`;
-const MenuMobileEditor = styled.div`
-  width: 50px;
-  height: 50px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  background: #fd6e67;
-  color: white;
-  padding: 0;
-  margin: 0;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0px 4px 13px 4px #45454582;
-  display: none;
-
-  > svg {
-    width: 25px;
-  }
-
-  ${breakpoints.tabletL} {
-    display: none;
-  }
-  ${breakpoints.tabletS} {
-    display: none;
-  }
-  ${breakpoints.phoneL} {
-    display: flex;
-  }
-`;
 const EditorElaminas: React.FC = () => {
-  const [activeSheetPanel, setActiveSheetPanel] = React.useState(1);
+  React.useEffect(() => {
+    if (envProduction.app.blocked) {
+      const token = Cookies.get("jwt_token");
+      if (token == "" || token == null) {
+        window.location.href = "https://test.elaminas.com";
+      }
+    }
+  }, []);
   const [valueScale, setValueScale] = React.useState(1);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
   const dispatch = useAppDispatch();
@@ -327,7 +73,7 @@ const EditorElaminas: React.FC = () => {
   const imageCropper = useAppSelector(getImageCropper);
   const currentImageId = useAppSelector(getCurrentImage);
   const listText = useAppSelector(getListTextBase);
-  const statusMobileMenu = useAppSelector(getStatusMobileMenu);
+  const activeSheetPanel = useAppSelector(getActiveSheetPanel);
   const handleCloseEditCropper = () => dispatch(closeModalEditor());
   const handleShowMobile = () => {
     dispatch(changeStatusMobileMenu());
@@ -337,6 +83,25 @@ const EditorElaminas: React.FC = () => {
     [220, 340],
     [297, 420],
   ];
+
+  React.useEffect(() => {
+    const laminaCode = Cookies.get("e_co");
+    if (laminaCode) {
+      searchLaminaByUUID(laminaCode);
+    }
+  }, []);
+
+  const [searchLaminaByUUID, resultSearch] = usePostLaminasByUUIDMutation();
+
+  React.useEffect(() => {
+    const currentImageView: ImageBaseProps = {
+      id: Date.now(),
+      image: resultSearch?.data?.data[0]?.tbllmnaimgo || "",
+    };
+    if (currentImageView.image != "") {
+      dispatch(addImageBase(currentImageView));
+    }
+  }, [resultSearch]);
 
   const onChange = (cropper: CropperRef) => {
     setTefCropper(cropper);
@@ -352,9 +117,6 @@ const EditorElaminas: React.FC = () => {
     dispatch(closeModalEditor());
   };
 
-  const handleSelectSheet = (selected: number) => () =>
-    setActiveSheetPanel(selected);
-
   const activeContentPanel = () => {
     const content = document.getElementById("contentRef");
     if (content != null) return content;
@@ -364,16 +126,6 @@ const EditorElaminas: React.FC = () => {
     dispatch(hiddenStatusControls());
     setValueScale(1);
     setTimeout(() => downloadPanel(), 800);
-  };
-
-  const handleTextPanel = () => {
-    const newText: TextBaseProps = {
-      id: Date.now(),
-      inputColor: "#000000",
-      sizeLetter: 10,
-      typography: "Arial",
-    };
-    dispatch(addTextBase(newText));
   };
 
   const downloadPanel = () => {
@@ -395,19 +147,21 @@ const EditorElaminas: React.FC = () => {
         });
         doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
         dispatch(closeDownloadPDF());
-        doc.save("aa.pdf");
+        doc.save("elaminas.pdf");
       });
     }
     dispatch(showStatusControls());
   };
   // Disabled Anticlick
-  // window.addEventListener(
-  //   "contextmenu",
-  //   (e: any) => {
-  //     e.preventDefault();
-  //   },
-  //   false
-  // );
+  if (envProduction.app.blocked) {
+    window.addEventListener(
+      "contextmenu",
+      (e: any) => {
+        e.preventDefault();
+      },
+      false
+    );
+  }
 
   const handleDownZoom = () => {
     if (valueScale > 1) {
@@ -429,32 +183,6 @@ const EditorElaminas: React.FC = () => {
         </MenuMobileEditor>
         <MenuEditor />
         <ContentPanelEditor>
-          {/* <ContainerTextButton>
-            <ButtonText onClick={handleTextPanel}>
-              Texto
-              <Text />
-            </ButtonText>
-          </ContainerTextButton> */}
-          <ContainerSheet>
-            <SheetItem
-              active={activeSheetPanel == 1}
-              onClick={handleSelectSheet(1)}
-            >
-              A4
-            </SheetItem>
-            <SheetItem
-              active={activeSheetPanel == 2}
-              onClick={handleSelectSheet(2)}
-            >
-              Oficio
-            </SheetItem>
-            <SheetItem
-              active={activeSheetPanel == 3}
-              onClick={handleSelectSheet(3)}
-            >
-              A3
-            </SheetItem>
-          </ContainerSheet>
           <HiddenWrapper>
             <WrapperTransformScale valueScale={valueScale}>
               <ContentEditor
