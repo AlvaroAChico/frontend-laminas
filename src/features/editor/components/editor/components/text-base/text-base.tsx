@@ -39,6 +39,13 @@ const OptionsWrapperMain = styled.div<{
     color: ${(p) => p.colorText};
     text-align: ${(p) => p.textAlign};
   }
+  > p {
+    margin: 0;
+    font-size: ${(p) => `${p.sizeLetter}px`};
+    font-family: ${(p) => p.fontFamily};
+    color: ${(p) => p.colorText};
+    text-align: ${(p) => p.textAlign};
+  }
 `;
 
 const EditorContentContainer = styled(EditorContent)`
@@ -111,9 +118,10 @@ const ContainerDelete = styled.div`
   background: #de2b2b;
   cursor: pointer;
 `;
-const ContainerTextarea = styled.textarea`
-  width: 100%;
-  height: 100%;
+const ContainerTextarea = styled.p`
+  width: inherit;
+  height: inherit;
+  overflow: hidden;
   border: 0;
   outline: none;
   background: transparent;
@@ -220,8 +228,10 @@ const TextBase: React.FC<TextBaseProps> = ({
               {/* <EditorContentContainer id={`editor_main${id}`} editor={editor} /> */}
               <ContainerTextarea
                 id={`textarea_base${id}`}
-                defaultValue={"Escribe aqui"}
-              />
+                contentEditable={true}
+              >
+                Escribe aqui
+              </ContainerTextarea>
             </OptionsWrapperMain>
             {/* {statusControls &&
               statusGeneralControl &&
