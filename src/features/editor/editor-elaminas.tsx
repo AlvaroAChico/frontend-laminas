@@ -138,7 +138,10 @@ const EditorElaminas: React.FC = () => {
   };
 
   React.useEffect(() => {
-    if (responseDownload.data?.status != "Descarga realizada.") {
+    if (
+      responseDownload.data?.status ==
+      "Se terminó tu cantidad de descargas por día. Podrías volver mañana"
+    ) {
       document.getElementById("root")!.innerHTML = `
       <div style="width: 100%; background: #b5b5b5; height: 100vh; position: absolute;
       margin: 0; top: 0; display: flex; flex-direction: column; gap: 20px; justify-content: center;
@@ -160,11 +163,11 @@ const EditorElaminas: React.FC = () => {
       " href="https://test.elaminas.com">Ir a la pagina principal</a>
       </div>
     `;
+      setTimeout(() => {
+        window.open("", "_parent", "");
+        window.close();
+      }, 2000);
     }
-    setTimeout(() => {
-      window.open("", "_parent", "");
-      window.close();
-    }, 1000);
   }, [responseDownload]);
 
   const downloadPanel = () => {
