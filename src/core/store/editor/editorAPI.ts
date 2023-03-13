@@ -29,6 +29,9 @@ interface ISearchByWorPerPage {
   word: string;
   page?: number;
 }
+interface IResponseDownload {
+  status: string;
+}
 // headers: {
 //   Authorization: "Bearer 4|0i0rBahxncLmZ5yUDjtLxtVCcOqdtuMyE9iJVRHx",
 //   AccessControlAllowOrigin: "*",
@@ -89,12 +92,12 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
-    postUpdateDownloadBySheet: build.mutation<string, string>({
+    postUpdateDownloadBySheet: build.mutation<IResponseDownload, string>({
       query: (sheet) => ({
         url: `/auth/actualizar-descargas/${sheet}`,
         method: "GET",
       }),
-      transformResponse: (response: string) => response,
+      transformResponse: (response: IResponseDownload) => response,
     }),
   }),
 });

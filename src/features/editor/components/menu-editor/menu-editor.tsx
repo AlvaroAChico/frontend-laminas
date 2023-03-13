@@ -192,15 +192,17 @@ const ContainerItemOption = styled.div`
   border-radius: 4px;
   padding: 4px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background: "#0020ff9e";
   margin-top: 10px;
   margin-bottom: 10px;
   width: 100%;
   cursor: pointer;
+  padding: 5px 10px;
+  column-gap: 10px;
 
-  > svg {
+  > div svg {
     width: 15px;
     height: 15px;
   }
@@ -214,10 +216,12 @@ const ContainerItemOption = styled.div`
 `;
 const ContainerOptionsText = styled.div`
   display: flex;
-  flex-direction: row;
-  jusfity-content: left;
+  justify-content: space-between;
   align-items: center;
   column-gap: 2px;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 `;
 
 const ContainerPapers = styled.div`
@@ -377,7 +381,13 @@ const MenuEditor: React.FC = () => {
       searchLaminasPerPage(page.selected + 1);
     }
   };
-  const handleArrowBack = () => history.back();
+  const handleArrowBack = () => {
+    if (history.length > 0) {
+      history.back();
+    } else {
+      window.location.href = "https://test.elaminas.com";
+    }
+  };
 
   return (
     <ContainerMenu>
@@ -437,17 +447,26 @@ const MenuEditor: React.FC = () => {
         <ContainerTextGeneralOptions>
           <ContainerOptionsText>
             <ContainerItemOption>
-              <input
-                id="input_color_main"
-                type="color"
-                onInput={handleInputColor}
-              />
+              <div>color</div>
+              <div>
+                <input
+                  id="input_color_main"
+                  type="color"
+                  onInput={handleInputColor}
+                />
+              </div>
             </ContainerItemOption>
             <ContainerItemOption onClick={handleUpClick}>
-              <ChevronUp />
+              <div>Reducir redondeado</div>
+              <div>
+                <ChevronUp />
+              </div>
             </ContainerItemOption>
             <ContainerItemOption onClick={handleDownClick}>
-              <ChevronDown />
+              <div>Aumentar redondeado</div>
+              <div>
+                <ChevronDown />
+              </div>
             </ContainerItemOption>
             <ContainerItem
               onClick={() => {
