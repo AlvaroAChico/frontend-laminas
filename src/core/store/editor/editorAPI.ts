@@ -25,6 +25,10 @@ export interface LaminaDefaultProps {
   tbllmnanomb: string;
   tbllmnaimgo: string;
 }
+interface ISearchByWorPerPage {
+  word: string;
+  page?: number;
+}
 // headers: {
 //   Authorization: "Bearer 4|0i0rBahxncLmZ5yUDjtLxtVCcOqdtuMyE9iJVRHx",
 //   AccessControlAllowOrigin: "*",
@@ -62,9 +66,11 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
-    postLaminasByWord: build.mutation<LaminaResponse, string>({
-      query: (searchWord) => ({
-        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnanomb]=${searchWord}`,
+    postLaminasByWord: build.mutation<LaminaResponse, ISearchByWorPerPage>({
+      query: ({ word, page }) => ({
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnanomb]=${word}${
+          page ? `&page=${page}` : ""
+        }`,
         method: "GET",
       }),
       transformResponse: (response: LaminaResponse) => response,
@@ -72,6 +78,13 @@ export const laminasApi = createApi({
     postLaminasByUUID: build.mutation<LaminaResponse, string>({
       query: (uuid) => ({
         url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnauuid]=${uuid}`,
+        method: "GET",
+      }),
+      transformResponse: (response: LaminaResponse) => response,
+    }),
+    postLaminasPerPage: build.mutation<LaminaResponse, number>({
+      query: (page) => ({
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&page=${page}`,
         method: "GET",
       }),
       transformResponse: (response: LaminaResponse) => response,
@@ -84,4 +97,5 @@ export const {
   useGetListLaminasQuery,
   usePostLaminasByWordMutation,
   usePostLaminasByUUIDMutation,
+  usePostLaminasPerPageMutation,
 } = laminasApi;

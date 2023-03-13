@@ -11,9 +11,11 @@ import {
   addImageBase,
   addTextBase,
   getActiveSheetPanel,
+  getDataCurrentImage,
   getListImageMenu,
   updateActiveSheetPanel,
   updateAllDataLaminas,
+  updateDataCurrentImage,
   updateEditortext,
   updateInputColor,
   updateSizeLetterDOWN,
@@ -27,6 +29,7 @@ import {
   useGetListLaminasQuery,
   useGetStatusUserDownloadsQuery,
   usePostLaminasByWordMutation,
+  usePostLaminasPerPageMutation,
 } from "../../../../core/store/editor/editorAPI";
 import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
 import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
@@ -39,6 +42,7 @@ import { TextLeft } from "@styled-icons/bootstrap/TextLeft";
 import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
+import ReactPaginate from "react-paginate";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -106,6 +110,16 @@ const ContainerLamina = styled.div`
     :hover{
       transform: scale(1.05);
     }
+  }
+
+  ${breakpoints.phoneLMin}{
+    width: 100%;
+  }
+  ${breakpoints.tabletSMin}{
+    width: 45%;
+  }
+  ${breakpoints.tabletLMin}{
+    width: 30%;
   }
 `;
 const ButtonAddText = styled.button`
@@ -232,6 +246,11 @@ const ContainerItem = styled.div<{ active?: boolean; customPadding?: string }>`
   }
 `;
 
+const ContainerListLaminas = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
@@ -239,6 +258,7 @@ const MenuEditor: React.FC = () => {
   const dispatch = useAppDispatch();
   const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
   const activeSheetPanel = useAppSelector(getActiveSheetPanel);
+  const currentDataImage = useAppSelector(getDataCurrentImage);
 
   const handleSelectImage = (image: string) => () => {
     const newImage: ImageBaseProps = {
@@ -260,16 +280,18 @@ const MenuEditor: React.FC = () => {
   };
   const handleChangeText = (value: string) => setInitialSearch(value);
 
-  const { data, isLoading } = useGetListLaminasQuery("");
+  const { data, isError, isSuccess, isLoading } = useGetListLaminasQuery("");
   const {
     data: dataDownload,
     error: isErrorDownload,
     isLoading: isLoadingDownload,
   } = useGetStatusUserDownloadsQuery("");
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
+  const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(data?.data || []));
+    dispatch(updateDataCurrentImage(data!));
   }, [data]);
 
   React.useEffect(() => {
@@ -278,11 +300,17 @@ const MenuEditor: React.FC = () => {
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
+    dispatch(updateDataCurrentImage(resultSearch!.data!));
   }, [resultSearch]);
+
+  React.useEffect(() => {
+    dispatch(updateAllDataLaminas(resultPerPage?.data?.data || []));
+    dispatch(updateDataCurrentImage(resultPerPage!.data!));
+  }, [resultPerPage]);
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      searchLaminaByWord(initialSearch);
+      searchLaminaByWord({ word: initialSearch });
     }
   };
 
@@ -299,6 +327,14 @@ const MenuEditor: React.FC = () => {
 
   const handleSelectSheet = (selected: number) => () =>
     dispatch(updateActiveSheetPanel(selected));
+
+  const handlePageClick = (page: any) => {
+    if (initialSearch != "") {
+      searchLaminaByWord({ word: initialSearch, page: page.selected + 1 });
+    } else {
+      searchLaminasPerPage(page.selected + 1);
+    }
+  };
 
   return (
     <ContainerMenu>
@@ -364,7 +400,6 @@ const MenuEditor: React.FC = () => {
             <ContainerItemOption onClick={handleDownClick}>
               <ChevronDown />
             </ContainerItemOption>
-            {/* ------------------------------------------------------------ */}
             <ContainerItem
               onClick={() => {
                 console.log("1");
@@ -397,7 +432,6 @@ const MenuEditor: React.FC = () => {
             >
               <Justify />
             </ContainerItem>
-            {/* ------------------------------------------------------------ */}
           </ContainerOptionsText>
           <ContainerTypography>
             <p onClick={handleSelectNewTypography("Arial")}>Arial</p>
@@ -450,24 +484,48 @@ const MenuEditor: React.FC = () => {
             onChange={(e: any) => handleChangeText(e.target.value)}
           />
         </ContainerSearch>
-        {menuEditorProduction.app.mocks &&
-          listMockLaminas.map((image) => (
-            <ContainerLamina key={image.id}>
-              <img src={image.image} onClick={handleSelectImage(image.image)} />
-            </ContainerLamina>
-          ))}
-        {isLoading ? (
-          <>Buscando láminas...</>
-        ) : (
-          (laminas || []).map((lamina) => (
-            <ContainerLamina key={lamina.tbllmnanomb}>
-              <img
-                src={lamina.tbllmnaimgo}
-                onClick={handleSelectImage(lamina.tbllmnaimgo)}
-              />
-            </ContainerLamina>
-          ))
-        )}
+        <ContainerListLaminas>
+          {menuEditorProduction.app.mocks &&
+            listMockLaminas.map((image) => (
+              <ContainerLamina key={image.id}>
+                <img
+                  src={image.image}
+                  onClick={handleSelectImage(image.image)}
+                />
+              </ContainerLamina>
+            ))}
+          {isLoading ? (
+            <>Buscando láminas...</>
+          ) : (
+            (laminas || []).map((lamina) => (
+              <ContainerLamina key={lamina.tbllmnanomb}>
+                <img
+                  src={lamina.tbllmnaimgo}
+                  onClick={handleSelectImage(lamina.tbllmnaimgo)}
+                />
+              </ContainerLamina>
+            ))
+          )}
+          {isSuccess && (
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={Math.ceil(
+                (currentDataImage?.total || 1) /
+                  (currentDataImage?.perPage || 15)
+              )}
+              previousLabel="< previous"
+            />
+          )}
+          {isError && (
+            <p>
+              Al parecer ocurrio un error, comunicate con el administrador del
+              sistema
+            </p>
+          )}
+        </ContainerListLaminas>
       </ContainerBodyOptions>
     </ContainerMenu>
   );

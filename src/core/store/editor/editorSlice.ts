@@ -3,9 +3,10 @@ import { Editor } from "@tiptap/react";
 import { ImageBaseProps } from "../../../features/editor/components/editor/components/image-base/image-base";
 import { TextBaseProps } from "../../../features/editor/components/editor/components/text-base/text-base";
 import { RootState } from "../../store";
-import { LaminaDefaultProps } from "./editorAPI";
+import { LaminaDefaultProps, LaminaResponse } from "./editorAPI";
 
 export interface EditorState {
+  dataCurrentImage?: LaminaResponse;
   listImage: ImageBaseProps[];
   listText: TextBaseProps[];
   statusModalEditor: boolean;
@@ -147,10 +148,14 @@ export const editorSlice = createSlice({
       });
       state.listText = newListText;
     },
+    updateDataCurrentImage: (state, action: PayloadAction<LaminaResponse>) => {
+      state.dataCurrentImage = action.payload;
+    },
   },
 });
 
 export const {
+  updateDataCurrentImage,
   updateEditortext,
   updateTypography,
   updateSizeLetterUP,
@@ -193,6 +198,8 @@ export const getGeneralStatusControl = (state: RootState) =>
 export const getActiveImage = (state: RootState) => state.editor.activeImage;
 export const getActiveText = (state: RootState) => state.editor.activeText;
 export const getActiveEditor = (state: RootState) => state.editor.activeText;
+export const getDataCurrentImage = (state: RootState) =>
+  state.editor.dataCurrentImage;
 export const getActiveSheetPanel = (state: RootState) =>
   state.editor.activeSheetPanel;
 
