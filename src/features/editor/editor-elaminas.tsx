@@ -36,7 +36,10 @@ import MenuMobile from "./components/menu-editor/menu-mobile";
 import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
 import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
 import Cookies from "js-cookie";
-import { usePostLaminasByUUIDMutation } from "../../core/store/editor/editorAPI";
+import {
+  usePostLaminasByUUIDMutation,
+  usePostUpdateDownloadBySheetMutation,
+} from "../../core/store/editor/editorAPI";
 import envProduction from "../../config/environments/production.json";
 import {
   ContainerEditor,
@@ -122,11 +125,21 @@ const EditorElaminas: React.FC = () => {
     if (content != null) return content;
   };
 
+  const [postUpdateDownloadBySheet, responseDownload] =
+    usePostUpdateDownloadBySheetMutation();
+
   const handleDownloadPanel = () => {
     dispatch(hiddenStatusControls());
+    postUpdateDownloadBySheet(
+      activeSheetPanel == 1 ? "A4" : activeSheetPanel == 2 ? "Oficio" : "A3"
+    );
     setValueScale(1);
     setTimeout(() => downloadPanel(), 800);
   };
+
+  React.useEffect(() => {
+    console.log("responseDownload -> ", responseDownload);
+  }, [responseDownload]);
 
   const downloadPanel = () => {
     dispatch(showDownloadPDF());

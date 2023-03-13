@@ -45,6 +45,12 @@ const OptionsWrapperMain = styled.div<{
     font-family: ${(p) => p.fontFamily};
     color: ${(p) => p.colorText};
     text-align: ${(p) => p.textAlign};
+    > * {
+      font-family: ${(p) => p.fontFamily};
+    }
+    > div * {
+      font-family: ${(p) => p.fontFamily};
+    }
   }
 `;
 

@@ -89,6 +89,13 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
+    postUpdateDownloadBySheet: build.mutation<string, string>({
+      query: (sheet) => ({
+        url: `/auth/actualizar-descargas/${sheet}`,
+        method: "GET",
+      }),
+      transformResponse: (response: string) => response,
+    }),
   }),
 });
 
@@ -98,4 +105,5 @@ export const {
   usePostLaminasByWordMutation,
   usePostLaminasByUUIDMutation,
   usePostLaminasPerPageMutation,
+  usePostUpdateDownloadBySheetMutation,
 } = laminasApi;

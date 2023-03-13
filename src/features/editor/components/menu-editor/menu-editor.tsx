@@ -43,6 +43,7 @@ import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
 import ReactPaginate from "react-paginate";
+import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -91,6 +92,30 @@ const ItemMenu = styled.div<{ isActive: boolean }>`
   border-radius: 10px 0 0 10px;
 
   > div svg {
+    max-width: 40px;
+  }
+`;
+const ItemMenuBack = styled.div<{ isActive: boolean }>`
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  background: white;
+  color: #fc4a41;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 70px;
+  height: 70px;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+
+  > div svg {
+    width: 100%;
     max-width: 40px;
   }
 `;
@@ -251,6 +276,23 @@ const ContainerListLaminas = styled.div`
   justify-content: center;
   flex-wrap: wrap;
 `;
+const ContentPaginated = styled(ReactPaginate)`
+  display: flex;
+  flex-wrap: wrap;
+  text-decoration: none;
+  list-style: none;
+  padding: 0;
+  column-gap: 10px;
+  row-gap: 5px;
+
+  > li {
+    background: #ffc6c6;
+    padding: 4px;
+    border-radius: 5px;
+    color: black;
+  }
+`;
+
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
@@ -335,6 +377,7 @@ const MenuEditor: React.FC = () => {
       searchLaminasPerPage(page.selected + 1);
     }
   };
+  const handleArrowBack = () => history.back();
 
   return (
     <ContainerMenu>
@@ -357,6 +400,12 @@ const MenuEditor: React.FC = () => {
           </div>
           <span>Texto</span>
         </ItemMenu>
+        <ItemMenuBack onClick={handleArrowBack} isActive={statusOption == 2}>
+          <div>
+            <CaretBack />
+          </div>
+          <span>Atrás</span>
+        </ItemMenuBack>
       </ContainerOptionsMenu>
       <ContainerBodyOptions isActive={statusOption == 1}>
         <ContainerPapers>
@@ -494,7 +543,7 @@ const MenuEditor: React.FC = () => {
                 />
               </ContainerLamina>
             ))}
-          {isLoading ? (
+          {isLoading || resultSearch.isLoading || resultSearch.isLoading ? (
             <>Buscando láminas...</>
           ) : (
             (laminas || []).map((lamina) => (
@@ -507,16 +556,16 @@ const MenuEditor: React.FC = () => {
             ))
           )}
           {isSuccess && (
-            <ReactPaginate
+            <ContentPaginated
               breakLabel="..."
-              nextLabel="next >"
+              nextLabel=">"
               onPageChange={handlePageClick}
-              pageRangeDisplayed={5}
+              pageRangeDisplayed={2}
               pageCount={Math.ceil(
                 (currentDataImage?.total || 1) /
                   (currentDataImage?.perPage || 15)
               )}
-              previousLabel="< previous"
+              previousLabel="<"
             />
           )}
           {isError && (
