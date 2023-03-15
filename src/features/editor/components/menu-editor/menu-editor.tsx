@@ -608,19 +608,6 @@ const MenuEditor: React.FC = () => {
               </ContainerLamina>
             ))
           )}
-          {/* {isSuccess && (currentDataImage?.data.length || 0) > 0 && (
-            <ContentPaginated
-              breakLabel="..."
-              nextLabel=">"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={2}
-              pageCount={Math.ceil(
-                (currentDataImage?.total || 1) /
-                  (currentDataImage?.perPage || 15)
-              )}
-              previousLabel="<"
-            />
-          )} */}
           {currentDataImage?.data.length == 0 && (
             <AlertNullResult>No se encontraron resultados</AlertNullResult>
           )}

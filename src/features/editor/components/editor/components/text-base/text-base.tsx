@@ -231,6 +231,10 @@ const TextBase: React.FC<TextBaseProps> = ({
   };
   const handlePasteText = (e: any) => {
     e.preventDefault();
+    const text = (e.originalEvent || e).clipboardData.getData("text/plain");
+    const textId = document.getElementById(`textarea_base${id}`);
+    const originalText = textId!.innerHTML;
+    textId!.innerHTML = originalText + text;
   };
 
   return (
