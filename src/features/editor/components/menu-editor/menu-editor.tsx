@@ -54,10 +54,10 @@ const ContainerMenu = styled.div`
   flex-direction: row;
 
   ${breakpoints.tabletL} {
-    width: 40%;
+    width: 110px;
   }
   ${breakpoints.tabletS} {
-    width: 40%;
+    width: 110px;
   }
   ${breakpoints.phoneL} {
     width: 0%;
@@ -72,11 +72,23 @@ const ContainerOptionsMenu = styled.div`
   }
 `;
 const ContainerBodyOptions = styled.div<{ isActive: boolean }>`
-  width: 100%;
+  width: fit-content;
+  max-width: 200px;
+  height: fit-content;
+  max-height: 500px;
   background: #ffffff;
   padding: 10px;
   overflow: auto;
   display: ${(p) => (p.isActive ? "block" : "none")};
+  visibility: ${(p) => (p.isActive ? "inherit" : "hidden")};
+  position: absolute;
+  top: 0;
+  left: 100px;
+  z-index: 1;
+  margin-top: 20px;
+  border: 1px solid #c5c5c5;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px 4px #bcbcbc82;
 
   ${breakpoints.phoneL} {
     width: 0%;
@@ -89,7 +101,7 @@ const ItemMenu = styled.div<{ isActive: boolean }>`
   cursor: pointer;
   background: ${(p) => (p.isActive ? "#ffffff" : "#001c46")};
   color: ${(p) => (p.isActive ? "#fc4a41" : "white")};
-  border-radius: 10px 0 0 10px;
+  border-radius: 10px;
 
   > div svg {
     max-width: 40px;
@@ -344,11 +356,18 @@ const WrapperMoreResults = styled.div`
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
-  const handleOption = (option: number) => () => setStatusOption(option);
   const dispatch = useAppDispatch();
   const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
   const activeSheetPanel = useAppSelector(getActiveSheetPanel);
   const currentDataImage = useAppSelector(getDataCurrentImage);
+
+  const handleOption = (option: number) => () => {
+    if (option == statusOption) {
+      setStatusOption(0);
+    } else {
+      setStatusOption(option);
+    }
+  };
 
   const handleSelectImage = (image: string) => () => {
     const newImage: ImageBaseProps = {
@@ -608,6 +627,19 @@ const MenuEditor: React.FC = () => {
               </ContainerLamina>
             ))
           )}
+          {/* {isSuccess && (currentDataImage?.data.length || 0) > 0 && (
+            <ContentPaginated
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={2}
+              pageCount={Math.ceil(
+                (currentDataImage?.total || 1) /
+                  (currentDataImage?.perPage || 15)
+              )}
+              previousLabel="<"
+            />
+          )} */}
           {currentDataImage?.data.length == 0 && (
             <AlertNullResult>No se encontraron resultados</AlertNullResult>
           )}
