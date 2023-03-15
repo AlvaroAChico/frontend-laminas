@@ -8,16 +8,40 @@ import {
   addImageBase,
   addTextBase,
   changeStatusMobileMenu,
+  getActiveSheetPanel,
+  getDataCurrentImage,
+  getListImageMenu,
   getStatusMobileMenu,
+  updateActiveSheetPanel,
+  updateAllDataLaminas,
+  updateDataCurrentImage,
+  updateEditortext,
   updateInputColor,
   updateSizeLetterDOWN,
   updateSizeLetterUP,
   updateTypography,
 } from "../../../../core/store/editor/editorSlice";
+import menuEditorProduction from "../../../../config/environments/production.json";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { ImageBaseProps } from "../editor/components/image-base/image-base";
 import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
 import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
+import { Settings } from "@styled-icons/fluentui-system-filled/Settings";
+import ReactPaginate from "react-paginate";
+import { breakpoints } from "../../../../constants/breakpoints";
+import a4IMG from "../../../../assets/img/a4.png";
+import oficioIMG from "../../../../assets/img/oficio.png";
+import a3IMG from "../../../../assets/img/a3.png";
+import {
+  LaminaDefaultProps,
+  useGetListLaminasQuery,
+  usePostLaminasByWordMutation,
+  usePostLaminasPerPageMutation,
+} from "../../../../core/store/editor/editorAPI";
+import { TextLeft } from "@styled-icons/bootstrap/TextLeft";
+import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
+import { TextRight } from "@styled-icons/bootstrap/TextRight";
+import { Justify } from "@styled-icons/bootstrap/Justify";
 
 const ContainerBackdrop = styled.div<{ active: boolean }>`
   position: absolute;
@@ -62,6 +86,7 @@ const ContainerBodyOptions = styled.div<{
   padding: 10px;
   display: ${(p) => (p.isActive ? "block" : "none")};
 `;
+
 const ItemMenu = styled.div<{ isActive: boolean }>`
   padding: 8px;
   text-align: center;
@@ -173,18 +198,95 @@ const ContainerItemOption = styled.div`
 `;
 const ContainerOptionsText = styled.div`
   display: flex;
-  flex-direction: row;
-  jusfity-content: left;
+  justify-content: space-between;
   align-items: center;
   column-gap: 2px;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+const ContainerPapers = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const ItemPaper = styled.div<{ active: boolean }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin: 15px 10px;
+  cursor: pointer;
+  column-gap: 10px;
+  ${(p) =>
+    p.active
+      ? `margin: 15px 10px;
+        border: 1px solid #3dc94b;
+        border-radius: 10px;
+        padding: 5px;`
+      : ""}
+
+  > img {
+    max-width: 60px;
+  }
+`;
+
+const ContainerItem = styled.div<{ active?: boolean; customPadding?: string }>`
+  border: 0.5px solid #4949e6;
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #6db2de61;
+  color: black;
+  padding: 4px;
+
+  > svg {
+    width: 12px;
+  }
+
+  > input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border: 0;
+  }
+`;
+
+const ContainerListLaminas = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+const ContentPaginated = styled(ReactPaginate)`
+  display: flex;
+  flex-wrap: wrap;
+  text-decoration: none;
+  list-style: none;
+  padding: 0;
+  column-gap: 10px;
+  row-gap: 5px;
+
+  > li {
+    background: #ffc6c6;
+    padding: 4px;
+    border-radius: 5px;
+    color: black;
+  }
 `;
 
 const MenuMobile: React.FC = () => {
-  const [statusOption, setStatusOption] = React.useState(3);
+  const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
   const handleOption = (option: number) => () => setStatusOption(option);
   const statusMenuMobile = useAppSelector(getStatusMobileMenu);
   const dispatch = useAppDispatch();
+  const activeSheetPanel = useAppSelector(getActiveSheetPanel);
+  const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
+  const currentDataImage = useAppSelector(getDataCurrentImage);
 
   const handleAddText = () => () => {
     const newText: TextBaseProps = {
@@ -222,6 +324,49 @@ const MenuMobile: React.FC = () => {
 
   const handleUpClick = () => dispatch(updateSizeLetterUP());
   const handleDownClick = () => dispatch(updateSizeLetterDOWN());
+  const handleSelectSheet = (selected: number) => () =>
+    dispatch(updateActiveSheetPanel(selected));
+
+  const handlePageClick = (page: any) => {
+    if (initialSearch != "") {
+      searchLaminaByWord({ word: initialSearch, page: page.selected + 1 });
+    } else {
+      searchLaminasPerPage(page.selected + 1);
+    }
+  };
+
+  const { data, isError, isSuccess, isLoading } = useGetListLaminasQuery("");
+  const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
+  const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
+
+  React.useEffect(() => {
+    dispatch(updateAllDataLaminas(data?.data || []));
+    dispatch(updateDataCurrentImage(data!));
+  }, [data]);
+
+  React.useEffect(() => {
+    dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
+    dispatch(updateDataCurrentImage(resultSearch!.data!));
+  }, [resultSearch]);
+
+  React.useEffect(() => {
+    dispatch(updateAllDataLaminas(resultPerPage?.data?.data || []));
+    dispatch(updateDataCurrentImage(resultPerPage!.data!));
+  }, [resultPerPage]);
+
+  const handleKeyUp = (e: any) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      searchLaminaByWord({ word: initialSearch });
+    }
+  };
+
+  const handleArrowBack = () => {
+    if (history.length > 0) {
+      history.back();
+    } else {
+      window.location.href = "https://test.elaminas.com";
+    }
+  };
 
   return (
     <ContainerBackdrop active={statusMenuMobile}>
@@ -234,6 +379,12 @@ const MenuMobile: React.FC = () => {
         </ContainerClose>
         <ContainerMenu>
           <ContainerOptionsMenu active={statusMenuMobile}>
+            <ItemMenu onClick={handleOption(1)} isActive={statusOption == 1}>
+              <div>
+                <Settings />
+              </div>
+              <span>General</span>
+            </ItemMenu>
             <ItemMenu onClick={handleOption(3)} isActive={statusOption == 3}>
               <div>
                 <CardImage />
@@ -248,6 +399,34 @@ const MenuMobile: React.FC = () => {
             </ItemMenu>
           </ContainerOptionsMenu>
           <ContainerBodyOptions
+            isActive={statusOption == 1}
+            activeMobile={statusMenuMobile}
+          >
+            <ContainerPapers>
+              <ItemPaper
+                active={activeSheetPanel == 1}
+                onClick={handleSelectSheet(1)}
+              >
+                <img src={a4IMG} />
+                <p>Tamaño A4</p>
+              </ItemPaper>
+              <ItemPaper
+                active={activeSheetPanel == 2}
+                onClick={handleSelectSheet(2)}
+              >
+                <img src={oficioIMG} />
+                <p>Tamaño Oficio</p>
+              </ItemPaper>
+              <ItemPaper
+                active={activeSheetPanel == 3}
+                onClick={handleSelectSheet(3)}
+              >
+                <img src={a3IMG} />
+                <p>Tamaño A3</p>
+              </ItemPaper>
+            </ContainerPapers>
+          </ContainerBodyOptions>
+          <ContainerBodyOptions
             isActive={statusOption == 2}
             activeMobile={statusMenuMobile}
           >
@@ -257,18 +436,55 @@ const MenuMobile: React.FC = () => {
             <ContainerTextGeneralOptions>
               <ContainerOptionsText>
                 <ContainerItemOption>
-                  <input
-                    id="input_color_main"
-                    type="color"
-                    onInput={handleInputColor}
-                  />
+                  <div>color</div>
+                  <div>
+                    <input
+                      id="input_color_main"
+                      type="color"
+                      onInput={handleInputColor}
+                    />
+                  </div>
                 </ContainerItemOption>
                 <ContainerItemOption onClick={handleUpClick}>
-                  <ChevronUp />
+                  <div>Aumentar tamaño</div>
+                  <div>
+                    <ChevronUp />
+                  </div>
                 </ContainerItemOption>
                 <ContainerItemOption onClick={handleDownClick}>
-                  <ChevronDown />
+                  <div>Reducir tamaño</div>
+                  <div>
+                    <ChevronDown />
+                  </div>
                 </ContainerItemOption>
+                <ContainerItem
+                  onClick={() => {
+                    dispatch(updateEditortext("left"));
+                  }}
+                >
+                  <TextLeft />
+                </ContainerItem>
+                <ContainerItem
+                  onClick={() => {
+                    dispatch(updateEditortext("center"));
+                  }}
+                >
+                  <TextCenter />
+                </ContainerItem>
+                <ContainerItem
+                  onClick={() => {
+                    dispatch(updateEditortext("right"));
+                  }}
+                >
+                  <TextRight />
+                </ContainerItem>
+                <ContainerItem
+                  onClick={() => {
+                    dispatch(updateEditortext("justify"));
+                  }}
+                >
+                  <Justify />
+                </ContainerItem>
               </ContainerOptionsText>
               <ContainerTypography>
                 <p onClick={handleSelectNewTypography("Arial")}>Arial</p>
@@ -325,14 +541,48 @@ const MenuMobile: React.FC = () => {
                 onChange={(e: any) => handleChangeText(e.target.value)}
               />
             </ContainerSearch>
-            {/* {listMockLaminas.map((lamina) => (
-              <ContainerLamina key={lamina.id}>
-                <img
-                  src={lamina.image}
-                  onClick={handleSelectImage(lamina.image)}
+            <ContainerListLaminas>
+              {menuEditorProduction.app.mocks &&
+                listMockLaminas.map((image) => (
+                  <ContainerLamina key={image.id}>
+                    <img
+                      src={image.image}
+                      onClick={handleSelectImage(image.image)}
+                    />
+                  </ContainerLamina>
+                ))}
+              {isLoading || resultSearch.isLoading || resultSearch.isLoading ? (
+                <>Buscando láminas...</>
+              ) : (
+                (laminas || []).map((lamina) => (
+                  <ContainerLamina key={lamina.tbllmnanomb}>
+                    <img
+                      src={lamina.tbllmnaimgo}
+                      onClick={handleSelectImage(lamina.tbllmnaimgo)}
+                    />
+                  </ContainerLamina>
+                ))
+              )}
+              {isSuccess && (
+                <ContentPaginated
+                  breakLabel="..."
+                  nextLabel=">"
+                  onPageChange={handlePageClick}
+                  pageRangeDisplayed={2}
+                  pageCount={Math.ceil(
+                    (currentDataImage?.total || 1) /
+                      (currentDataImage?.perPage || 15)
+                  )}
+                  previousLabel="<"
                 />
-              </ContainerLamina>
-            ))} */}
+              )}
+              {isError && (
+                <p>
+                  Al parecer ocurrio un error, comunicate con el administrador
+                  del sistema
+                </p>
+              )}
+            </ContainerListLaminas>
           </ContainerBodyOptions>
         </ContainerMenu>
       </ContainerMenuMobile>

@@ -27,7 +27,6 @@ import { breakpoints } from "../../../../constants/breakpoints";
 import {
   LaminaDefaultProps,
   useGetListLaminasQuery,
-  useGetStatusUserDownloadsQuery,
   usePostLaminasByWordMutation,
   usePostLaminasPerPageMutation,
 } from "../../../../core/store/editor/editorAPI";
@@ -154,6 +153,7 @@ const ButtonAddText = styled.button`
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  width: 100%;
 `;
 const ContainerSearch = styled.div`
   width: 100%;
@@ -297,6 +297,15 @@ const ContentPaginated = styled(ReactPaginate)`
   }
 `;
 
+const ContainerTitle = styled.div`
+  > h3 {
+    color: #fc4a41;
+  }
+  > p {
+    font-size: 13px;
+  }
+`;
+
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(1);
   const [initialSearch, setInitialSearch] = React.useState("");
@@ -327,11 +336,6 @@ const MenuEditor: React.FC = () => {
   const handleChangeText = (value: string) => setInitialSearch(value);
 
   const { data, isError, isSuccess, isLoading } = useGetListLaminasQuery("");
-  const {
-    data: dataDownload,
-    error: isErrorDownload,
-    isLoading: isLoadingDownload,
-  } = useGetStatusUserDownloadsQuery("");
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
   const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
@@ -339,10 +343,6 @@ const MenuEditor: React.FC = () => {
     dispatch(updateAllDataLaminas(data?.data || []));
     dispatch(updateDataCurrentImage(data!));
   }, [data]);
-
-  React.useEffect(() => {
-    dispatch(updateAllDataLaminas(dataDownload?.data || []));
-  }, [dataDownload]);
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
@@ -389,6 +389,10 @@ const MenuEditor: React.FC = () => {
     }
   };
 
+  const handleDispatchEditorText = (align: string) => {
+    dispatch(updateEditortext(align));
+  };
+
   return (
     <ContainerMenu>
       <ContainerOptionsMenu>
@@ -418,6 +422,10 @@ const MenuEditor: React.FC = () => {
         </ItemMenuBack>
       </ContainerOptionsMenu>
       <ContainerBodyOptions isActive={statusOption == 1}>
+        <ContainerTitle>
+          <h3>Tamaños de hoja</h3>
+          <p>Selecciona el tamaño de tu panel editable</p>
+        </ContainerTitle>
         <ContainerPapers>
           <ItemPaper
             active={activeSheetPanel == 1}
@@ -443,6 +451,10 @@ const MenuEditor: React.FC = () => {
         </ContainerPapers>
       </ContainerBodyOptions>
       <ContainerBodyOptions isActive={statusOption == 2}>
+        <ContainerTitle>
+          <h3>Panel de texto</h3>
+          <p>Aquí puedes agregar un nuevo texto y personalizarlo a tu gusto</p>
+        </ContainerTitle>
         <ButtonAddText onClick={handleAddText()}>Agregar texto</ButtonAddText>
         <ContainerTextGeneralOptions>
           <ContainerOptionsText>
@@ -457,47 +469,27 @@ const MenuEditor: React.FC = () => {
               </div>
             </ContainerItemOption>
             <ContainerItemOption onClick={handleUpClick}>
-              <div>Reducir redondeado</div>
+              <div>Aumentar tamaño</div>
               <div>
                 <ChevronUp />
               </div>
             </ContainerItemOption>
             <ContainerItemOption onClick={handleDownClick}>
-              <div>Aumentar redondeado</div>
+              <div>Reducir tamaño</div>
               <div>
                 <ChevronDown />
               </div>
             </ContainerItemOption>
-            <ContainerItem
-              onClick={() => {
-                console.log("1");
-                dispatch(updateEditortext("left"));
-              }}
-            >
+            <ContainerItem onClick={() => handleDispatchEditorText("left")}>
               <TextLeft />
             </ContainerItem>
-            <ContainerItem
-              onClick={() => {
-                console.log("2");
-                dispatch(updateEditortext("center"));
-              }}
-            >
+            <ContainerItem onClick={() => handleDispatchEditorText("center")}>
               <TextCenter />
             </ContainerItem>
-            <ContainerItem
-              onClick={() => {
-                console.log("3");
-                dispatch(updateEditortext("right"));
-              }}
-            >
+            <ContainerItem onClick={() => handleDispatchEditorText("right")}>
               <TextRight />
             </ContainerItem>
-            <ContainerItem
-              onClick={() => {
-                console.log("4");
-                dispatch(updateEditortext("justify"));
-              }}
-            >
+            <ContainerItem onClick={() => handleDispatchEditorText("justify")}>
               <Justify />
             </ContainerItem>
           </ContainerOptionsText>
@@ -543,6 +535,10 @@ const MenuEditor: React.FC = () => {
         </ContainerTextGeneralOptions>
       </ContainerBodyOptions>
       <ContainerBodyOptions isActive={statusOption == 3}>
+        <ContainerTitle>
+          <h3>Panel de Láminas</h3>
+          <p>Selecciona nuevas láminas</p>
+        </ContainerTitle>
         <ContainerSearch>
           <ContainerInputSearchStyle
             type="text"
@@ -586,6 +582,9 @@ const MenuEditor: React.FC = () => {
               )}
               previousLabel="<"
             />
+          )}
+          {currentDataImage?.data.length == 0 && (
+            <>No se encontraron resultados</>
           )}
           {isError && (
             <p>

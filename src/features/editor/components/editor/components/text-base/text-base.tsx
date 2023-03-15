@@ -15,6 +15,7 @@ import {
   getGeneralStatusControl,
   updateTextActive,
 } from "../../../../../../core/store/editor/editorSlice";
+import { Edit } from "@styled-icons/evaicons-solid/Edit";
 
 const OptionsWrapperMain = styled.div<{
   sizeLetter: number;
@@ -124,6 +125,26 @@ const ContainerDelete = styled.div`
   background: #de2b2b;
   cursor: pointer;
 `;
+const ContainerEdit = styled.div`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  left: -25px;
+  top: 25px;
+  color: white;
+  background: #de2b2b;
+  cursor: pointer;
+  color: white;
+
+  > svg {
+    width: 10px;
+    color: white;
+  }
+`;
 const ContainerTextarea = styled.p`
   width: inherit;
   height: inherit;
@@ -205,6 +226,13 @@ const TextBase: React.FC<TextBaseProps> = ({
     setStatusControls(!statusControls);
   };
 
+  const handleEditText = () => {
+    document.getElementById(`textarea_base${id}`)?.focus();
+  };
+  const handlePasteText = (e: any) => {
+    e.preventDefault();
+  };
+
   return (
     <>
       <ContainerMain
@@ -214,16 +242,21 @@ const TextBase: React.FC<TextBaseProps> = ({
           statusControls && statusGeneralControl && textActiveControls == id
         }
         onClick={handleChangeActive}
-        onDoubleClick={() => {
-          document.getElementById(`textarea_base${id}`)?.focus();
-        }}
+        onDoubleClick={handleEditText}
       >
         <div>
           <ContainerText id={`text${id}`} className={`target${id}`}>
             {statusControls &&
               statusGeneralControl &&
               textActiveControls == id && (
-                <ContainerDelete onClick={handleDeleteText}>x</ContainerDelete>
+                <>
+                  <ContainerDelete onClick={handleDeleteText}>
+                    x
+                  </ContainerDelete>
+                  <ContainerEdit onClick={handleEditText}>
+                    <Edit />
+                  </ContainerEdit>
+                </>
               )}
             <OptionsWrapperMain
               sizeLetter={sizeLetter}
@@ -235,8 +268,9 @@ const TextBase: React.FC<TextBaseProps> = ({
               <ContainerTextarea
                 id={`textarea_base${id}`}
                 contentEditable={true}
+                onPaste={handlePasteText}
               >
-                Escribe aqui
+                Doble click para editar
               </ContainerTextarea>
             </OptionsWrapperMain>
             {/* {statusControls &&

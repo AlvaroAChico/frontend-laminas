@@ -66,9 +66,10 @@ const EditorElaminas: React.FC = () => {
         window.location.href = "https://test.elaminas.com";
       }
     }
-  }, []);
+  }, [Cookies.get("jwt_token")]);
   const [valueScale, setValueScale] = React.useState(1);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
+  const [activeDownload, setActiveDownload] = React.useState(false);
   const dispatch = useAppDispatch();
   const listImage = useAppSelector(getListImageBase);
   const statusModalEditor = useAppSelector(getStatusModalEditor);
@@ -129,44 +130,53 @@ const EditorElaminas: React.FC = () => {
     usePostUpdateDownloadBySheetMutation();
 
   const handleDownloadPanel = () => {
-    dispatch(hiddenStatusControls());
+    setActiveDownload(true);
     postUpdateDownloadBySheet(
       activeSheetPanel == 1 ? "A4" : activeSheetPanel == 2 ? "Oficio" : "A3"
     );
-    setValueScale(1);
-    setTimeout(() => downloadPanel(), 800);
   };
 
   React.useEffect(() => {
+    const token = Cookies.get("jwt_token");
     if (
       responseDownload.data?.status ==
-      "Se terminó tu cantidad de descargas por día. Podrías volver mañana"
+        "Se terminó tu cantidad de descargas por día. Podrías volver mañana" ||
+      token == "" ||
+      token == null
     ) {
-      document.getElementById("root")!.innerHTML = `
-      <div style="width: 100%; background: #b5b5b5; height: 100vh; position: absolute;
-      margin: 0; top: 0; display: flex; flex-direction: column; gap: 20px; justify-content: center;
-      align-items: center;">
-      <p>${responseDownload.data?.status}</p>
-      <a style=" display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-      border: 2px solid #fff;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 30px;
-      box-shadow: 0px 4px 6px 5px #ff7f956b;
-      cursor: pointer;
-      max-width: 300px;
-      text-decoration: none;
-      " href="https://test.elaminas.com">Ir a la pagina principal</a>
-      </div>
-    `;
+      //   document.getElementById("root")!.innerHTML = `
+      //   <div style="width: 100%; background: #b5b5b5; height: 100vh; position: absolute;
+      //   margin: 0; top: 0; display: flex; flex-direction: column; gap: 20px; justify-content: center;
+      //   align-items: center;">
+      //   <p>Al parecer se ha agotado tu cantidad de descargas por día o no se ha encontrado una sesión activa.</p>
+      //   <p>Por favor vuelve a iniciar sesión o comunicate con tu administrador</p>
+      //   <a style=" display: flex;
+      //   align-items: center;
+      //   justify-content: center;
+      //   gap: 5px;
+      //   background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+      //   border: 2px solid #fff;
+      //   color: #fff;
+      //   padding: 10px 20px;
+      //   border-radius: 30px;
+      //   box-shadow: 0px 4px 6px 5px #ff7f956b;
+      //   cursor: pointer;
+      //   max-width: 300px;
+      //   text-decoration: none;
+      //   " href="https://test.elaminas.com">Ir a la pagina principal</a>
+      //   </div>
+      // `;
       setTimeout(() => {
         window.open("", "_parent", "");
         window.close();
       }, 2000);
+    } else {
+      if (activeDownload) {
+        dispatch(hiddenStatusControls());
+        setValueScale(1);
+        setTimeout(() => downloadPanel(), 800);
+        setActiveDownload(false);
+      }
     }
   }, [responseDownload]);
 

@@ -82,9 +82,41 @@ const ItemOption = styled.div`
     height: 15px;
     color: white;
   }
+
+  :hover > span {
+    visibility: visible;
+    opacity: 1;
+  }
 `;
 const ImageMain = styled.img<{ border: number }>`
   border-radius: ${(p) => `${p.border}px`};
+`;
+const ContainerTooltiptext = styled.span`
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 110%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+
+  :after {
+    content: "";
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+  }
 `;
 export interface ImageBaseProps {
   id: number;
@@ -182,12 +214,19 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
               <ContainerOptions>
                 <ItemOption onClick={handleCutOption}>
                   <Cut />
+                  <ContainerTooltiptext>Cortar</ContainerTooltiptext>
                 </ItemOption>
                 <ItemOption onClick={handleSquareOption}>
                   <Square />
+                  <ContainerTooltiptext>
+                    Reducir Redondeado
+                  </ContainerTooltiptext>
                 </ItemOption>
                 <ItemOption onClickCapture={handleRoundedOption}>
                   <SquareRounded />
+                  <ContainerTooltiptext>
+                    Aumentar Redondeado
+                  </ContainerTooltiptext>
                 </ItemOption>
               </ContainerOptions>
             )}
