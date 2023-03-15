@@ -18,6 +18,7 @@ import {
   updateDataCurrentImage,
   updateEditortext,
   updateInputColor,
+  updateMoreLaminas,
   updateSizeLetterDOWN,
   updateSizeLetterUP,
   updateTypography,
@@ -277,8 +278,16 @@ const ContainerItem = styled.div<{ active?: boolean; customPadding?: string }>`
 
 const ContainerListLaminas = styled.div`
   display: flex;
+  padding: 10px;
+  text-align: center;
+  color: #e76161;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  align-content: center;
   flex-wrap: wrap;
+  flex-direction: inherit;
 `;
 const ContentPaginated = styled(ReactPaginate)`
   display: flex;
@@ -303,6 +312,32 @@ const ContainerTitle = styled.div`
   }
   > p {
     font-size: 13px;
+  }
+`;
+const AlertNullResult = styled.div`
+  padding: 10px;
+  text-align: center;
+  color: #e76161;
+  margin-top: 10px;
+`;
+
+const WrapperMoreResults = styled.div`
+  > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 6px 5px #ff7f956b;
+    cursor: pointer;
+
+    > svg {
+      width: 15px;
+    }
   }
 `;
 
@@ -339,6 +374,9 @@ const MenuEditor: React.FC = () => {
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
   const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
+  const handleMoreResults = () =>
+    searchLaminasPerPage((currentDataImage?.currentPage || 0) + 1);
+
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(data?.data || []));
     dispatch(updateDataCurrentImage(data!));
@@ -350,7 +388,7 @@ const MenuEditor: React.FC = () => {
   }, [resultSearch]);
 
   React.useEffect(() => {
-    dispatch(updateAllDataLaminas(resultPerPage?.data?.data || []));
+    dispatch(updateMoreLaminas(resultPerPage?.data?.data || []));
     dispatch(updateDataCurrentImage(resultPerPage!.data!));
   }, [resultPerPage]);
 
@@ -570,7 +608,7 @@ const MenuEditor: React.FC = () => {
               </ContainerLamina>
             ))
           )}
-          {isSuccess && (
+          {/* {isSuccess && (currentDataImage?.data.length || 0) > 0 && (
             <ContentPaginated
               breakLabel="..."
               nextLabel=">"
@@ -582,15 +620,25 @@ const MenuEditor: React.FC = () => {
               )}
               previousLabel="<"
             />
-          )}
+          )} */}
           {currentDataImage?.data.length == 0 && (
-            <>No se encontraron resultados</>
+            <AlertNullResult>No se encontraron resultados</AlertNullResult>
           )}
           {isError && (
             <p>
               Al parecer ocurrio un error, comunicate con el administrador del
               sistema
             </p>
+          )}
+          {currentDataImage?.nextPageUrl != null && (
+            <WrapperMoreResults>
+              <button
+                disabled={resultPerPage.isLoading}
+                onClick={handleMoreResults}
+              >
+                Mostrar más resultados
+              </button>
+            </WrapperMoreResults>
           )}
         </ContainerListLaminas>
       </ContainerBodyOptions>

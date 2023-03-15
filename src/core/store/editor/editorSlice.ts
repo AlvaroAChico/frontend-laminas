@@ -91,6 +91,13 @@ export const editorSlice = createSlice({
     ) => {
       state.listImageMenu = action.payload;
     },
+    updateMoreLaminas: (state, action: PayloadAction<LaminaDefaultProps[]>) => {
+      const newLaminas = state.listImageMenu;
+      action.payload.map((item) => {
+        newLaminas.push(item);
+      });
+      state.listImageMenu = newLaminas;
+    },
     showStatusControls: (state) => {
       state.generalSatusControl = true;
     },
@@ -155,6 +162,7 @@ export const editorSlice = createSlice({
 });
 
 export const {
+  updateMoreLaminas,
   updateDataCurrentImage,
   updateEditortext,
   updateTypography,
