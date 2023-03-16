@@ -13,14 +13,14 @@ import {
   getActiveSheetPanel,
   getDataCurrentImage,
   getListImageMenu,
+  getSizeLetterText,
   updateActiveSheetPanel,
   updateAllDataLaminas,
   updateDataCurrentImage,
   updateEditortext,
   updateInputColor,
   updateMoreLaminas,
-  updateSizeLetterDOWN,
-  updateSizeLetterUP,
+  updateSizeLetterText,
   updateTypography,
 } from "../../../../core/store/editor/editorSlice";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
@@ -31,8 +31,6 @@ import {
   usePostLaminasByWordMutation,
   usePostLaminasPerPageMutation,
 } from "../../../../core/store/editor/editorAPI";
-import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
-import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
 import { Settings } from "@styled-icons/fluentui-system-filled/Settings";
 import menuEditorProduction from "../../../../config/environments/production.json";
 import a4IMG from "../../../../assets/img/a4.png";
@@ -42,12 +40,11 @@ import { TextLeft } from "@styled-icons/bootstrap/TextLeft";
 import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
-import ReactPaginate from "react-paginate";
 import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
 
 const ContainerMenu = styled.div`
   background: #001c46;
-  width: 30%;
+  width: 110px;
   height: 100%;
   transition: 0.5s;
   display: flex;
@@ -73,17 +70,17 @@ const ContainerOptionsMenu = styled.div`
 `;
 const ContainerBodyOptions = styled.div<{ isActive: boolean }>`
   width: fit-content;
-  max-width: 200px;
+  max-width: 500px;
   height: fit-content;
   max-height: 500px;
   background: #ffffff;
-  padding: 10px;
+  padding: 15px;
   overflow: auto;
   display: ${(p) => (p.isActive ? "block" : "none")};
   visibility: ${(p) => (p.isActive ? "inherit" : "hidden")};
   position: absolute;
   top: 0;
-  left: 100px;
+  left: 110px;
   z-index: 1;
   margin-top: 20px;
   border: 1px solid #c5c5c5;
@@ -301,22 +298,6 @@ const ContainerListLaminas = styled.div`
   flex-wrap: wrap;
   flex-direction: inherit;
 `;
-const ContentPaginated = styled(ReactPaginate)`
-  display: flex;
-  flex-wrap: wrap;
-  text-decoration: none;
-  list-style: none;
-  padding: 0;
-  column-gap: 10px;
-  row-gap: 5px;
-
-  > li {
-    background: #ffc6c6;
-    padding: 4px;
-    border-radius: 5px;
-    color: black;
-  }
-`;
 
 const ContainerTitle = styled.div`
   > h3 {
@@ -352,6 +333,25 @@ const WrapperMoreResults = styled.div`
     }
   }
 `;
+const ContainerInputRangeText = styled.input`
+  width: 100% !important;
+  height: auto;
+`;
+
+const ContainerItemOptionTextRange = styled(ContainerItemOption)`
+  > p {
+    width: 40%;
+  }
+`;
+const ContainerSelectTypography = styled.select`
+  padding: 8px;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 20px;
+  outline: none;
+  border: 1px solid #acacac;
+  margin-bottom: 20px;
+`;
 
 const MenuEditor: React.FC = () => {
   const [statusOption, setStatusOption] = React.useState(1);
@@ -360,6 +360,7 @@ const MenuEditor: React.FC = () => {
   const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
   const activeSheetPanel = useAppSelector(getActiveSheetPanel);
   const currentDataImage = useAppSelector(getDataCurrentImage);
+  const sizeLetter = useAppSelector(getSizeLetterText);
 
   const handleOption = (option: number) => () => {
     if (option == statusOption) {
@@ -389,7 +390,7 @@ const MenuEditor: React.FC = () => {
   };
   const handleChangeText = (value: string) => setInitialSearch(value);
 
-  const { data, isError, isSuccess, isLoading } = useGetListLaminasQuery("");
+  const { data, isError, isLoading } = useGetListLaminasQuery("");
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
   const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
@@ -417,27 +418,17 @@ const MenuEditor: React.FC = () => {
     }
   };
 
-  const handleSelectNewTypography = (fontFamily: string) => () => {
-    dispatch(updateTypography(fontFamily));
-  };
-
   const handleInputColor = (e: any) => {
     dispatch(updateInputColor(e.target.value));
   };
 
-  const handleUpClick = () => dispatch(updateSizeLetterUP());
-  const handleDownClick = () => dispatch(updateSizeLetterDOWN());
+  const handleChangeSizeLetter = (e: any) => {
+    dispatch(updateSizeLetterText(e.target.value));
+  };
 
   const handleSelectSheet = (selected: number) => () =>
     dispatch(updateActiveSheetPanel(selected));
 
-  const handlePageClick = (page: any) => {
-    if (initialSearch != "") {
-      searchLaminaByWord({ word: initialSearch, page: page.selected + 1 });
-    } else {
-      searchLaminasPerPage(page.selected + 1);
-    }
-  };
   const handleArrowBack = () => {
     if (history.length > 0) {
       history.back();
@@ -449,6 +440,9 @@ const MenuEditor: React.FC = () => {
   const handleDispatchEditorText = (align: string) => {
     dispatch(updateEditortext(align));
   };
+
+  const handleSelectTypography = (e: any) =>
+    dispatch(updateTypography(e.target.value));
 
   return (
     <ContainerMenu>
@@ -525,18 +519,16 @@ const MenuEditor: React.FC = () => {
                 />
               </div>
             </ContainerItemOption>
-            <ContainerItemOption onClick={handleUpClick}>
-              <div>Aumentar tamaño</div>
-              <div>
-                <ChevronUp />
-              </div>
-            </ContainerItemOption>
-            <ContainerItemOption onClick={handleDownClick}>
-              <div>Reducir tamaño</div>
-              <div>
-                <ChevronDown />
-              </div>
-            </ContainerItemOption>
+            <ContainerItemOptionTextRange>
+              <p>Tamaño de texto</p>
+              <ContainerInputRangeText
+                type="range"
+                min="5"
+                max="60"
+                defaultValue={sizeLetter}
+                onInput={handleChangeSizeLetter}
+              />
+            </ContainerItemOptionTextRange>
             <ContainerItem onClick={() => handleDispatchEditorText("left")}>
               <TextLeft />
             </ContainerItem>
@@ -551,43 +543,26 @@ const MenuEditor: React.FC = () => {
             </ContainerItem>
           </ContainerOptionsText>
           <ContainerTypography>
-            <p onClick={handleSelectNewTypography("Arial")}>Arial</p>
-            <p onClick={handleSelectNewTypography("Arial Black")}>
-              Arial Black
-            </p>
-            <p onClick={handleSelectNewTypography("Verdana")}>Verdana</p>
-            <p onClick={handleSelectNewTypography("Tahoma")}>Tahoma</p>
-            <p onClick={handleSelectNewTypography("Trebuchet MS")}>
-              Trebuchet MS
-            </p>
-            <p onClick={handleSelectNewTypography("Impact")}>Impact</p>
-            <p onClick={handleSelectNewTypography("Times New Roman")}>
-              Times New Roman
-            </p>
-            <p onClick={handleSelectNewTypography("Georgia")}>Georgia</p>
-            <p onClick={handleSelectNewTypography("American Typewriter")}>
-              American Typewriter
-            </p>
-            <p onClick={handleSelectNewTypography("Andale Mono")}>
-              Andale Mono
-            </p>
-            <p onClick={handleSelectNewTypography("Courier")}>Courier</p>
-            <p onClick={handleSelectNewTypography("Lucida Console")}>
-              Lucida Console
-            </p>
-            <p onClick={handleSelectNewTypography("Monaco")}>Monaco</p>
-            <p onClick={handleSelectNewTypography("Bradley Hand")}>
-              Bradley Hand
-            </p>
-            <p onClick={handleSelectNewTypography("Brush Script MT")}>
-              Brush Script MT
-            </p>
-            <p onClick={handleSelectNewTypography("Luminari")}>Luminari</p>
-            <p onClick={handleSelectNewTypography("Comic Sans MS")}>
-              Comic Sans MS
-            </p>
-            <p onClick={handleSelectNewTypography("Helvetica")}>Helvetica</p>
-            <p onClick={handleSelectNewTypography("Cambria")}>Cambria</p>
+            <ContainerSelectTypography onChange={handleSelectTypography}>
+              <option value="Arial">Arial</option>
+              <option value="Arial Black">Arial Black</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Georgia">Georgia</option>
+              <option value="American Typewriter">American Typewriter</option>
+              <option value="Andale Mono">Andale Mono</option>
+              <option value="Courier">Courier</option>
+              <option value="Lucida Console">Lucida Console</option>
+              <option value="Monaco">Monaco</option>
+              <option value="Bradley Hand">Bradley Hand</option>
+              <option value="Brush Script MT">Brush Script MT</option>
+              <option value="Luminari">Luminari</option>
+              <option value="Comic Sans MS">Comic Sans MS</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Cambria">Cambria</option>
+            </ContainerSelectTypography>
           </ContainerTypography>
         </ContainerTextGeneralOptions>
       </ContainerBodyOptions>
@@ -627,19 +602,6 @@ const MenuEditor: React.FC = () => {
               </ContainerLamina>
             ))
           )}
-          {/* {isSuccess && (currentDataImage?.data.length || 0) > 0 && (
-            <ContentPaginated
-              breakLabel="..."
-              nextLabel=">"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={2}
-              pageCount={Math.ceil(
-                (currentDataImage?.total || 1) /
-                  (currentDataImage?.perPage || 15)
-              )}
-              previousLabel="<"
-            />
-          )} */}
           {currentDataImage?.data.length == 0 && (
             <AlertNullResult>No se encontraron resultados</AlertNullResult>
           )}

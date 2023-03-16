@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import styled from "styled-components";
 import { CardImage } from "@styled-icons/bootstrap/CardImage";
@@ -11,24 +12,20 @@ import {
   getActiveSheetPanel,
   getDataCurrentImage,
   getListImageMenu,
+  getSizeLetterText,
   getStatusMobileMenu,
   updateActiveSheetPanel,
   updateAllDataLaminas,
   updateDataCurrentImage,
   updateEditortext,
   updateInputColor,
-  updateSizeLetterDOWN,
-  updateSizeLetterUP,
+  updateSizeLetterText,
   updateTypography,
 } from "../../../../core/store/editor/editorSlice";
 import menuEditorProduction from "../../../../config/environments/production.json";
 import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { ImageBaseProps } from "../editor/components/image-base/image-base";
-import { ChevronUp } from "@styled-icons/bootstrap/ChevronUp";
-import { ChevronDown } from "@styled-icons/bootstrap/ChevronDown";
 import { Settings } from "@styled-icons/fluentui-system-filled/Settings";
-import ReactPaginate from "react-paginate";
-import { breakpoints } from "../../../../constants/breakpoints";
 import a4IMG from "../../../../assets/img/a4.png";
 import oficioIMG from "../../../../assets/img/oficio.png";
 import a3IMG from "../../../../assets/img/a3.png";
@@ -42,6 +39,7 @@ import { TextLeft } from "@styled-icons/bootstrap/TextLeft";
 import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
+import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
 
 const ContainerBackdrop = styled.div<{ active: boolean }>`
   position: absolute;
@@ -100,7 +98,7 @@ const ItemMenu = styled.div<{ isActive: boolean }>`
   }
 `;
 const ContainerLamina = styled.div`
-  width: 100%;
+  width: 50%;
   text-align: center;
   padding: 8px;
   box-sizing: border-box;
@@ -123,6 +121,7 @@ const ButtonAddText = styled.button`
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  width: 100%;
 `;
 const ContainerSearch = styled.div`
   width: 100%;
@@ -258,24 +257,95 @@ const ContainerItem = styled.div<{ active?: boolean; customPadding?: string }>`
 
 const ContainerListLaminas = styled.div`
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-const ContentPaginated = styled(ReactPaginate)`
+  padding: 10px;
+  text-align: center;
+  color: #e76161;
+  margin-top: 10px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
   flex-wrap: wrap;
-  text-decoration: none;
-  list-style: none;
-  padding: 0;
-  column-gap: 10px;
-  row-gap: 5px;
-
-  > li {
-    background: #ffc6c6;
-    padding: 4px;
-    border-radius: 5px;
-    color: black;
+  flex-direction: inherit; ;
+`;
+const ContainerTitle = styled.div`
+  > h3 {
+    color: #fc4a41;
   }
+  > p {
+    font-size: 13px;
+  }
+`;
+const ContainerInputRangeText = styled.input`
+  width: 100% !important;
+  height: auto;
+`;
+
+const ContainerItemOptionTextRange = styled(ContainerItemOption)`
+  > p {
+    width: 40%;
+  }
+`;
+const AlertNullResult = styled.div`
+  padding: 10px;
+  text-align: center;
+  color: #e76161;
+  margin-top: 10px;
+`;
+
+const WrapperMoreResults = styled.div`
+  > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0px 4px 6px 5px #ff7f956b;
+    cursor: pointer;
+
+    > svg {
+      width: 15px;
+    }
+  }
+`;
+
+const ItemMenuBack = styled.div<{ isActive: boolean }>`
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  background: white;
+  color: #fc4a41;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 70px;
+  height: 70px;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+
+  > div svg {
+    width: 100%;
+    max-width: 40px;
+  }
+`;
+
+const ContainerSelectTypography = styled.select`
+  padding: 8px;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 20px;
+  outline: none;
+  border: 1px solid #acacac;
+  margin-bottom: 20px;
 `;
 
 const MenuMobile: React.FC = () => {
@@ -287,6 +357,7 @@ const MenuMobile: React.FC = () => {
   const activeSheetPanel = useAppSelector(getActiveSheetPanel);
   const laminas: LaminaDefaultProps[] = useAppSelector(getListImageMenu);
   const currentDataImage = useAppSelector(getDataCurrentImage);
+  const sizeLetter = useAppSelector(getSizeLetterText);
 
   const handleAddText = () => () => {
     const newText: TextBaseProps = {
@@ -311,10 +382,6 @@ const MenuMobile: React.FC = () => {
 
   const handleCloseMenuMobile = () => dispatch(changeStatusMobileMenu());
 
-  const handleSelectNewTypography = (fontFamily: string) => () => {
-    dispatch(updateTypography(fontFamily));
-  };
-
   const handleInputColor = () => {
     const color: HTMLInputElement = document.getElementById(
       "input_color_main"
@@ -322,20 +389,10 @@ const MenuMobile: React.FC = () => {
     dispatch(updateInputColor(color!.value));
   };
 
-  const handleUpClick = () => dispatch(updateSizeLetterUP());
-  const handleDownClick = () => dispatch(updateSizeLetterDOWN());
   const handleSelectSheet = (selected: number) => () =>
     dispatch(updateActiveSheetPanel(selected));
 
-  const handlePageClick = (page: any) => {
-    if (initialSearch != "") {
-      searchLaminaByWord({ word: initialSearch, page: page.selected + 1 });
-    } else {
-      searchLaminasPerPage(page.selected + 1);
-    }
-  };
-
-  const { data, isError, isSuccess, isLoading } = useGetListLaminasQuery("");
+  const { data, isError, isLoading } = useGetListLaminasQuery("");
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
   const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
@@ -368,6 +425,19 @@ const MenuMobile: React.FC = () => {
     }
   };
 
+  const handleDispatchEditorText = (align: string) => {
+    dispatch(updateEditortext(align));
+  };
+  const handleChangeSizeLetter = (e: any) => {
+    dispatch(updateSizeLetterText(e.target.value));
+  };
+
+  const handleMoreResults = () =>
+    searchLaminasPerPage((currentDataImage?.currentPage || 0) + 1);
+
+  const handleSelectTypography = (e: any) =>
+    dispatch(updateTypography(e.target.value));
+
   return (
     <ContainerBackdrop active={statusMenuMobile}>
       <ContainerMenuMobile active={statusMenuMobile}>
@@ -397,11 +467,24 @@ const MenuMobile: React.FC = () => {
               </div>
               <span>Texto</span>
             </ItemMenu>
+            <ItemMenuBack
+              onClick={handleArrowBack}
+              isActive={statusOption == 2}
+            >
+              <div>
+                <CaretBack />
+              </div>
+              <span>Atrás</span>
+            </ItemMenuBack>
           </ContainerOptionsMenu>
           <ContainerBodyOptions
             isActive={statusOption == 1}
             activeMobile={statusMenuMobile}
           >
+            <ContainerTitle>
+              <h3>Tamaños de hoja</h3>
+              <p>Selecciona el tamaño de tu panel editable</p>
+            </ContainerTitle>
             <ContainerPapers>
               <ItemPaper
                 active={activeSheetPanel == 1}
@@ -430,6 +513,12 @@ const MenuMobile: React.FC = () => {
             isActive={statusOption == 2}
             activeMobile={statusMenuMobile}
           >
+            <ContainerTitle>
+              <h3>Panel de texto</h3>
+              <p>
+                Aquí puedes agregar un nuevo texto y personalizarlo a tu gusto
+              </p>
+            </ContainerTitle>
             <ButtonAddText onClick={handleAddText()}>
               Agregar texto
             </ButtonAddText>
@@ -445,87 +534,58 @@ const MenuMobile: React.FC = () => {
                     />
                   </div>
                 </ContainerItemOption>
-                <ContainerItemOption onClick={handleUpClick}>
-                  <div>Aumentar tamaño</div>
-                  <div>
-                    <ChevronUp />
-                  </div>
-                </ContainerItemOption>
-                <ContainerItemOption onClick={handleDownClick}>
-                  <div>Reducir tamaño</div>
-                  <div>
-                    <ChevronDown />
-                  </div>
-                </ContainerItemOption>
-                <ContainerItem
-                  onClick={() => {
-                    dispatch(updateEditortext("left"));
-                  }}
-                >
+                <ContainerItemOptionTextRange>
+                  <p>Tamaño de texto</p>
+                  <ContainerInputRangeText
+                    type="range"
+                    min="5"
+                    max="60"
+                    defaultValue={sizeLetter}
+                    onInput={handleChangeSizeLetter}
+                  />
+                </ContainerItemOptionTextRange>
+                <ContainerItem onClick={() => handleDispatchEditorText("left")}>
                   <TextLeft />
                 </ContainerItem>
                 <ContainerItem
-                  onClick={() => {
-                    dispatch(updateEditortext("center"));
-                  }}
+                  onClick={() => handleDispatchEditorText("center")}
                 >
                   <TextCenter />
                 </ContainerItem>
                 <ContainerItem
-                  onClick={() => {
-                    dispatch(updateEditortext("right"));
-                  }}
+                  onClick={() => handleDispatchEditorText("right")}
                 >
                   <TextRight />
                 </ContainerItem>
                 <ContainerItem
-                  onClick={() => {
-                    dispatch(updateEditortext("justify"));
-                  }}
+                  onClick={() => handleDispatchEditorText("justify")}
                 >
                   <Justify />
                 </ContainerItem>
               </ContainerOptionsText>
               <ContainerTypography>
-                <p onClick={handleSelectNewTypography("Arial")}>Arial</p>
-                <p onClick={handleSelectNewTypography("Arial Black")}>
-                  Arial Black
-                </p>
-                <p onClick={handleSelectNewTypography("Verdana")}>Verdana</p>
-                <p onClick={handleSelectNewTypography("Tahoma")}>Tahoma</p>
-                <p onClick={handleSelectNewTypography("Trebuchet MS")}>
-                  Trebuchet MS
-                </p>
-                <p onClick={handleSelectNewTypography("Impact")}>Impact</p>
-                <p onClick={handleSelectNewTypography("Times New Roman")}>
-                  Times New Roman
-                </p>
-                <p onClick={handleSelectNewTypography("Georgia")}>Georgia</p>
-                <p onClick={handleSelectNewTypography("American Typewriter")}>
-                  American Typewriter
-                </p>
-                <p onClick={handleSelectNewTypography("Andale Mono")}>
-                  Andale Mono
-                </p>
-                <p onClick={handleSelectNewTypography("Courier")}>Courier</p>
-                <p onClick={handleSelectNewTypography("Lucida Console")}>
-                  Lucida Console
-                </p>
-                <p onClick={handleSelectNewTypography("Monaco")}>Monaco</p>
-                <p onClick={handleSelectNewTypography("Bradley Hand")}>
-                  Bradley Hand
-                </p>
-                <p onClick={handleSelectNewTypography("Brush Script MT")}>
-                  Brush Script MT
-                </p>
-                <p onClick={handleSelectNewTypography("Luminari")}>Luminari</p>
-                <p onClick={handleSelectNewTypography("Comic Sans MS")}>
-                  Comic Sans MS
-                </p>
-                <p onClick={handleSelectNewTypography("Helvetica")}>
-                  Helvetica
-                </p>
-                <p onClick={handleSelectNewTypography("Cambria")}>Cambria</p>
+                <ContainerSelectTypography onChange={handleSelectTypography}>
+                  <option value="Arial">Arial</option>
+                  <option value="Arial Black">Arial Black</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Tahoma">Tahoma</option>
+                  <option value="Trebuchet MS">Trebuchet MS</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="American Typewriter">
+                    American Typewriter
+                  </option>
+                  <option value="Andale Mono">Andale Mono</option>
+                  <option value="Courier">Courier</option>
+                  <option value="Lucida Console">Lucida Console</option>
+                  <option value="Monaco">Monaco</option>
+                  <option value="Bradley Hand">Bradley Hand</option>
+                  <option value="Brush Script MT">Brush Script MT</option>
+                  <option value="Luminari">Luminari</option>
+                  <option value="Comic Sans MS">Comic Sans MS</option>
+                  <option value="Helvetica">Helvetica</option>
+                  <option value="Cambria">Cambria</option>
+                </ContainerSelectTypography>
               </ContainerTypography>
             </ContainerTextGeneralOptions>
           </ContainerBodyOptions>
@@ -533,11 +593,16 @@ const MenuMobile: React.FC = () => {
             isActive={statusOption == 3}
             activeMobile={statusMenuMobile}
           >
+            <ContainerTitle>
+              <h3>Panel de Láminas</h3>
+              <p>Selecciona nuevas láminas</p>
+            </ContainerTitle>
             <ContainerSearch>
               <ContainerInputSearchStyle
                 type="text"
                 placeholder="Buscar lámina"
                 defaultValue={initialSearch}
+                onKeyUp={handleKeyUp}
                 onChange={(e: any) => handleChangeText(e.target.value)}
               />
             </ContainerSearch>
@@ -563,24 +628,24 @@ const MenuMobile: React.FC = () => {
                   </ContainerLamina>
                 ))
               )}
-              {isSuccess && (
-                <ContentPaginated
-                  breakLabel="..."
-                  nextLabel=">"
-                  onPageChange={handlePageClick}
-                  pageRangeDisplayed={2}
-                  pageCount={Math.ceil(
-                    (currentDataImage?.total || 1) /
-                      (currentDataImage?.perPage || 15)
-                  )}
-                  previousLabel="<"
-                />
+              {currentDataImage?.data.length == 0 && (
+                <AlertNullResult>No se encontraron resultados</AlertNullResult>
               )}
               {isError && (
                 <p>
                   Al parecer ocurrio un error, comunicate con el administrador
                   del sistema
                 </p>
+              )}
+              {currentDataImage?.nextPageUrl != null && (
+                <WrapperMoreResults>
+                  <button
+                    disabled={resultPerPage.isLoading}
+                    onClick={handleMoreResults}
+                  >
+                    Mostrar más resultados
+                  </button>
+                </WrapperMoreResults>
               )}
             </ContainerListLaminas>
           </ContainerBodyOptions>

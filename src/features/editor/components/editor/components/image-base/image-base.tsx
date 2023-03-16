@@ -8,6 +8,7 @@ import {
   deleteImage,
   getActiveImage,
   getGeneralStatusControl,
+  getValueScaleZoom,
   showModalEditor,
   updateCurrentImage,
   updateImageActive,
@@ -91,9 +92,9 @@ const ItemOption = styled.div`
 const ImageMain = styled.img<{ border: number }>`
   border-radius: ${(p) => `${p.border}px`};
 `;
-const ContainerTooltiptext = styled.span`
+const ContainerTooltiptext = styled.span<{ scaleZoom: number }>`
   visibility: hidden;
-  width: 120px;
+  width: fit-content;
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -106,17 +107,26 @@ const ContainerTooltiptext = styled.span`
   margin-left: -60px;
   opacity: 0;
   transition: opacity 0.3s;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: ${(p) => {
+    if (p.scaleZoom == 1) return "13px";
+    if (p.scaleZoom == 2) return "10px";
+    if (p.scaleZoom == 3) return "7px";
+    if (p.scaleZoom == 4) return "4px";
+    if (p.scaleZoom > 4) return "4px";
+  }};
 
-  :after {
-    content: "";
-    position: absolute;
-    top: -40%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: transparent transparent #555 transparent;
-  }
+  // :after {
+  //   content: "";
+  //   position: absolute;
+  //   top: -40%;
+  //   left: 50%;
+  //   margin-left: -5px;
+  //   border-width: 10px;
+  //   border-style: solid;
+  //   border-color: transparent transparent #555 transparent;
+  // }
 `;
 export interface ImageBaseProps {
   id: number;
@@ -139,6 +149,7 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
   const statusGeneralControl = useAppSelector(getGeneralStatusControl);
   const imageActiveControls = useAppSelector(getActiveImage);
   const handleDeleteImage = () => dispatch(deleteImage(id));
+  const valueScale = useAppSelector(getValueScaleZoom);
 
   const handleChangeActive = () => {
     dispatch(updateImageActive(id));
@@ -214,17 +225,19 @@ const ImageBase: React.FC<ImageBaseProps> = ({ id, image }) => {
               <ContainerOptions>
                 <ItemOption onClick={handleCutOption}>
                   <Cut />
-                  <ContainerTooltiptext>Cortar</ContainerTooltiptext>
+                  <ContainerTooltiptext scaleZoom={valueScale}>
+                    Cortar
+                  </ContainerTooltiptext>
                 </ItemOption>
                 <ItemOption onClick={handleSquareOption}>
                   <Square />
-                  <ContainerTooltiptext>
+                  <ContainerTooltiptext scaleZoom={valueScale}>
                     Reducir Redondeado
                   </ContainerTooltiptext>
                 </ItemOption>
                 <ItemOption onClickCapture={handleRoundedOption}>
                   <SquareRounded />
-                  <ContainerTooltiptext>
+                  <ContainerTooltiptext scaleZoom={valueScale}>
                     Aumentar Redondeado
                   </ContainerTooltiptext>
                 </ItemOption>

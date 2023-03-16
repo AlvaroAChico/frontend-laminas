@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Editor } from "@tiptap/react";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ImageBaseProps } from "../../../features/editor/components/editor/components/image-base/image-base";
 import { TextBaseProps } from "../../../features/editor/components/editor/components/text-base/text-base";
 import { RootState } from "../../store";
@@ -19,6 +18,8 @@ export interface EditorState {
   activeImage: number;
   activeText: number;
   activeSheetPanel: number;
+  scaleZoom: number;
+  sizeLetterText: number;
 }
 
 const initialState: EditorState = {
@@ -34,6 +35,8 @@ const initialState: EditorState = {
   activeImage: 0,
   activeText: 0,
   activeSheetPanel: 1,
+  scaleZoom: 1,
+  sizeLetterText: 13,
 };
 
 export const editorSlice = createSlice({
@@ -117,26 +120,6 @@ export const editorSlice = createSlice({
       });
       state.listText = newListText;
     },
-    updateSizeLetterUP: (state) => {
-      const newListText = state.listText.map((item) => {
-        if (item.id == state.activeText) {
-          item.sizeLetter = item.sizeLetter + 1;
-        }
-        return item;
-      });
-      state.listText = newListText;
-    },
-    updateSizeLetterDOWN: (state) => {
-      const newListText = state.listText.map((item) => {
-        if (item.id == state.activeText) {
-          if (item.sizeLetter > 0) {
-            item.sizeLetter = item.sizeLetter - 1;
-          }
-        }
-        return item;
-      });
-      state.listText = newListText;
-    },
     updateInputColor: (state, action: PayloadAction<string>) => {
       const newListText = state.listText.map((item) => {
         if (item.id == state.activeText) {
@@ -158,16 +141,40 @@ export const editorSlice = createSlice({
     updateDataCurrentImage: (state, action: PayloadAction<LaminaResponse>) => {
       state.dataCurrentImage = action.payload;
     },
+    updateSizeLetterText: (state, action: PayloadAction<number>) => {
+      const newListText = state.listText.map((item) => {
+        if (item.id == state.activeText) {
+          item.sizeLetter = action.payload;
+        }
+        return item;
+      });
+      state.listText = newListText;
+    },
+    addMoreZoom: (state) => {
+      if (state.scaleZoom <= 10) {
+        state.scaleZoom = state.scaleZoom + 1;
+      }
+    },
+    reduceZoom: (state) => {
+      if (state.scaleZoom > 1) {
+        state.scaleZoom = state.scaleZoom - 1;
+      }
+    },
+    resetZoom: (state) => {
+      state.scaleZoom = 1;
+    },
   },
 });
 
 export const {
+  updateSizeLetterText,
+  resetZoom,
+  addMoreZoom,
+  reduceZoom,
   updateMoreLaminas,
   updateDataCurrentImage,
   updateEditortext,
   updateTypography,
-  updateSizeLetterUP,
-  updateSizeLetterDOWN,
   updateInputColor,
   addImageBase,
   addTextBase,
@@ -210,5 +217,8 @@ export const getDataCurrentImage = (state: RootState) =>
   state.editor.dataCurrentImage;
 export const getActiveSheetPanel = (state: RootState) =>
   state.editor.activeSheetPanel;
+export const getValueScaleZoom = (state: RootState) => state.editor.scaleZoom;
+export const getSizeLetterText = (state: RootState) =>
+  state.editor.sizeLetterText;
 
 export default editorSlice.reducer;

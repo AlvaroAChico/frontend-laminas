@@ -8,6 +8,7 @@ import ImageBase, {
 } from "./components/editor/components/image-base/image-base";
 import {
   addImageBase,
+  addMoreZoom,
   changeStatusMobileMenu,
   closeDownloadPDF,
   closeModalEditor,
@@ -18,7 +19,10 @@ import {
   getListTextBase,
   getStatusDownloadPDF,
   getStatusModalEditor,
+  getValueScaleZoom,
   hiddenStatusControls,
+  reduceZoom,
+  resetZoom,
   showDownloadPDF,
   showStatusControls,
 } from "../../core/store/editor/editorSlice";
@@ -67,7 +71,6 @@ const EditorElaminas: React.FC = () => {
       }
     }
   }, [Cookies.get("jwt_token")]);
-  const [valueScale, setValueScale] = React.useState(1);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
   const [activeDownload, setActiveDownload] = React.useState(false);
   const dispatch = useAppDispatch();
@@ -78,7 +81,10 @@ const EditorElaminas: React.FC = () => {
   const currentImageId = useAppSelector(getCurrentImage);
   const listText = useAppSelector(getListTextBase);
   const activeSheetPanel = useAppSelector(getActiveSheetPanel);
+  const valueScale = useAppSelector(getValueScaleZoom);
+
   const handleCloseEditCropper = () => dispatch(closeModalEditor());
+
   const handleShowMobile = () => {
     dispatch(changeStatusMobileMenu());
   };
@@ -173,7 +179,7 @@ const EditorElaminas: React.FC = () => {
     } else {
       if (activeDownload) {
         dispatch(hiddenStatusControls());
-        setValueScale(1);
+        dispatch(resetZoom());
         setTimeout(() => downloadPanel(), 800);
         setActiveDownload(false);
       }
@@ -216,14 +222,10 @@ const EditorElaminas: React.FC = () => {
   }
 
   const handleDownZoom = () => {
-    if (valueScale > 1) {
-      setValueScale(valueScale - 1);
-    }
+    dispatch(reduceZoom());
   };
   const handleUpZoom = () => {
-    if (valueScale <= 10) {
-      setValueScale(valueScale + 1);
-    }
+    dispatch(addMoreZoom());
   };
 
   return (

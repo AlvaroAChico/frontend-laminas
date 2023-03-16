@@ -3,11 +3,6 @@ import React from "react";
 import styled from "styled-components";
 import Moveable from "react-moveable";
 import { Frame } from "scenejs";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import MenuBarText from "./menu-bar-text";
-import TextAlign from "@tiptap/extension-text-align";
-import { Color } from "@tiptap/extension-color";
 import { useAppDispatch, useAppSelector } from "../../../../../../app/hooks";
 import {
   deleteText,
@@ -55,37 +50,9 @@ const OptionsWrapperMain = styled.div<{
   }
 `;
 
-const EditorContentContainer = styled(EditorContent)`
-  outline: none;
-
-  .ProseMirror-focused {
-    outline: none;
-    border: 1px solid red;
-    border-radius: 5px;
-  }
-
-  > div p {
-    margin: 6px 4px;
-  }
-`;
-
 const ContainerText = styled.div`
   position: absolute;
   height: auto;
-`;
-const WrapperMove = styled.div`
-  position: absolute;
-  background: #aeaeae;
-  width: 20px;
-  height: 20px;
-  top: 0;
-  right: -20px;
-  border-radius: 50%;
-  padding: 2px;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 const ContainerMain = styled.div<{ active: boolean }>`
@@ -94,19 +61,6 @@ const ContainerMain = styled.div<{ active: boolean }>`
   .moveable-control-box {
     ${(p) =>
       !p.active ? "visibility: hidden !important" : "visibility: visible;"};
-  }
-`;
-
-const ContainerImage = styled.div`
-  position: absolute;
-
-  > img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .moveable-line {
-    display: none;
   }
 `;
 
@@ -204,21 +158,6 @@ const TextBase: React.FC<TextBaseProps> = ({
   const setTransform = (target: any) => {
     target.style.cssText = frame.toCSS();
   };
-
-  // Config text
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
-      Color.configure({
-        types: ["textStyle"],
-      }),
-    ],
-    content: "<p>Escribe aquí tu mensaje</p>",
-  });
-  // Config text
 
   const handleChangeActive = () => {
     // dispatch(updateEditorTipTap(editor));
