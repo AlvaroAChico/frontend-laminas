@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
 import productionJSON from "../../../config/environments/production.json";
 
-const baseURLLaminas = "https://test.elaminas.com/api";
+const baseURLLaminas = productionJSON.api.laminas;
 // const baseURLLaminasLocal = "http://127.0.0.1:8000";
 
 export interface LaminaResponse {

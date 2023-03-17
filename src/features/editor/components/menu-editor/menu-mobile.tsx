@@ -421,7 +421,7 @@ const MenuMobile: React.FC = () => {
     if (history.length > 0) {
       history.back();
     } else {
-      window.location.href = "https://test.elaminas.com";
+      window.location.href = "https://elaminas.com";
     }
   };
 

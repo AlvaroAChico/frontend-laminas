@@ -67,7 +67,7 @@ const EditorElaminas: React.FC = () => {
     if (envProduction.app.blocked) {
       const token = Cookies.get("jwt_token");
       if (token == "" || token == null) {
-        window.location.href = "https://test.elaminas.com";
+        window.location.href = "https://elaminas.com";
       }
     }
   }, [Cookies.get("jwt_token")]);
