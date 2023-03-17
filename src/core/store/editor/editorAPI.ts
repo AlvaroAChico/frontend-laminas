@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 import productionJSON from "../../../config/environments/production.json";
 
 const baseURLLaminas = productionJSON.api.laminas;
-// const baseURLLaminasLocal = "http://127.0.0.1:8000";
 
 export interface LaminaResponse {
   currentPage: number;
@@ -43,7 +42,7 @@ export const laminasApi = createApi({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
       const token = productionJSON.app.mocks
-        ? "15|QLnP7JXKu1yCu5Y0PeHO6TcFvE81X3twkBvkQMNK  "
+        ? "15|QLnP7JXKu1yCu5Y0PeHO6TcFvE81X3twkBvkQMNK"
         : Cookies.get("jwt_token");
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
@@ -99,6 +98,13 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: IResponseDownload) => response,
     }),
+    getVerifyPlan: build.query<string, string>({
+      query: () => ({
+        url: `/auth/verificar-plan`,
+        method: "GET",
+      }),
+      transformResponse: (response: string) => response,
+    }),
   }),
 });
 
@@ -109,4 +115,5 @@ export const {
   usePostLaminasByUUIDMutation,
   usePostLaminasPerPageMutation,
   usePostUpdateDownloadBySheetMutation,
+  useGetVerifyPlanQuery,
 } = laminasApi;

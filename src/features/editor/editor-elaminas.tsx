@@ -41,6 +41,7 @@ import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
 import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
 import Cookies from "js-cookie";
 import {
+  useGetVerifyPlanQuery,
   usePostLaminasByUUIDMutation,
   usePostUpdateDownloadBySheetMutation,
 } from "../../core/store/editor/editorAPI";
@@ -61,6 +62,7 @@ import {
   ButtonApplyCropper,
   MenuMobileEditor,
 } from "./editor-laminas.styles";
+import productionJSON from "../../config/environments/production.json";
 
 const EditorElaminas: React.FC = () => {
   React.useEffect(() => {
@@ -142,46 +144,45 @@ const EditorElaminas: React.FC = () => {
     );
   };
 
+  const { data, isError, isLoading } = useGetVerifyPlanQuery("");
+
   React.useEffect(() => {
-    const token = Cookies.get("jwt_token");
-    if (
-      responseDownload.data?.status ==
-        "Se terminó tu cantidad de descargas por día. Podrías volver mañana" ||
-      token == "" ||
-      token == null
-    ) {
-      //   document.getElementById("root")!.innerHTML = `
-      //   <div style="width: 100%; background: #b5b5b5; height: 100vh; position: absolute;
-      //   margin: 0; top: 0; display: flex; flex-direction: column; gap: 20px; justify-content: center;
-      //   align-items: center;">
-      //   <p>Al parecer se ha agotado tu cantidad de descargas por día o no se ha encontrado una sesión activa.</p>
-      //   <p>Por favor vuelve a iniciar sesión o comunicate con tu administrador</p>
-      //   <a style=" display: flex;
-      //   align-items: center;
-      //   justify-content: center;
-      //   gap: 5px;
-      //   background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-      //   border: 2px solid #fff;
-      //   color: #fff;
-      //   padding: 10px 20px;
-      //   border-radius: 30px;
-      //   box-shadow: 0px 4px 6px 5px #ff7f956b;
-      //   cursor: pointer;
-      //   max-width: 300px;
-      //   text-decoration: none;
-      //   " href="https://test.elaminas.com">Ir a la pagina principal</a>
-      //   </div>
-      // `;
-      setTimeout(() => {
-        window.open("", "_parent", "");
-        window.close();
-      }, 2000);
-    } else {
-      if (activeDownload) {
-        dispatch(hiddenStatusControls());
-        dispatch(resetZoom());
-        setTimeout(() => downloadPanel(), 800);
-        setActiveDownload(false);
+    if (!isLoading && productionJSON.app.blocked) {
+      if (isError) {
+        window.location.href = "https://elaminas.com";
+      }
+    }
+  }, [isLoading, isError, data]);
+
+  React.useEffect(() => {
+    if (!responseDownload.isLoading) {
+      if (responseDownload.isError) {
+        if (productionJSON.app.blocked) {
+          document.getElementById("root")!.innerHTML = `
+        <div style="width: 100%; background: #b5b5b5; height: 100vh; position: absolute;
+        margin: 0; top: 0; display: flex; flex-direction: column; gap: 20px; justify-content: center;
+        align-items: center;"> <p>Al parecer se ha agotado tu cantidad de descargas por día o no se ha encontrado una sesión activa.</p>
+        <p>Por favor vuelve a iniciar sesión o comunicate con tu administrador</p>
+        <a style=" display: flex; align-items: center; justify-content: center; gap: 5px;
+        background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c); border: 2px solid #fff;
+        color: #fff; padding: 10px 20px; border-radius: 30px; box-shadow: 0px 4px 6px 5px #ff7f956b;
+        cursor: pointer; max-width: 300px; text-decoration: none;" href="https://test.elaminas.com">Ir a la pagina principal</a>
+        </div>
+      `;
+          if (productionJSON.app.blocked) {
+            setTimeout(() => {
+              window.open("", "_parent", "");
+              window.close();
+            }, 2000);
+          }
+        }
+      } else {
+        if (activeDownload) {
+          dispatch(hiddenStatusControls());
+          dispatch(resetZoom());
+          setTimeout(() => downloadPanel(), 800);
+          setActiveDownload(false);
+        }
       }
     }
   }, [responseDownload]);
