@@ -41,7 +41,6 @@ import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
 import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
 import Cookies from "js-cookie";
 import {
-  useGetVerifyPlanQuery,
   usePostLaminasByUUIDMutation,
   usePostUpdateDownloadBySheetMutation,
 } from "../../core/store/editor/editorAPI";
@@ -92,7 +91,7 @@ const EditorElaminas: React.FC = () => {
   };
   const sizeSheet = [
     [210, 297],
-    [220, 340],
+    [215, 340],
     [297, 420],
   ];
 
@@ -143,16 +142,6 @@ const EditorElaminas: React.FC = () => {
       activeSheetPanel == 1 ? "A4" : activeSheetPanel == 2 ? "Oficio" : "A3"
     );
   };
-
-  const { data, isError, isLoading } = useGetVerifyPlanQuery("");
-
-  React.useEffect(() => {
-    if (!isLoading && productionJSON.app.blocked) {
-      if (isError) {
-        window.location.href = "https://elaminas.com";
-      }
-    }
-  }, [isLoading, isError, data]);
 
   React.useEffect(() => {
     if (!responseDownload.isLoading) {

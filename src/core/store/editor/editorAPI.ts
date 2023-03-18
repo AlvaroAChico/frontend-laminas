@@ -61,7 +61,7 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
-    getListLaminas: build.query<LaminaResponse, any>({
+    getListLaminas: build.mutation<LaminaResponse, any>({
       query: () => ({
         url: `/laminas?sort=tbllmnacdgo&render=paginate`,
         method: "GET",
@@ -110,7 +110,7 @@ export const laminasApi = createApi({
 
 export const {
   useGetStatusUserDownloadsQuery,
-  useGetListLaminasQuery,
+  useGetListLaminasMutation,
   usePostLaminasByWordMutation,
   usePostLaminasByUUIDMutation,
   usePostLaminasPerPageMutation,

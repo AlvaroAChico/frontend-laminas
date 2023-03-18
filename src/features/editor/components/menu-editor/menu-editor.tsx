@@ -27,7 +27,8 @@ import { TextBaseProps } from "../editor/components/text-base/text-base";
 import { breakpoints } from "../../../../constants/breakpoints";
 import {
   LaminaDefaultProps,
-  useGetListLaminasQuery,
+  useGetListLaminasMutation,
+  useGetVerifyPlanQuery,
   usePostLaminasByWordMutation,
   usePostLaminasPerPageMutation,
 } from "../../../../core/store/editor/editorAPI";
@@ -41,6 +42,7 @@ import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
 import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
+import productionJSON from "../../../../config/environments/production.json";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -390,7 +392,20 @@ const MenuEditor: React.FC = () => {
   };
   const handleChangeText = (value: string) => setInitialSearch(value);
 
-  const { data, isError, isLoading } = useGetListLaminasQuery("");
+  const { data, isError, isLoading, isSuccess } = useGetVerifyPlanQuery("");
+  const [getStatusPlan, statusResponsePlan] = useGetListLaminasMutation();
+
+  React.useEffect(() => {
+    if (!isLoading && productionJSON.app.blocked) {
+      if (isError) {
+        window.location.href = "https://elaminas.com";
+      }
+      if (isSuccess) {
+        getStatusPlan("");
+      }
+    }
+  }, [isLoading, isError, data, isSuccess]);
+
   const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
   const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
@@ -398,9 +413,13 @@ const MenuEditor: React.FC = () => {
     searchLaminasPerPage((currentDataImage?.currentPage || 0) + 1);
 
   React.useEffect(() => {
-    dispatch(updateAllDataLaminas(data?.data || []));
-    dispatch(updateDataCurrentImage(data!));
-  }, [data]);
+    if (!statusResponsePlan.isLoading) {
+      if (isSuccess) {
+        dispatch(updateAllDataLaminas(statusResponsePlan.data!.data || []));
+        dispatch(updateDataCurrentImage(statusResponsePlan.data!));
+      }
+    }
+  }, [statusResponsePlan]);
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
