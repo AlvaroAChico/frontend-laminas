@@ -31,7 +31,8 @@ import oficioIMG from "../../../../assets/img/oficio.png";
 import a3IMG from "../../../../assets/img/a3.png";
 import {
   LaminaDefaultProps,
-  useGetListLaminasQuery,
+  useGetListLaminasMutation,
+  useGetVerifyPlanQuery,
   usePostLaminasByWordMutation,
   usePostLaminasPerPageMutation,
 } from "../../../../core/store/editor/editorAPI";
@@ -40,6 +41,7 @@ import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
 import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
+import productionJSON from "../../../../config/environments/production.json";
 
 const ContainerBackdrop = styled.div<{ active: boolean }>`
   position: absolute;
@@ -392,14 +394,22 @@ const MenuMobile: React.FC = () => {
   const handleSelectSheet = (selected: number) => () =>
     dispatch(updateActiveSheetPanel(selected));
 
-  const { data, isError, isLoading } = useGetListLaminasQuery("");
-  const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
-  const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
+  const { data, isError, isLoading, isSuccess } = useGetVerifyPlanQuery("");
+  const [getStatusPlan, statusResponsePlan] = useGetListLaminasMutation();
 
   React.useEffect(() => {
-    dispatch(updateAllDataLaminas(data?.data || []));
-    dispatch(updateDataCurrentImage(data!));
-  }, [data]);
+    if (!isLoading && productionJSON.app.blocked) {
+      if (isError) {
+        window.location.href = "https://elaminas.com";
+      }
+      if (isSuccess) {
+        getStatusPlan("");
+      }
+    }
+  }, [isLoading, isError, data, isSuccess]);
+
+  const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
+  const [searchLaminasPerPage, resultPerPage] = usePostLaminasPerPageMutation();
 
   React.useEffect(() => {
     dispatch(updateAllDataLaminas(resultSearch?.data?.data || []));
@@ -410,6 +420,15 @@ const MenuMobile: React.FC = () => {
     dispatch(updateAllDataLaminas(resultPerPage?.data?.data || []));
     dispatch(updateDataCurrentImage(resultPerPage!.data!));
   }, [resultPerPage]);
+
+  React.useEffect(() => {
+    if (!statusResponsePlan.isLoading) {
+      if (isSuccess) {
+        dispatch(updateAllDataLaminas(statusResponsePlan.data!.data || []));
+        dispatch(updateDataCurrentImage(statusResponsePlan.data!));
+      }
+    }
+  }, [statusResponsePlan]);
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
