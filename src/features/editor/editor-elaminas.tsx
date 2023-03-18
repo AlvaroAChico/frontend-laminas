@@ -1,23 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { jsPDF } from "jspdf";
 import React from "react";
-import styled from "styled-components";
 import MenuEditor from "./components/menu-editor/menu-editor";
 import html2canvas from "html2canvas";
 import ImageBase, {
   ImageBaseProps,
 } from "./components/editor/components/image-base/image-base";
 import {
+  addImageBase,
+  addMoreZoom,
   changeStatusMobileMenu,
   closeDownloadPDF,
   closeModalEditor,
+  getActiveSheetPanel,
   getCurrentImage,
   getImageCropper,
   getListImageBase,
   getListTextBase,
   getStatusDownloadPDF,
-  getStatusMobileMenu,
   getStatusModalEditor,
+  getValueScaleZoom,
+  hiddenStatusControls,
+  reduceZoom,
+  resetZoom,
   showDownloadPDF,
+  showStatusControls,
 } from "../../core/store/editor/editorSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import TextBase, {
@@ -28,208 +35,46 @@ import "react-advanced-cropper/dist/style.css";
 import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownload";
 import downloadLoadingImage from "../../assets/gif/painting_download_load.gif";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
-import { breakpoints } from "../../constants/breakpoints";
-import { Settings2Outline } from "@styled-icons/evaicons-outline/Settings2Outline";
+import { Edit } from "@styled-icons/fluentui-system-filled/Edit";
 import MenuMobile from "./components/menu-editor/menu-mobile";
+import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
+import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
+import Cookies from "js-cookie";
+import {
+  useGetVerifyPlanQuery,
+  usePostLaminasByUUIDMutation,
+  usePostUpdateDownloadBySheetMutation,
+} from "../../core/store/editor/editorAPI";
+import envProduction from "../../config/environments/production.json";
+import {
+  ContainerEditor,
+  ContentPanelEditor,
+  ContentEditor,
+  WrapperTransformScale,
+  HiddenWrapper,
+  ContainerDownloadButton,
+  ButtonZoom,
+  ContainerModalImage,
+  ContainerDownloadPDF,
+  ModalEditImage,
+  ButtonDownload,
+  ContainerLoaded,
+  ButtonApplyCropper,
+  MenuMobileEditor,
+} from "./editor-laminas.styles";
+import productionJSON from "../../config/environments/production.json";
 
-const ContainerEditor = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  width: 100%;
-  height: 100vh;
-  background-color: #e5e5f7;
-  opacity: 0.8;
-  background-image: linear-gradient(#ffffff 1px, transparent 1px),
-    linear-gradient(to right, #ffffff 1px, #e9eaed 1px);
-  background-size: 20px 20px;
-
-  * {
-    font-family: sans-serif;
-    box-sizing: border-box;
-  }
-`;
-const ContentPanelEditor = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-`;
-const ContentEditor = styled.div<{ activeSheetPanel: number }>`
-  overflow: hidden;
-  background: white;
-  box-shadow: 0px 4px 20px 8px #a2a2a2b8;
-  transition: 0.5s;
-
-  width: ${(p) =>
-    p.activeSheetPanel == 1
-      ? "283.5px"
-      : p.activeSheetPanel == 2
-      ? "297px"
-      : "400.95px"};
-
-  height: ${(p) =>
-    p.activeSheetPanel == 1
-      ? "400.95px"
-      : p.activeSheetPanel == 2
-      ? "459px"
-      : "567px"};
-`;
-const ContainerSheet = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 10px;
-  column-gap: 10px;
-`;
-const SheetItem = styled.div<{ active: boolean }>`
-  background: ${(p) => (p.active ? "#83af44" : "white")};
-  padding: 10px 20px;
-  border-radius: 5px;
-  color: ${(p) => (p.active ? "white" : "#83af44")};
-  cursor: pointer;
-  box-shadow: ${(p) => (p.active ? "0px 6px 12px 0px #a2c6718c" : "none")};
-  border: 1px solid #83af44;
-`;
-const ContainerDownloadButton = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-`;
-const ContainerModalImage = styled.div`
-  position: fixed;
-  background: #21212187;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ContainerDownloadPDF = styled.div`
-  position: fixed;
-  background: #21212187;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ModalEditImage = styled.div`
-  width: 100%;
-  height: auto;
-  max-width: 300px;
-  margin: auto;
-  background: white;
-  padding: 15px;
-
-  > svg {
-    width: 20px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
-`;
-const ButtonDownload = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  box-shadow: 0px 4px 6px 5px #ff7f956b;
-  cursor: pointer;
-
-  > svg {
-    width: 15px;
-  }
-`;
-const ContainerLoaded = styled.div`
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  border-radius: 20px;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  width: fit-content;
-
-  > p {
-    font-family: cursive;
-  }
-  > img {
-    width: 100%;
-    max-width: 300px;
-  }
-`;
-const ButtonApplyCropper = styled.button`
-  gap: 5px;
-  background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  box-shadow: 0px 4px 6px 5px #ff7f956b;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-`;
-const MenuMobileEditor = styled.div`
-  width: 50px;
-  height: 50px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  background: #fd6e67;
-  color: white;
-  padding: 0;
-  margin: 0;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0px 4px 13px 4px #45454582;
-  display: none;
-
-  > svg {
-    width: 25px;
-  }
-
-  ${breakpoints.tabletL} {
-    display: none;
-  }
-  ${breakpoints.tabletS} {
-    display: none;
-  }
-  ${breakpoints.phoneL} {
-    display: flex;
-  }
-`;
 const EditorElaminas: React.FC = () => {
-  const [activeSheetPanel, setActiveSheetPanel] = React.useState(1);
+  React.useEffect(() => {
+    if (envProduction.app.blocked) {
+      const token = Cookies.get("jwt_token");
+      if (token == "" || token == null) {
+        window.location.href = "https://elaminas.com";
+      }
+    }
+  }, [Cookies.get("jwt_token")]);
   const [refCropper, setTefCropper] = React.useState<CropperRef>();
+  const [activeDownload, setActiveDownload] = React.useState(false);
   const dispatch = useAppDispatch();
   const listImage = useAppSelector(getListImageBase);
   const statusModalEditor = useAppSelector(getStatusModalEditor);
@@ -237,8 +82,11 @@ const EditorElaminas: React.FC = () => {
   const imageCropper = useAppSelector(getImageCropper);
   const currentImageId = useAppSelector(getCurrentImage);
   const listText = useAppSelector(getListTextBase);
-  const statusMobileMenu = useAppSelector(getStatusMobileMenu);
+  const activeSheetPanel = useAppSelector(getActiveSheetPanel);
+  const valueScale = useAppSelector(getValueScaleZoom);
+
   const handleCloseEditCropper = () => dispatch(closeModalEditor());
+
   const handleShowMobile = () => {
     dispatch(changeStatusMobileMenu());
   };
@@ -247,6 +95,25 @@ const EditorElaminas: React.FC = () => {
     [220, 340],
     [297, 420],
   ];
+
+  React.useEffect(() => {
+    const laminaCode = Cookies.get("e_co");
+    if (laminaCode) {
+      searchLaminaByUUID(laminaCode);
+    }
+  }, []);
+
+  const [searchLaminaByUUID, resultSearch] = usePostLaminasByUUIDMutation();
+
+  React.useEffect(() => {
+    const currentImageView: ImageBaseProps = {
+      id: Date.now(),
+      image: resultSearch?.data?.data[0]?.tbllmnaimgo || "",
+    };
+    if (currentImageView.image != "") {
+      dispatch(addImageBase(currentImageView));
+    }
+  }, [resultSearch]);
 
   const onChange = (cropper: CropperRef) => {
     setTefCropper(cropper);
@@ -262,15 +129,65 @@ const EditorElaminas: React.FC = () => {
     dispatch(closeModalEditor());
   };
 
-  const handleSelectSheet = (selected: number) => () =>
-    setActiveSheetPanel(selected);
-
   const activeContentPanel = () => {
     const content = document.getElementById("contentRef");
     if (content != null) return content;
   };
 
+  const [postUpdateDownloadBySheet, responseDownload] =
+    usePostUpdateDownloadBySheetMutation();
+
   const handleDownloadPanel = () => {
+    setActiveDownload(true);
+    postUpdateDownloadBySheet(
+      activeSheetPanel == 1 ? "A4" : activeSheetPanel == 2 ? "Oficio" : "A3"
+    );
+  };
+
+  const { data, isError, isLoading } = useGetVerifyPlanQuery("");
+
+  React.useEffect(() => {
+    if (!isLoading && productionJSON.app.blocked) {
+      if (isError) {
+        window.location.href = "https://elaminas.com";
+      }
+    }
+  }, [isLoading, isError, data]);
+
+  React.useEffect(() => {
+    if (!responseDownload.isLoading) {
+      if (responseDownload.isError) {
+        if (productionJSON.app.blocked) {
+          document.getElementById("root")!.innerHTML = `
+        <div style="width: 100%; background: #b5b5b5; height: 100vh; position: absolute;
+        margin: 0; top: 0; display: flex; flex-direction: column; gap: 20px; justify-content: center;
+        align-items: center;"> <p>Al parecer se ha agotado tu cantidad de descargas por día o no se ha encontrado una sesión activa.</p>
+        <p>Por favor vuelve a iniciar sesión o comunicate con tu administrador</p>
+        <a style=" display: flex; align-items: center; justify-content: center; gap: 5px;
+        background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c); border: 2px solid #fff;
+        color: #fff; padding: 10px 20px; border-radius: 30px; box-shadow: 0px 4px 6px 5px #ff7f956b;
+        cursor: pointer; max-width: 300px; text-decoration: none;" href="https://test.elaminas.com">Ir a la pagina principal</a>
+        </div>
+      `;
+          if (productionJSON.app.blocked) {
+            setTimeout(() => {
+              window.open("", "_parent", "");
+              window.close();
+            }, 2000);
+          }
+        }
+      } else {
+        if (activeDownload) {
+          dispatch(hiddenStatusControls());
+          dispatch(resetZoom());
+          setTimeout(() => downloadPanel(), 800);
+          setActiveDownload(false);
+        }
+      }
+    }
+  }, [responseDownload]);
+
+  const downloadPanel = () => {
     dispatch(showDownloadPDF());
     const content = activeContentPanel();
     if (content != null) {
@@ -281,7 +198,7 @@ const EditorElaminas: React.FC = () => {
       }).then((canvas) => {
         const imgWidth = sizeSheet[activeSheetPanel - 1][0];
         const imgHeight = sizeSheet[activeSheetPanel - 1][1];
-        const imgData = canvas.toDataURL("image/png", 1.0);
+        const imgData = canvas.toDataURL("image/png");
         const doc = new jsPDF({
           orientation: "portrait",
           unit: "mm",
@@ -289,58 +206,67 @@ const EditorElaminas: React.FC = () => {
         });
         doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
         dispatch(closeDownloadPDF());
-        doc.save("aa.pdf");
+        doc.save("elaminas.pdf");
       });
     }
+    dispatch(showStatusControls());
   };
-
   // Disabled Anticlick
-  // window.addEventListener(
-  //   "contextmenu",
-  //   (e: any) => {
-  //     e.preventDefault();
-  //   },
-  //   false
-  // );
+  if (envProduction.app.blocked) {
+    window.addEventListener(
+      "contextmenu",
+      (e: any) => {
+        e.preventDefault();
+      },
+      false
+    );
+  }
+
+  const handleDownZoom = () => {
+    dispatch(reduceZoom());
+  };
+  const handleUpZoom = () => {
+    dispatch(addMoreZoom());
+  };
 
   return (
     <>
       <ContainerEditor>
         <MenuMobile />
         <MenuMobileEditor onClick={handleShowMobile}>
-          <Settings2Outline />
+          <Edit />
         </MenuMobileEditor>
         <MenuEditor />
         <ContentPanelEditor>
-          <ContainerSheet>
-            <SheetItem
-              active={activeSheetPanel == 1}
-              onClick={handleSelectSheet(1)}
-            >
-              A4
-            </SheetItem>
-            <SheetItem
-              active={activeSheetPanel == 2}
-              onClick={handleSelectSheet(2)}
-            >
-              Oficio
-            </SheetItem>
-            <SheetItem
-              active={activeSheetPanel == 3}
-              onClick={handleSelectSheet(3)}
-            >
-              A3
-            </SheetItem>
-          </ContainerSheet>
-          <ContentEditor id="contentRef" activeSheetPanel={activeSheetPanel}>
-            {listImage.map((item: ImageBaseProps) => (
-              <ImageBase key={item.id} id={item.id} image={item.image} />
-            ))}
-            {listText.map((item: TextBaseProps) => (
-              <TextBase key={item.id} id={item.id} />
-            ))}
-          </ContentEditor>
+          <HiddenWrapper>
+            <WrapperTransformScale valueScale={valueScale}>
+              <ContentEditor
+                id="contentRef"
+                activeSheetPanel={activeSheetPanel}
+              >
+                {listImage.map((item: ImageBaseProps) => (
+                  <ImageBase key={item.id} id={item.id} image={item.image} />
+                ))}
+                {listText.map((item: TextBaseProps) => (
+                  <TextBase
+                    key={item.id}
+                    id={item.id}
+                    inputColor={item.inputColor}
+                    typography={item.typography}
+                    sizeLetter={item.sizeLetter}
+                    textAlign={item.textAlign}
+                  />
+                ))}
+              </ContentEditor>
+            </WrapperTransformScale>
+          </HiddenWrapper>
           <ContainerDownloadButton>
+            <ButtonZoom onClick={handleDownZoom}>
+              <ZoomOut />
+            </ButtonZoom>
+            <ButtonZoom onClick={handleUpZoom}>
+              <ZoomIn />
+            </ButtonZoom>
             <ButtonDownload onClick={handleDownloadPanel}>
               Descargar
               <ArrowDownload />

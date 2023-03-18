@@ -1,9 +1,12 @@
 {
     "app": {
-        "name": "E-Laminas"
+        "name": "E-Laminas",
+        "blocked": true,
+        "mocks": false,
+        "urlBase": "https://elaminas.com"
     },
     "api": {
-        "laminas": "https://test.elaminas.com/api"
+        "laminas": "https://elaminas.com/api"
     },
     "i18nDebug": false,
     "cloudEnv": "development"

@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Cookies from "js-cookie";
+import productionJSON from "../../../config/environments/production.json";
 
-const baseURLLaminas = "https://test.elaminas.com/api";
-// const baseURLLaminasLocal = "http://127.0.0.1:8000";
+const baseURLLaminas = productionJSON.api.laminas;
 
 export interface LaminaResponse {
   currentPage: number;
@@ -23,6 +24,13 @@ export interface LaminaDefaultProps {
   tbllmnanomb: string;
   tbllmnaimgo: string;
 }
+interface ISearchByWorPerPage {
+  word: string;
+  page?: number;
+}
+interface IResponseDownload {
+  status: string;
+}
 // headers: {
 //   Authorization: "Bearer 4|0i0rBahxncLmZ5yUDjtLxtVCcOqdtuMyE9iJVRHx",
 //   AccessControlAllowOrigin: "*",
@@ -33,7 +41,9 @@ export const laminasApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
-      const token = "4|0i0rBahxncLmZ5yUDjtLxtVCcOqdtuMyE9iJVRHx";
+      const token = productionJSON.app.mocks
+        ? "15|QLnP7JXKu1yCu5Y0PeHO6TcFvE81X3twkBvkQMNK"
+        : Cookies.get("jwt_token");
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
         headers.set("Content-Type", "application/json");
@@ -44,6 +54,13 @@ export const laminasApi = createApi({
     },
   }),
   endpoints: (build) => ({
+    getStatusUserDownloads: build.query<LaminaResponse, any>({
+      query: () => ({
+        url: `/auth/descargas`,
+        method: "GET",
+      }),
+      transformResponse: (response: LaminaResponse) => response,
+    }),
     getListLaminas: build.query<LaminaResponse, any>({
       query: () => ({
         url: `/laminas?sort=tbllmnacdgo&render=paginate`,
@@ -51,15 +68,52 @@ export const laminasApi = createApi({
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
-    postLaminasByWord: build.mutation<LaminaResponse, string>({
-      query: (searchWord) => ({
-        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnanomb]=${searchWord}`,
+    postLaminasByWord: build.mutation<LaminaResponse, ISearchByWorPerPage>({
+      query: ({ word, page }) => ({
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnanomb]=${word}${
+          page ? `&page=${page}` : ""
+        }`,
         method: "GET",
       }),
       transformResponse: (response: LaminaResponse) => response,
     }),
+    postLaminasByUUID: build.mutation<LaminaResponse, string>({
+      query: (uuid) => ({
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnauuid]=${uuid}`,
+        method: "GET",
+      }),
+      transformResponse: (response: LaminaResponse) => response,
+    }),
+    postLaminasPerPage: build.mutation<LaminaResponse, number>({
+      query: (page) => ({
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&page=${page}`,
+        method: "GET",
+      }),
+      transformResponse: (response: LaminaResponse) => response,
+    }),
+    postUpdateDownloadBySheet: build.mutation<IResponseDownload, string>({
+      query: (sheet) => ({
+        url: `/auth/actualizar-descargas/${sheet}`,
+        method: "GET",
+      }),
+      transformResponse: (response: IResponseDownload) => response,
+    }),
+    getVerifyPlan: build.query<string, string>({
+      query: () => ({
+        url: `/auth/verificar-plan`,
+        method: "GET",
+      }),
+      transformResponse: (response: string) => response,
+    }),
   }),
 });
 
-export const { useGetListLaminasQuery, usePostLaminasByWordMutation } =
-  laminasApi;
+export const {
+  useGetStatusUserDownloadsQuery,
+  useGetListLaminasQuery,
+  usePostLaminasByWordMutation,
+  usePostLaminasByUUIDMutation,
+  usePostLaminasPerPageMutation,
+  usePostUpdateDownloadBySheetMutation,
+  useGetVerifyPlanQuery,
+} = laminasApi;

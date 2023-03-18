@@ -4,4 +4,9 @@ export const breakpoints = {
   tabletS: "@media (max-width: 768px)",
   phoneL: "@media (max-width: 580px)",
   phone: "@media (max-width: 480px)",
+  // MIN
+  tabletLMin: "@media (min-width: 1024px)",
+  tabletSMin: "@media (min-width: 768px)",
+  phoneLMin: "@media (min-width: 580px)",
+  phoneMin: "@media (min-width: 480px)",
 };
