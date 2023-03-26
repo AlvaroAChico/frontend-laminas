@@ -9,5 +9,5 @@
         "laminas": "https://elaminas.com/api"
     },
     "i18nDebug": false,
-    "cloudEnv": "production"
+    "environment": "dev"
 }

@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
-import productionJSON from "../../../config/environments/production.json";
+import { settingsAPP } from "../../../config/environments/settings";
 
-const baseURLLaminas = productionJSON.api.laminas;
+const baseURLLaminas = settingsAPP.api.laminas;
 
 export interface LaminaResponse {
   currentPage: number;
@@ -41,7 +42,7 @@ export const laminasApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
-      const token = productionJSON.app.mocks
+      const token = settingsAPP.app.mocks
         ? "15|QLnP7JXKu1yCu5Y0PeHO6TcFvE81X3twkBvkQMNK"
         : Cookies.get("jwt_token");
       if (token) {

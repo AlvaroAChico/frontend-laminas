@@ -41,7 +41,7 @@ import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
 import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
-import productionJSON from "../../../../config/environments/production.json";
+import { settingsAPP } from "../../../../config/environments/settings";
 
 const ContainerBackdrop = styled.div<{ active: boolean }>`
   position: absolute;
@@ -398,7 +398,7 @@ const MenuMobile: React.FC = () => {
   const [getStatusPlan, statusResponsePlan] = useGetListLaminasMutation();
 
   React.useEffect(() => {
-    if (!isLoading && productionJSON.app.blocked) {
+    if (!isLoading && settingsAPP.app.blocked) {
       if (isError) {
         window.location.href = "https://elaminas.com";
       }

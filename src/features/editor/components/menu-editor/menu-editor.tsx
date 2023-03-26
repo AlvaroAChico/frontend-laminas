@@ -33,7 +33,6 @@ import {
   usePostLaminasPerPageMutation,
 } from "../../../../core/store/editor/editorAPI";
 import { Settings } from "@styled-icons/fluentui-system-filled/Settings";
-import menuEditorProduction from "../../../../config/environments/production.json";
 import a4IMG from "../../../../assets/img/a4.png";
 import oficioIMG from "../../../../assets/img/oficio.png";
 import a3IMG from "../../../../assets/img/a3.png";
@@ -42,7 +41,7 @@ import { TextCenter } from "@styled-icons/bootstrap/TextCenter";
 import { TextRight } from "@styled-icons/bootstrap/TextRight";
 import { Justify } from "@styled-icons/bootstrap/Justify";
 import { CaretBack } from "@styled-icons/ionicons-sharp/CaretBack";
-import productionJSON from "../../../../config/environments/production.json";
+import { settingsAPP } from "../../../../config/environments/settings";
 
 const ContainerMenu = styled.div`
   background: #001c46;
@@ -396,7 +395,7 @@ const MenuEditor: React.FC = () => {
   const [getStatusPlan, statusResponsePlan] = useGetListLaminasMutation();
 
   React.useEffect(() => {
-    if (!isLoading && productionJSON.app.blocked) {
+    if (!isLoading && settingsAPP.app.blocked) {
       if (isError) {
         window.location.href = "https://elaminas.com";
       }
@@ -600,7 +599,7 @@ const MenuEditor: React.FC = () => {
           />
         </ContainerSearch>
         <ContainerListLaminas>
-          {menuEditorProduction.app.mocks &&
+          {settingsAPP.app.mocks &&
             listMockLaminas.map((image) => (
               <ContainerLamina key={image.id}>
                 <img
