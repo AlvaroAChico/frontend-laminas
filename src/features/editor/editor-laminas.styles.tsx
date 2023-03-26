@@ -50,10 +50,10 @@ export const WrapperTransformScale = styled.div<{ valueScale: number }>`
   background: white;
   transition: 0.5s;
   transform: ${(p) =>
-    p.valueScale < 2
+    p.valueScale < 1.6
       ? `scale(${p.valueScale}) translate(0%, 0%)`
       : `scale(${p.valueScale}) translate(30%, 30%)`};
-  overflow: ${(p) => (p.valueScale < 2 ? "inherit" : "auto")};
+  overflow: ${(p) => (p.valueScale < 0.5 ? "inherit" : "auto")};
   position: relative;
   width: 100%;
   height: 100%;

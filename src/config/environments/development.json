@@ -1,0 +1,13 @@
+{
+    "app": {
+        "name": "E-Laminas - DEV",
+        "blocked": false,
+        "mocks": true,
+        "urlBase": "http://localhost"
+    },
+    "api": {
+        "laminas": "http://localhost:8000/api"
+    },
+    "i18nDebug": false,
+    "cloudEnv": "development"
+}

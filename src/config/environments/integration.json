@@ -1,0 +1,13 @@
+{
+    "app": {
+        "name": "E-Laminas - INT",
+        "blocked": true,
+        "mocks": false,
+        "urlBase": "https://test.elaminas.com"
+    },
+    "api": {
+        "laminas": "https://test.elaminas.com/api"
+    },
+    "i18nDebug": false,
+    "cloudEnv": "integration"
+}

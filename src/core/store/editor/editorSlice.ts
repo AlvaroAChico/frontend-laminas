@@ -152,12 +152,12 @@ export const editorSlice = createSlice({
     },
     addMoreZoom: (state) => {
       if (state.scaleZoom <= 10) {
-        state.scaleZoom = state.scaleZoom + 1;
+        state.scaleZoom = state.scaleZoom + 0.1;
       }
     },
     reduceZoom: (state) => {
       if (state.scaleZoom > 1) {
-        state.scaleZoom = state.scaleZoom - 1;
+        state.scaleZoom = state.scaleZoom - 0.1;
       }
     },
     resetZoom: (state) => {
