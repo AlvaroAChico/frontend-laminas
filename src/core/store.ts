@@ -1,10 +1,10 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import counterReducer from "./store/counter/counterSlice";
-import { laminasApi } from "./store/editor/editorAPI";
+import { laminasApi, openAiAPI } from "./store/editor/editorAPI";
 import editorReducer from "./store/editor/editorSlice";
 import konvaEditorReducer from "./store/konva-editor/konva-editorSlice";
 
-export const queryMiddleares = [laminasApi.middleware];
+export const queryMiddleares = [laminasApi.middleware, openAiAPI.middleware];
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +12,7 @@ export const store = configureStore({
     editor: editorReducer,
     konvaEditor: konvaEditorReducer,
     [laminasApi.reducerPath]: laminasApi.reducer,
+    [openAiAPI.reducerPath]: openAiAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(queryMiddleares as any),

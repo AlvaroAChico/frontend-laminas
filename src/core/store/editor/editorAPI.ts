@@ -4,8 +4,25 @@ import Cookies from "js-cookie";
 import { settingsAPP } from "../../../config/environments/settings";
 
 const baseURLLaminas = settingsAPP.api.laminas;
+const baseURLOpenIA = settingsAPP.api.openai;
 
+export interface ArturitoChoicesResponse {
+  text: string;
+}
+export interface ArturitoResponse {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: ArturitoChoicesResponse[];
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
 export interface LaminaResponse {
+  [x: string]: any;
   currentPage: number;
   data: LaminaDefaultProps[];
   firstPageUrl: string;
@@ -25,25 +42,21 @@ export interface LaminaDefaultProps {
   tbllmnanomb: string;
   tbllmnaimgo: string;
 }
-interface ISearchByWorPerPage {
-  word: string;
-  page?: number;
+export interface ISearchByWorPerPage {
+  word?: string;
+  page: number;
 }
 interface IResponseDownload {
   status: string;
 }
-// headers: {
-//   Authorization: "Bearer 4|0i0rBahxncLmZ5yUDjtLxtVCcOqdtuMyE9iJVRHx",
-//   AccessControlAllowOrigin: "*",
-//   Accetp: "text/html",
-// },
+
 export const laminasApi = createApi({
-  reducerPath: "laminasApi",
+  reducerPath: "openAiAPI",
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLaminas,
     prepareHeaders: (headers) => {
       const token = settingsAPP.app.mocks
-        ? "15|QLnP7JXKu1yCu5Y0PeHO6TcFvE81X3twkBvkQMNK"
+        ? "111|XM36TYAWPozngvUvXwu0fPrixWiAMtXLSSCQLQfp"
         : Cookies.get("jwt_token");
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
@@ -71,9 +84,7 @@ export const laminasApi = createApi({
     }),
     postLaminasByWord: build.mutation<LaminaResponse, ISearchByWorPerPage>({
       query: ({ word, page }) => ({
-        url: `/laminas?sort=tbllmnacdgo&render=paginate&filter[tbllmnanomb]=${word}${
-          page ? `&page=${page}` : ""
-        }`,
+        url: `/laminas?sort=tbllmnacdgo&render=paginate&page=${page}&filter[tbllmnanomb]=${word}`,
         method: "GET",
       }),
       transformResponse: (response: LaminaResponse) => response,
@@ -109,6 +120,38 @@ export const laminasApi = createApi({
   }),
 });
 
+export const openAiAPI = createApi({
+  reducerPath: "openAiApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: baseURLOpenIA,
+    prepareHeaders: (headers) => {
+      const token = "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";
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+        headers.set("Content-Type", "application/json");
+        headers.set("Accept", "text/html,image/apng,application/pdf");
+      }
+
+      return headers;
+    },
+  }),
+  endpoints: (build) => ({
+    postIAForApp: build.mutation<ArturitoResponse, string>({
+      query: (text) => ({
+        url: `/completions`,
+        method: "POST",
+        body: {
+          model: "text-davinci-003",
+          prompt: text,
+          max_tokens: 250,
+          temperature: 0.7,
+        },
+      }),
+      transformResponse: (response: ArturitoResponse) => response,
+    }),
+  }),
+});
+
 export const {
   useGetStatusUserDownloadsQuery,
   useGetListLaminasMutation,
@@ -118,3 +161,5 @@ export const {
   usePostUpdateDownloadBySheetMutation,
   useGetVerifyPlanQuery,
 } = laminasApi;
+
+export const { usePostIAForAppMutation } = openAiAPI;

@@ -268,7 +268,7 @@ const ContainerListLaminas = styled.div`
   justify-content: center;
   align-content: center;
   flex-wrap: wrap;
-  flex-direction: inherit; ;
+  flex-direction: inherit;
 `;
 const ContainerTitle = styled.div`
   > h3 {
@@ -432,7 +432,7 @@ const MenuMobile: React.FC = () => {
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      searchLaminaByWord({ word: initialSearch });
+      // searchLaminaByWord({ word: initialSearch });
     }
   };
 

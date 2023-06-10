@@ -6,7 +6,8 @@
         "urlBase": "http://localhost"
     },
     "api": {
-        "laminas": "http://localhost:8000/api"
+        "laminas": "https://test.elaminas.com/api",
+        "openai": "https://api.openai.com/v1"
     },
     "i18nDebug": false,
     "cloudEnv": "development"

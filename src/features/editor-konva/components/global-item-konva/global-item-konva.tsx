@@ -5,8 +5,16 @@ import CircleFigure, {
 import RectFigure, {
   RectInitialProps,
 } from "../../../../components/editor/rect/rect-figure";
-import TriangleFigure from "../../../../components/editor/triangle/triangle-figure";
+import TriangleFigure, {
+  TriangleInitialProps,
+} from "../../../../components/editor/triangle/triangle-figure";
 import { ComponentKonvaItem } from "../../editor-konva";
+import TextKonva, {
+  TextInitialProps,
+} from "../../../../components/editor/text-konva/text-konva";
+import ImageKonva, {
+  ImageInitialProps,
+} from "../../../../components/editor/image-konva/image-konva";
 
 export enum KonvaTypeItem {
   CIRCLE = "CIRCLE",
@@ -27,6 +35,17 @@ export interface GlobalItemKonvaProps {
   initialHeight: number;
   isSelected: boolean;
   initialFill: string;
+  initialText?: string; // Solo para texto:
+  initialAlign?: string; // Solo para texto:
+  initialSize?: string; // Solo para texto:
+  customFill?: string; // Solo para texto:
+  customFontSize?: number; // Solo para texto:
+  customAlign?: string; // Solo para texto:
+  customFamily?: string; // Solo para texto:
+  initialImage?: string; // Solo para imagen:
+  color?: string; // Solo para figuras
+  stroke?: string; // Solo para figuras
+  sizeStroke?: number; // Solo para figuras
   onSelect: () => void;
   onChange: (newAttrs: ComponentKonvaItem) => void;
   canvaRef: MutableRefObject<HTMLCanvasElement | undefined>;
@@ -40,6 +59,17 @@ const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
   initialWidth,
   initialHeight,
   initialFill,
+  initialText,
+  initialAlign,
+  initialSize,
+  initialImage,
+  color,
+  stroke,
+  sizeStroke,
+  customFill,
+  customFontSize,
+  customAlign,
+  customFamily,
   onSelect,
   onChange,
 }) => {
@@ -57,6 +87,9 @@ const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
               fill: initialFill,
             } as CircleInitialProps
           }
+          color={color!}
+          stroke={stroke!}
+          sizeStroke={sizeStroke!}
           onSelect={onSelect}
           onChange={onChange}
         />
@@ -67,7 +100,7 @@ const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
     return (
       <>
         <RectFigure
-          isSelected={false}
+          isSelected={isSelected}
           shapeProps={
             {
               x: initialX,
@@ -77,6 +110,9 @@ const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
               fill: initialFill,
             } as RectInitialProps
           }
+          color={color!}
+          stroke={stroke!}
+          sizeStroke={sizeStroke!}
           onSelect={onSelect}
           onChange={onChange}
         />
@@ -86,7 +122,72 @@ const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
   if (type == KonvaTypeItem.TRIANGLE) {
     return (
       <>
-        <TriangleFigure />
+        <TriangleFigure
+          isSelected={isSelected}
+          shapeProps={
+            {
+              x: initialX,
+              y: initialY,
+              width: initialWidth,
+              height: initialHeight,
+              fill: initialFill,
+              sides: 3,
+            } as TriangleInitialProps
+          }
+          color={color!}
+          stroke={stroke!}
+          sizeStroke={sizeStroke!}
+          onSelect={onSelect}
+          onChange={onChange}
+        />
+      </>
+    );
+  }
+  if (type == KonvaTypeItem.TEXT) {
+    return (
+      <>
+        <TextKonva
+          isSelected={isSelected}
+          customFill={customFill!}
+          customFontSize={customFontSize!}
+          customAlign={customAlign!}
+          customFamily={customFamily!}
+          shapeProps={
+            {
+              x: initialX,
+              y: initialY,
+              width: initialWidth,
+              height: initialHeight,
+              fill: initialFill,
+              text: initialText,
+              fontSize: initialSize || 14,
+              align: initialAlign || "",
+            } as TextInitialProps
+          }
+          onSelect={onSelect}
+          onChange={onChange}
+        />
+      </>
+    );
+  }
+  if (type == KonvaTypeItem.IMAGE) {
+    return (
+      <>
+        <ImageKonva
+          isSelected={isSelected}
+          shapeProps={
+            {
+              x: initialX,
+              y: initialY,
+              width: initialWidth,
+              height: initialHeight,
+              fill: initialFill,
+              image: initialImage,
+            } as ImageInitialProps
+          }
+          onSelect={onSelect}
+          onChange={onChange}
+        />
       </>
     );
   }

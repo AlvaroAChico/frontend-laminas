@@ -9,6 +9,7 @@ let activeMocks_APP = true;
 let urlBaseProject_APP = "http://localhost";
 let environment_APP = "development";
 let urlLaminas_API = "http://localhost:8000/api";
+let urlOpenAI_API = "http://localhost:8000/api";
 
 if (settingsEnv.environment == "dev") {
   name_APP = settingsDEV.app.name;
@@ -17,6 +18,7 @@ if (settingsEnv.environment == "dev") {
   urlBaseProject_APP = settingsDEV.app.urlBase;
   environment_APP = settingsDEV.cloudEnv;
   urlLaminas_API = settingsDEV.api.laminas;
+  urlOpenAI_API = settingsDEV.api.openai;
 }
 
 if (settingsEnv.environment == "int") {
@@ -26,6 +28,7 @@ if (settingsEnv.environment == "int") {
   urlBaseProject_APP = settingsINT.app.urlBase;
   environment_APP = settingsDEV.cloudEnv;
   urlLaminas_API = settingsINT.api.laminas;
+  urlOpenAI_API = settingsDEV.api.openai;
 }
 
 if (settingsEnv.environment == "prod") {
@@ -35,6 +38,7 @@ if (settingsEnv.environment == "prod") {
   urlBaseProject_APP = settingsPROD.app.urlBase;
   environment_APP = settingsDEV.cloudEnv;
   urlLaminas_API = settingsPROD.api.laminas;
+  urlOpenAI_API = settingsDEV.api.openai;
 }
 
 export const settingsAPP = {
@@ -46,6 +50,7 @@ export const settingsAPP = {
   },
   api: {
     laminas: urlLaminas_API,
+    openai: urlOpenAI_API,
   },
   environment: environment_APP,
 };

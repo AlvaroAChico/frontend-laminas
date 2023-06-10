@@ -1,7 +1,21 @@
-import React from "react";
+import React, { MutableRefObject } from "react";
 import { InfoOutline } from "@styled-icons/evaicons-outline/InfoOutline";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { customPalette } from "../../../../../config/theme/theme";
+import { CloudUpload } from "@styled-icons/material-sharp/CloudUpload";
+import {
+  LaminaDefaultProps,
+  LaminaResponse,
+  usePostLaminasByWordMutation,
+} from "../../../../../core/store/editor/editorAPI";
+import { useAppDispatch } from "../../../../../app/hooks";
+import {
+  addItemKonva,
+  updateActiveIDKonva,
+  updateActiveMenuOption,
+} from "../../../../../core/store/konva-editor/konva-editorSlice";
+import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
+import { ComponentKonvaItem } from "../../../editor-konva";
 
 const WrapperMenuImagen = styled.div<{ isVisible: boolean }>`
   background: ${customPalette.grayLightColor};
@@ -42,17 +56,327 @@ const IconInfo = styled(InfoOutline)`
   color: black;
 `;
 
+const ContainerSteps = styled.div<{ stepActive: number }>`
+  color: #bdbdbd;
+  border: 1px solid #f5f9ff;
+  background: #f5f9ff;
+  width: fit-content;
+  text-align: center;
+  display: flex; column-gap: 10px;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 15px;
+  cursor: pointer;
+
+  div:nth-child(${(p) => p.stepActive}) {
+    padding 4px 8px;
+    border-radius: 10px;
+    color: #fff;
+    border: 1px solid ${customPalette.secondaryColor};
+    background: ${customPalette.secondaryColor};
+  }
+`;
+const BodyCardLamina = styled.div``;
+const BodyCardImage = styled.div``;
+const UploadImageContainer = styled.div<{ isDragActive: boolean }>`
+  border-style: dotted;
+  border-width: 1px;
+  border-color: ${customPalette.secondaryColor};
+  background-color: transparent;
+  font-family: verdana, arial;
+  font-size: 10pt;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  row-gap: 8px;
+  flex-direction: column;
+  padding 30px 15px;
+  position: relative;
+
+  :after{
+    ${(p) => (p.isDragActive ? "content: ''" : "")};
+    position: absolute;
+    background: #c2f78694;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+  }
+`;
+const UploadButtonImage = styled.div`
+  color: #fff;
+  border: 1px solid ${customPalette.secondaryColor};
+  background: ${customPalette.secondaryColor};
+  outline: none;
+  cursor: pointer;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 10px;
+
+  > input {
+    display: none;
+  }
+`;
+const InfoTitleUpload = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #5e5e5e;
+  column-gap: 10px;
+  max-width: 150px;
+
+  svg {
+    width: 100%;
+    max-width: 30px;
+    color: #b7b7b7;
+  }
+`;
+const SearchButton = styled.input`
+  border: 0.5px solid #aeaeae;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  outline: none;
+  width: 100%;
+`;
+const WrapperListLaminas = styled.div`
+  display: flex;
+  row-gap: 5px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+const WrapperItemsResults = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  max-height: 250px;
+  overflow-x: hidden;
+`;
+const LaminaItem = styled.div`
+  width: 30%;
+  max-width: 100px;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    text-align: center;
+    padding: 2px;
+  }
+`;
+const ButtonMoreResults = styled.div`
+  width: 100%;
+  border-radius: 12px;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  cursor: pointer;
+  background: ${customPalette.secondaryColor};
+`;
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+const LoaderWrapper = styled.div`
+  border: 6px solid #f3f3f3; /* Light grey */
+  border-top: 6px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: ${spin} 0.8s linear infinite;
+`;
 interface IOwnProps {
   isVisible: boolean;
+  canvaRef: MutableRefObject<HTMLCanvasElement | undefined>;
+  layerRef: MutableRefObject<any>;
 }
-const SubMenuImagen: React.FC<IOwnProps> = ({ isVisible }) => {
+const SubMenuImagen: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
+  const [stepActive, setStepActive] = React.useState(1);
+  const [activeDragImage, setActiveDragImage] = React.useState(false);
+  const [pageGetLaminas, setPageGetLaminas] = React.useState(1);
+  const [dataPostResult, setDataPostResult] = React.useState<LaminaResponse>();
+  const [listLaminas, setListLaminas] = React.useState<LaminaDefaultProps[]>(
+    []
+  );
+  const [initialSearch, setInitialSearch] = React.useState({
+    page: pageGetLaminas,
+    word: "",
+  });
+  const dispatch = useAppDispatch();
+
+  const handleUpdateStep = (step: number) => () => setStepActive(step);
+  const handleDragImage = () => {
+    document.getElementById("input-file-image")?.click();
+  };
+  const handleChangeText = (word: string) =>
+    setInitialSearch({
+      page: pageGetLaminas,
+      word,
+    });
+
+  const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
+
+  const handleKeyUp = (e: any) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      searchLaminaByWord(initialSearch);
+    }
+  };
+
+  const handleMoreResults = () => {
+    setPageGetLaminas(pageGetLaminas + 1);
+    searchLaminaByWord(initialSearch);
+  };
+  React.useEffect(() => {
+    if (resultSearch.data != null) {
+      setDataPostResult(resultSearch.data);
+      const newData = listLaminas;
+      resultSearch.data.data.map((item) => newData.push(item));
+      setListLaminas(newData);
+    }
+  }, [resultSearch]);
+
+  React.useEffect(() => {
+    searchLaminaByWord(initialSearch);
+  }, []);
+
+  const handleAddImage = (srcImage: string) => () => {
+    const activeID = Date.now();
+    dispatch(
+      addItemKonva({
+        id: `image${activeID}`,
+        type: KonvaTypeItem.IMAGE,
+        x: layerRef.current.children[0].attrs.x,
+        y: layerRef.current.children[0].attrs.y,
+        height: 200,
+        width: 200,
+        image: srcImage,
+      } as ComponentKonvaItem)
+    );
+    dispatch(updateActiveIDKonva(`image${activeID}`));
+  };
+
   return (
     <WrapperMenuImagen id="menuImagenes" isVisible={isVisible}>
       <HeaderText>
-        <h3>Panel Imagenes</h3>
-        <p>Selecciona el tamaño de la descarga del documento</p>
+        <ContainerSteps stepActive={stepActive}>
+          <div onClick={handleUpdateStep(1)}>Láminas</div>
+          <div onClick={handleUpdateStep(2)}>Imagenes</div>
+        </ContainerSteps>
+        <p>
+          {stepActive == 1
+            ? "Recuerda seleccionar la imagen para poder agregarla al pane de edición"
+            : "Para agregar una nueva imagen haz click en el botón o arrastra una imagen hacía el recuadro"}
+        </p>
         <IconInfo />
       </HeaderText>
+      {stepActive == 1 && (
+        <BodyCardLamina>
+          <SearchButton
+            placeholder="Buscar láminas"
+            type="text"
+            onKeyUp={handleKeyUp}
+            onChange={(e: any) => handleChangeText(e.target.value)}
+            defaultValue={initialSearch.word}
+          />
+          <WrapperListLaminas>
+            <WrapperItemsResults>
+              <LaminaItem
+                onClick={handleAddImage(
+                  "https://images.hola.com/imagenes/decoracion/20220810214947/plantas-con-flores-perennes-plantas-exterior-mc/1-125-376/vinca-t.jpg"
+                )}
+              >
+                <img src="https://images.hola.com/imagenes/decoracion/20220810214947/plantas-con-flores-perennes-plantas-exterior-mc/1-125-376/vinca-t.jpg" />
+              </LaminaItem>
+              {listLaminas.map((lamina) => (
+                <LaminaItem
+                  key={`${Date.now()}${lamina.tbllmnanomb}`}
+                  onClick={handleAddImage(lamina.tbllmnaimgo)}
+                >
+                  <img src={lamina.tbllmnaimgo} />
+                </LaminaItem>
+              ))}
+            </WrapperItemsResults>
+            {resultSearch.isLoading ? (
+              <LoaderWrapper />
+            ) : (
+              dataPostResult?.nextPageUrl != null && (
+                <ButtonMoreResults onClick={handleMoreResults}>
+                  Más resultados
+                </ButtonMoreResults>
+              )
+            )}
+          </WrapperListLaminas>
+        </BodyCardLamina>
+      )}
+      {stepActive == 2 && (
+        <BodyCardImage>
+          <UploadImageContainer
+            isDragActive={activeDragImage}
+            onDragOver={(e: any) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setActiveDragImage(true);
+            }}
+            onDrop={(e: any) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setActiveDragImage(false);
+              const reader = new FileReader();
+
+              reader.onload = function (e) {
+                if (typeof e!.target!.result === "string") {
+                  handleAddImage(e!.target!.result)();
+                  dispatch(updateActiveMenuOption(0));
+                }
+              };
+              reader.readAsDataURL(e.dataTransfer.files[0]);
+              return false;
+            }}
+            onDragEnter={(e: any) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+            onDragLeave={(e: any) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setActiveDragImage(false);
+            }}
+          >
+            <InfoTitleUpload>
+              <CloudUpload />
+              <div>Agregar nueva imagen</div>
+            </InfoTitleUpload>
+            <UploadButtonImage onClick={handleDragImage}>
+              Seleccionar imagen
+              <input
+                id="input-file-image"
+                type="file"
+                multiple={false}
+                onInput={(e: any) => {
+                  if (e!.target!.files && e!.target!.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt: any) {
+                      handleAddImage(evt!.target!.result)();
+                      dispatch(updateActiveMenuOption(0));
+                    };
+                    reader.readAsDataURL(e!.target!.files[0]);
+                  }
+                }}
+              />
+            </UploadButtonImage>
+          </UploadImageContainer>
+        </BodyCardImage>
+      )}
     </WrapperMenuImagen>
   );
 };

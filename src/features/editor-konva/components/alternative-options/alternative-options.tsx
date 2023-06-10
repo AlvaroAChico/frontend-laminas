@@ -1,21 +1,29 @@
 import React from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   getActiveGlobalSheet,
+  getConfigStageZoom,
   getSizeGlobalSheet,
+  updateStageZoom,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
 import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownload";
+import { ZoomIn } from "@styled-icons/bootstrap/ZoomIn";
+import { ZoomOut } from "@styled-icons/bootstrap/ZoomOut";
 import jsPDF from "jspdf";
 
-const WrapperOptions = styled.div``;
-const ContainerButton = styled.button`
+const WrapperOptions = styled.div`
   position: absolute;
-  bottom: 15px;
+  top: 15px;
   right: 15px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  row-gap: 15px;
+`;
+const ContainerButton = styled.button`
+  display: flex;
   gap: 5px;
   background-image: linear-gradient(to right, #fc4464, #fc4c3c, #fc4c2c);
   border: 2px solid #fff;
@@ -40,6 +48,9 @@ const AlternativeOptions: React.FC<IOwnProps> = ({
 }) => {
   const sizeGlobalSheet = useAppSelector(getSizeGlobalSheet);
   const activeSheet = useAppSelector(getActiveGlobalSheet);
+  const valueStageZoom = useAppSelector(getConfigStageZoom);
+
+  const dispatch = useAppDispatch();
 
   const downloadActivePanel = () => {
     if (canvaGlobalRef != null) {
@@ -81,11 +92,35 @@ const AlternativeOptions: React.FC<IOwnProps> = ({
     }
   };
 
+  const handleInGlobalZoom = () => {
+    dispatch(
+      updateStageZoom({
+        scale: valueStageZoom.scale * 1.02,
+        x: valueStageZoom.x,
+        y: valueStageZoom.y,
+      })
+    );
+  };
+  const handleOutGlobalZoom = () => {
+    dispatch(
+      updateStageZoom({
+        scale: valueStageZoom.scale / 1.02,
+        x: valueStageZoom.x,
+        y: valueStageZoom.y,
+      })
+    );
+  };
+
   return (
     <WrapperOptions>
       <ContainerButton onClick={downloadActivePanel}>
-        Descargar
         <ArrowDownload />
+      </ContainerButton>
+      <ContainerButton onClick={handleInGlobalZoom}>
+        <ZoomIn />
+      </ContainerButton>
+      <ContainerButton onClick={handleOutGlobalZoom}>
+        <ZoomOut />
       </ContainerButton>
     </WrapperOptions>
   );

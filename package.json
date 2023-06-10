@@ -2,7 +2,7 @@
   "name": "template-react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://elaminas.com/editor/",
+  "homepage": "https://test-editor.elaminas.com",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -40,6 +40,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.0",
     "react-konva": "^18.2.5",
+    "react-konva-utils": "^1.0.4",
     "react-moveable": "^0.46.1",
     "react-paginate": "^8.1.4",
     "react-redux": "^8.0.5",

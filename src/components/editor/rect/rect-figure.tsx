@@ -1,5 +1,7 @@
 import React, { MutableRefObject } from "react";
 import { Rect, Transformer } from "react-konva";
+import { useAppSelector } from "../../../app/hooks";
+import { getActiveComponentKonvaID } from "../../../core/store/konva-editor/konva-editorSlice";
 
 export interface RectInitialProps {
   x: number;
@@ -11,15 +13,22 @@ export interface RectInitialProps {
 interface IOwnProps {
   isSelected: boolean;
   shapeProps: RectInitialProps;
+  color: string;
+  stroke: string;
+  sizeStroke: number;
   onSelect: () => void;
   onChange: (arg: any) => void;
 }
 const RectFigure: React.FC<IOwnProps> = ({
   isSelected,
   shapeProps,
+  color,
+  stroke,
+  sizeStroke,
   onSelect,
   onChange,
 }) => {
+  const [initialProps, setInitialProps] = React.useState(shapeProps);
   const shapeRef = React.useRef<any>();
   const trRef = React.useRef<any>();
 
@@ -32,6 +41,10 @@ const RectFigure: React.FC<IOwnProps> = ({
     }
   }, [isSelected]);
 
+  React.useEffect(() => {
+    onChange(initialProps);
+  }, [initialProps]);
+
   return (
     <React.Fragment>
       <Rect
@@ -40,12 +53,19 @@ const RectFigure: React.FC<IOwnProps> = ({
         {...shapeProps}
         onTap={onSelect}
         onClick={onSelect}
+        onMouseOver={onSelect}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={sizeStroke}
         onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
+          setInitialProps({
+            ...initialProps,
             x: e.target.x(),
             y: e.target.y(),
+            width: e.target.width(),
+            height: e.target.height(),
           });
+          // onChange(initialProps);
         }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
@@ -54,13 +74,14 @@ const RectFigure: React.FC<IOwnProps> = ({
 
           node.scaleX(1);
           node.scaleY(1);
-          onChange({
-            ...shapeProps,
+          setInitialProps({
+            ...initialProps,
             x: node.x(),
             y: node.y(),
             width: Math.max(5, node.width() * scaleX),
             height: Math.max(node.height() * scaleY),
           });
+          // onChange(initialProps);
         }}
       />
       {isSelected && (

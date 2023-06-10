@@ -94,9 +94,12 @@ const SubMenuFiguras: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
         height: 100,
         width: 100,
         fill: "blue",
+        color: "#00ff00",
+        stroke: "#00ff00",
+        sizeStroke: 1,
       } as ComponentKonvaItem)
     );
-    dispatch(updateActiveIDKonva(`${activeID}`));
+    dispatch(updateActiveIDKonva(`circle${activeID}`));
   };
   const handleSelectRect = () => {
     const activeID = Date.now();
@@ -104,14 +107,17 @@ const SubMenuFiguras: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
       addItemKonva({
         id: `rect${activeID}`,
         type: KonvaTypeItem.RECT,
-        x: layerRef.current.children[0].attrs.x + 50,
-        y: layerRef.current.children[0].attrs.y + 50,
+        x: layerRef.current.children[0].attrs.x,
+        y: layerRef.current.children[0].attrs.y,
         height: 100,
         width: 100,
         fill: "blue",
+        color: "#00ff00",
+        stroke: "#00ff00",
+        sizeStroke: 1,
       } as ComponentKonvaItem)
     );
-    dispatch(updateActiveIDKonva(`${activeID}`));
+    dispatch(updateActiveIDKonva(`rect${activeID}`));
   };
   const handleSelectTriangle = () => {
     const activeID = Date.now();
@@ -119,14 +125,17 @@ const SubMenuFiguras: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
       addItemKonva({
         id: `triangle${activeID}`,
         type: KonvaTypeItem.TRIANGLE,
-        x: layerRef.current.children[0].attrs.x + 50,
+        x: layerRef.current.children[0].attrs.x + 45,
         y: layerRef.current.children[0].attrs.y + 50,
         height: 100,
         width: 100,
         fill: "blue",
+        color: "#00ff00",
+        stroke: "#00ff00",
+        sizeStroke: 1,
       } as ComponentKonvaItem)
     );
-    dispatch(updateActiveIDKonva(`${activeID}`));
+    dispatch(updateActiveIDKonva(`triangle${activeID}`));
   };
 
   return (

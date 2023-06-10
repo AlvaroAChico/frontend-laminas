@@ -80,12 +80,20 @@ const MenuOptions: React.FC<IOwnProps> = ({
         <ItemMenu isActive={activeMenu == 2} onClick={handleActiveMenu(2)}>
           <CardImage />
           Imagenes
-          <SubMenuImagen isVisible={activeMenu == 2} />
+          <SubMenuImagen
+            isVisible={activeMenu == 2}
+            canvaRef={canvaGlobalRef}
+            layerRef={layerGlobalRef}
+          />
         </ItemMenu>
         <ItemMenu isActive={activeMenu == 3} onClick={handleActiveMenu(3)}>
           <Text />
           Texto
-          <SubMenuTexto isVisible={activeMenu == 3} />
+          <SubMenuTexto
+            isVisible={activeMenu == 3}
+            canvaRef={canvaGlobalRef}
+            layerRef={layerGlobalRef}
+          />
         </ItemMenu>
         <ItemMenu isActive={activeMenu == 4} onClick={handleActiveMenu(4)}>
           <Shapes />

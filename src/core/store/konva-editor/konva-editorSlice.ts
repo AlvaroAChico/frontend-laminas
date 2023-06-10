@@ -2,6 +2,25 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import { ComponentKonvaItem } from "../../../features/editor-konva/editor-konva";
 
+export interface GlobalCoordText {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface ConfigStageZoom {
+  scale: number;
+  x: number;
+  y: number;
+}
+
+export interface ITextAreaCurrentStyle {
+  currentTextFontSize: number;
+  currentTextFontFamily: string;
+  currentTextColor: string;
+  currentTextAlign: string;
+}
 export interface EditorState {
   sizeGlobalSheet: number[][];
   activeGlobalSheet: number;
@@ -10,6 +29,14 @@ export interface EditorState {
   activeMenuOption: number;
   listComponentsKonva: ComponentKonvaItem[];
   activeKonvaComponentID: string; // ID del componente activo de KONVA
+  groupCoordGlobaltext: GlobalCoordText; //Coordenadas para textarea de editText
+  isActiveModalCutImage: boolean; // Solo para imagenes
+  activeIdImageEditing: string; // Solo para imagenes
+  urlImageActiveEditing: string; // Solo para imagenes
+  showModalEditingImage: boolean; // Solo para imagenes
+  stageZoom: ConfigStageZoom; // Solo para Stage
+  textAreaStyles: ITextAreaCurrentStyle; // Solo para texto
+  activeTextActive: string; // Solo para texto
 }
 
 const initialState: EditorState = {
@@ -24,6 +51,23 @@ const initialState: EditorState = {
   activeMenuOption: 0,
   listComponentsKonva: [],
   activeKonvaComponentID: "",
+  groupCoordGlobaltext: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  },
+  isActiveModalCutImage: false,
+  activeIdImageEditing: "",
+  urlImageActiveEditing: "",
+  showModalEditingImage: false,
+  stageZoom: {
+    scale: 1,
+    x: 0,
+    y: 0,
+  },
+  textAreaStyles: {} as ITextAreaCurrentStyle,
+  activeTextActive: "",
 };
 
 export const konvaEditorSlice = createSlice({
@@ -49,6 +93,13 @@ export const konvaEditorSlice = createSlice({
     addItemKonva: (state, action: PayloadAction<ComponentKonvaItem>) => {
       state.listComponentsKonva.push(action.payload);
     },
+    // Configuracion comun en todos los objetos
+    deleteObjectKonva: (state) => {
+      const listObjects = state.listComponentsKonva.filter(
+        (component) => component.id != state.activeKonvaComponentID
+      );
+      state.listComponentsKonva = listObjects;
+    },
     // Configuracion para canvas
     updateActiveGlobalSheet: (state, action: PayloadAction<number>) => {
       state.activeGlobalSheet = action.payload;
@@ -63,6 +114,100 @@ export const konvaEditorSlice = createSlice({
     updateActiveMenuOption: (state, action: PayloadAction<number>) => {
       state.activeMenuOption = action.payload;
     },
+    // Solo para figuras
+    updateColorFillFigure: (state, action: PayloadAction<string>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].color = action.payload;
+    },
+    updateStrokeFillFigure: (state, action: PayloadAction<string>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].stroke = action.payload;
+    },
+    updateStrokeSizeFigure: (state, action: PayloadAction<number>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].sizeStroke = action.payload;
+    },
+    // Solo para Texto
+    updateGlobalCoordText: (state) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      state.groupCoordGlobaltext.x = updatingItem[0].x;
+      state.groupCoordGlobaltext.y = updatingItem[0].y;
+      state.groupCoordGlobaltext.width = updatingItem[0].width;
+      state.groupCoordGlobaltext.height = updatingItem[0].height;
+      updatingItem[0].text = "";
+    },
+    // Solo Rich texto
+    updateColorRichText: (state, action: PayloadAction<string>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].customFill = action.payload;
+    },
+    updateSizeRichText: (state, action: PayloadAction<number>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].customFontSize = action.payload;
+    },
+    updateFamilyRichText: (state, action: PayloadAction<string>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].customFamily = action.payload;
+    },
+    updateAlignRichText: (state, action: PayloadAction<string>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      updatingItem[0].customAlign = action.payload;
+    },
+    updateActiveTextProperties: (state) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      const newtextStyles = {
+        currentTextAlign: updatingItem[0].customAlign,
+        currentTextColor: updatingItem[0].customFill,
+        currentTextFontSize: updatingItem[0].customFontSize,
+        currentTextFontFamily: updatingItem[0].customFamily,
+      } as ITextAreaCurrentStyle;
+      state.textAreaStyles = newtextStyles;
+      state.activeTextActive = state.activeKonvaComponentID;
+      state.activeKonvaComponentID = "";
+      const txtarea = document.getElementById("global-text-editor");
+      txtarea!.innerText = updatingItem[0]!.text!;
+      updatingItem[0].width = 0;
+      updatingItem[0].height = 0;
+      txtarea?.focus();
+    },
+    // Solo para Imagenes
+    updateCutImageText: (state) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      );
+      state.activeIdImageEditing = state.activeKonvaComponentID;
+      state.urlImageActiveEditing = updatingItem[0]!.image!;
+    },
+    updateVisilibityImageEdit: (state) => {
+      state.showModalEditingImage = !state.showModalEditingImage;
+    },
+    updateNewImageActiveEdit: (state, action: PayloadAction<string>) => {
+      const updatingItem = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeIdImageEditing
+      );
+      updatingItem[0].image = action.payload;
+    },
+    updateStageZoom: (state, action: PayloadAction<ConfigStageZoom>) => {
+      state.stageZoom = action.payload;
+    },
   },
 });
 
@@ -74,6 +219,20 @@ export const {
   updateCanvasWidth,
   updateCanvasHeight,
   updateActiveMenuOption,
+  deleteObjectKonva, // Todos los objetos
+  updateColorFillFigure, // Solo Figuras
+  updateStrokeFillFigure, // Solo Figuras
+  updateStrokeSizeFigure, // Solo Figuras
+  updateGlobalCoordText, // Solo Texto
+  updateColorRichText, // Solo texto
+  updateSizeRichText, // Solo texto
+  updateFamilyRichText, // Solo texto
+  updateAlignRichText, // Solo texto
+  updateActiveTextProperties, // Solo texto
+  updateCutImageText, // Solo Imagenes
+  updateVisilibityImageEdit, // Solo Imagenes
+  updateNewImageActiveEdit, // Solo Imagenes
+  updateStageZoom, // Solo Stage
 } = konvaEditorSlice.actions;
 
 export const getSizeGlobalSheet = (state: RootState) =>
@@ -90,5 +249,15 @@ export const getListComponentsKonva = (state: RootState) =>
   state.konvaEditor.listComponentsKonva;
 export const getActiveComponentKonvaID = (state: RootState) =>
   state.konvaEditor.activeKonvaComponentID;
+export const getGlobalCoord = (state: RootState) =>
+  state.konvaEditor.groupCoordGlobaltext;
+export const getUrlActiveImageEdit = (state: RootState) =>
+  state.konvaEditor.urlImageActiveEditing;
+export const getVisibilityModalImageEdit = (state: RootState) =>
+  state.konvaEditor.showModalEditingImage;
+export const getConfigStageZoom = (state: RootState) =>
+  state.konvaEditor.stageZoom;
+export const getCurrentStylesTextArea = (state: RootState) =>
+  state.konvaEditor.textAreaStyles;
 
 export default konvaEditorSlice.reducer;

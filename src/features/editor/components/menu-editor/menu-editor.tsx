@@ -432,7 +432,7 @@ const MenuEditor: React.FC = () => {
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      searchLaminaByWord({ word: initialSearch });
+      // searchLaminaByWord({ word: initialSearch });
     }
   };
 

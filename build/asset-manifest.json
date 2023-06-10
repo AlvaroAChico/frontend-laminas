@@ -1,27 +1,20 @@
 {
   "files": {
-    "main.css": "/editor/static/css/main.33d47523.css",
-    "main.js": "/editor/static/js/main.5f3cd43b.js",
-    "static/js/703.630885d4.chunk.js": "/editor/static/js/703.630885d4.chunk.js",
-    "static/js/825.76d02288.chunk.js": "/editor/static/js/825.76d02288.chunk.js",
-    "static/media/L_017_vertientes-hidrograficas.jpg": "/editor/static/media/L_017_vertientes-hidrograficas.736728cd3aca6cf5448a.jpg",
-    "static/media/L_015_hortalizas.jpg": "/editor/static/media/L_015_hortalizas.5c949aacd8acbb20a606.jpg",
-    "static/media/L_019_organizacion-cultural.jpg": "/editor/static/media/L_019_organizacion-cultural.2729b0ec6edc9288a4ad.jpg",
-    "static/media/L_016_mapa-hidrografico.jpg": "/editor/static/media/L_016_mapa-hidrografico.e5ca6119465922932106.jpg",
-    "static/media/L_020_imperio-incaico.jpg": "/editor/static/media/L_020_imperio-incaico.b706f005aa304a83e5a4.jpg",
-    "static/media/L_018_regiones-naturales.jpg": "/editor/static/media/L_018_regiones-naturales.46a9b305745763e5c5dc.jpg",
-    "static/media/painting_download_load.gif": "/editor/static/media/painting_download_load.c109b0fdd4d7afa7f33c.gif",
-    "static/media/a3.png": "/editor/static/media/a3.6bb09f5a917cc2ee2d5a.png",
-    "static/media/oficio.png": "/editor/static/media/oficio.0d8c58b24063967120ba.png",
-    "static/media/a4.png": "/editor/static/media/a4.3f54cc25201e4d61b38c.png",
-    "index.html": "/editor/index.html",
-    "main.33d47523.css.map": "/editor/static/css/main.33d47523.css.map",
-    "main.5f3cd43b.js.map": "/editor/static/js/main.5f3cd43b.js.map",
-    "703.630885d4.chunk.js.map": "/editor/static/js/703.630885d4.chunk.js.map",
-    "825.76d02288.chunk.js.map": "/editor/static/js/825.76d02288.chunk.js.map"
+    "main.css": "/static/css/main.33d47523.css",
+    "main.js": "/static/js/main.f1e89713.js",
+    "static/js/498.0b07f652.chunk.js": "/static/js/498.0b07f652.chunk.js",
+    "static/js/703.630885d4.chunk.js": "/static/js/703.630885d4.chunk.js",
+    "static/js/513.876074d0.chunk.js": "/static/js/513.876074d0.chunk.js",
+    "static/media/arturito-openai.png": "/static/media/arturito-openai.5f8790b00ec09905dceb.png",
+    "index.html": "/index.html",
+    "main.33d47523.css.map": "/static/css/main.33d47523.css.map",
+    "main.f1e89713.js.map": "/static/js/main.f1e89713.js.map",
+    "498.0b07f652.chunk.js.map": "/static/js/498.0b07f652.chunk.js.map",
+    "703.630885d4.chunk.js.map": "/static/js/703.630885d4.chunk.js.map",
+    "513.876074d0.chunk.js.map": "/static/js/513.876074d0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.33d47523.css",
-    "static/js/main.5f3cd43b.js"
+    "static/js/main.f1e89713.js"
   ]
 }
