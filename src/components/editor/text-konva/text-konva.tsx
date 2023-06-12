@@ -2,6 +2,7 @@ import React from "react";
 import { Text, Transformer } from "react-konva";
 import { useAppDispatch } from "../../../app/hooks";
 import {
+  deleteObjectKonva,
   updateActiveTextProperties,
   updateGlobalCoordText,
 } from "../../../core/store/konva-editor/konva-editorSlice";
@@ -100,8 +101,11 @@ const TextKonva: React.FC<IOwnProps> = ({
           // onChange(initialProps);
         }}
         onDblClick={() => {
-          dispatch(updateActiveTextProperties());
+          // const txtarea: HTMLTextAreaElement | any = document.getElementById("global-text-editor");
+          // txtarea!.innerText
           dispatch(updateGlobalCoordText());
+          dispatch(updateActiveTextProperties());
+          dispatch(deleteObjectKonva());
         }}
         radiusX={50}
         radiusY={50}

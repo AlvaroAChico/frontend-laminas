@@ -36,7 +36,7 @@ export interface EditorState {
   showModalEditingImage: boolean; // Solo para imagenes
   stageZoom: ConfigStageZoom; // Solo para Stage
   textAreaStyles: ITextAreaCurrentStyle; // Solo para texto
-  activeTextActive: string; // Solo para texto
+  currentEditingText: ComponentKonvaItem;
 }
 
 const initialState: EditorState = {
@@ -67,7 +67,17 @@ const initialState: EditorState = {
     y: 0,
   },
   textAreaStyles: {} as ITextAreaCurrentStyle,
-  activeTextActive: "",
+  currentEditingText: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    text: "",
+    customFontSize: 0,
+    customFill: "",
+    customAlign: "",
+    customFamily: "",
+  } as ComponentKonvaItem,
 };
 
 export const konvaEditorSlice = createSlice({
@@ -98,7 +108,11 @@ export const konvaEditorSlice = createSlice({
       const listObjects = state.listComponentsKonva.filter(
         (component) => component.id != state.activeKonvaComponentID
       );
+      state.activeKonvaComponentID = "";
       state.listComponentsKonva = listObjects;
+    },
+    unselectObjectKonva: (state) => {
+      state.activeKonvaComponentID = "";
     },
     // Configuracion para canvas
     updateActiveGlobalSheet: (state, action: PayloadAction<number>) => {
@@ -135,6 +149,7 @@ export const konvaEditorSlice = createSlice({
     },
     // Solo para Texto
     updateGlobalCoordText: (state) => {
+      // Update textarea and save the properties of the active component
       const updatingItem = state.listComponentsKonva.filter(
         (component) => component.id == state.activeKonvaComponentID
       );
@@ -142,7 +157,14 @@ export const konvaEditorSlice = createSlice({
       state.groupCoordGlobaltext.y = updatingItem[0].y;
       state.groupCoordGlobaltext.width = updatingItem[0].width;
       state.groupCoordGlobaltext.height = updatingItem[0].height;
-      updatingItem[0].text = "";
+      // Updating currentComponentEditing
+      state.currentEditingText = updatingItem[0];
+    },
+    updateOldTextEditing: (state) => {
+      state.groupCoordGlobaltext.x = 0;
+      state.groupCoordGlobaltext.y = 0;
+      state.groupCoordGlobaltext.width = 0;
+      state.groupCoordGlobaltext.height = 0;
     },
     // Solo Rich texto
     updateColorRichText: (state, action: PayloadAction<string>) => {
@@ -180,12 +202,11 @@ export const konvaEditorSlice = createSlice({
         currentTextFontFamily: updatingItem[0].customFamily,
       } as ITextAreaCurrentStyle;
       state.textAreaStyles = newtextStyles;
-      state.activeTextActive = state.activeKonvaComponentID;
-      state.activeKonvaComponentID = "";
-      const txtarea = document.getElementById("global-text-editor");
+      const txtarea: HTMLTextAreaElement | any =
+        document.getElementById("global-text-editor");
       txtarea!.innerText = updatingItem[0]!.text!;
-      updatingItem[0].width = 0;
-      updatingItem[0].height = 0;
+      txtarea!.value = updatingItem[0]!.text!;
+      updatingItem[0].text = "";
       txtarea?.focus();
     },
     // Solo para Imagenes
@@ -220,6 +241,7 @@ export const {
   updateCanvasHeight,
   updateActiveMenuOption,
   deleteObjectKonva, // Todos los objetos
+  unselectObjectKonva, // Todos los objetos
   updateColorFillFigure, // Solo Figuras
   updateStrokeFillFigure, // Solo Figuras
   updateStrokeSizeFigure, // Solo Figuras
@@ -229,6 +251,7 @@ export const {
   updateFamilyRichText, // Solo texto
   updateAlignRichText, // Solo texto
   updateActiveTextProperties, // Solo texto
+  updateOldTextEditing, // Solo texto
   updateCutImageText, // Solo Imagenes
   updateVisilibityImageEdit, // Solo Imagenes
   updateNewImageActiveEdit, // Solo Imagenes
@@ -259,5 +282,7 @@ export const getConfigStageZoom = (state: RootState) =>
   state.konvaEditor.stageZoom;
 export const getCurrentStylesTextArea = (state: RootState) =>
   state.konvaEditor.textAreaStyles;
+export const getOldPropertiesTextEditing = (state: RootState) =>
+  state.konvaEditor.currentEditingText;
 
 export default konvaEditorSlice.reducer;

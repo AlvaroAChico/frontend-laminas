@@ -285,12 +285,6 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
   // La pregunta "Quien gano el miss peru ?" se enseña en peru ?
   const [postIAForApp, responseOpenAi] = usePostIAForAppMutation();
 
-  React.useEffect(() => {
-    if (responseOpenAi.data != null) {
-      console.log("responseOpenAi -> ", responseOpenAi.data);
-    }
-  }, [responseOpenAi]);
-
   const handleQuestionArturito = (text: string) => {
     postIAForApp(text);
   };
@@ -310,7 +304,6 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
         customFontSize: 14,
         customAlign: "left",
         customFamily: "arial",
-
         text: text || "Doble click para editar",
       } as ComponentKonvaItem)
     );

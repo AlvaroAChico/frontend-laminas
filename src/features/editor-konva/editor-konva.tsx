@@ -4,6 +4,7 @@ import styled from "styled-components";
 import LayerEditor from "./components/layer-editor/layer-editor";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
+  addItemKonva,
   getActiveComponentKonvaID,
   getCanvasHeight,
   getCanvasWidth,
@@ -11,9 +12,12 @@ import {
   getCurrentStylesTextArea,
   getGlobalCoord,
   getListComponentsKonva,
+  getOldPropertiesTextEditing,
+  unselectObjectKonva,
   updateActiveIDKonva,
   updateActiveMenuOption,
   updateComponentKonva,
+  updateOldTextEditing,
   updateStageZoom,
 } from "../../core/store/konva-editor/konva-editorSlice";
 import MenuOptions from "./components/menu-options/menu-options";
@@ -95,6 +99,7 @@ const EditorKonva: React.FC = () => {
   const globalCoord = useAppSelector(getGlobalCoord);
   const valueZoom = useAppSelector(getConfigStageZoom);
   const textAreaStyles = useAppSelector(getCurrentStylesTextArea);
+  const oldPropertiesText = useAppSelector(getOldPropertiesTextEditing);
   const dispatch = useAppDispatch();
 
   const layerRef = React.useRef<any>();
@@ -195,7 +200,28 @@ const EditorKonva: React.FC = () => {
             <GlobalTextArea
               id="global-text-editor"
               onBlur={() => {
-                console.log("Blur edit");
+                // Add new component
+                const activeID = Date.now();
+                const textArea: HTMLTextAreaElement | any =
+                  document.getElementById("global-text-editor")!;
+                dispatch(
+                  addItemKonva({
+                    id: `text${activeID}`,
+                    type: KonvaTypeItem.TEXT,
+                    text: textArea.value,
+                    x: oldPropertiesText.x,
+                    y: oldPropertiesText.y,
+                    height: oldPropertiesText.height,
+                    width: oldPropertiesText.width,
+                    fill: oldPropertiesText.customFill,
+                    customFill: oldPropertiesText.customFill,
+                    customFontSize: oldPropertiesText.customFontSize,
+                    customAlign: oldPropertiesText.customAlign,
+                    customFamily: oldPropertiesText.customFamily,
+                  } as ComponentKonvaItem)
+                );
+                dispatch(updateActiveIDKonva(`text${activeID}`));
+                dispatch(updateOldTextEditing());
               }}
               styleWidth={globalCoord.width}
               styleHeight={globalCoord.height}

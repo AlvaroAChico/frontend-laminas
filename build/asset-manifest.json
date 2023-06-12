@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/static/css/main.33d47523.css",
-    "main.js": "/static/js/main.f1e89713.js",
+    "main.js": "/static/js/main.810b38f7.js",
     "static/js/498.0b07f652.chunk.js": "/static/js/498.0b07f652.chunk.js",
     "static/js/703.630885d4.chunk.js": "/static/js/703.630885d4.chunk.js",
     "static/js/513.876074d0.chunk.js": "/static/js/513.876074d0.chunk.js",
     "static/media/arturito-openai.png": "/static/media/arturito-openai.5f8790b00ec09905dceb.png",
     "index.html": "/index.html",
     "main.33d47523.css.map": "/static/css/main.33d47523.css.map",
-    "main.f1e89713.js.map": "/static/js/main.f1e89713.js.map",
+    "main.810b38f7.js.map": "/static/js/main.810b38f7.js.map",
     "498.0b07f652.chunk.js.map": "/static/js/498.0b07f652.chunk.js.map",
     "703.630885d4.chunk.js.map": "/static/js/703.630885d4.chunk.js.map",
     "513.876074d0.chunk.js.map": "/static/js/513.876074d0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.33d47523.css",
-    "static/js/main.f1e89713.js"
+    "static/js/main.810b38f7.js"
   ]
 }

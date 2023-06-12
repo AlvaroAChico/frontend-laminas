@@ -5,6 +5,7 @@ import {
   getActiveGlobalSheet,
   getConfigStageZoom,
   getSizeGlobalSheet,
+  unselectObjectKonva,
   updateStageZoom,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
 import { ArrowDownload } from "@styled-icons/fluentui-system-filled/ArrowDownload";
@@ -53,43 +54,48 @@ const AlternativeOptions: React.FC<IOwnProps> = ({
   const dispatch = useAppDispatch();
 
   const downloadActivePanel = () => {
-    if (canvaGlobalRef != null) {
-      const img = document.createElement("img");
-      img.src = canvaGlobalRef.current!.toDataURL();
-
-      img.onload = function () {
-        const canvaCut = document.createElement("canvas");
-        canvaCut.width = layerGlobalRef.current!.children[0].attrs.width;
-        canvaCut.height = layerGlobalRef.current!.children[0].attrs.height;
-        const ctx = canvaCut.getContext("2d")!;
-        console.log("Layer -> ", layerGlobalRef.current!.children[0].attrs);
-        ctx!.drawImage(
-          img,
-          layerGlobalRef.current!.children[0].attrs.x,
-          layerGlobalRef.current!.children[0].attrs.y,
-          layerGlobalRef.current!.children[0].attrs.width,
-          layerGlobalRef.current!.children[0].attrs.height,
-          0,
-          0,
-          layerGlobalRef.current!.children[0].attrs.width,
-          layerGlobalRef.current!.children[0].attrs.height
-        );
-        const newImage = document.createElement("img");
-        newImage.src = canvaCut.toDataURL("image/png", 1.0);
-        console.log("CanvaCUT", canvaCut.toDataURL("image/png", 1.0));
-        document.body.appendChild(newImage);
-        // Create PDF download
-        const doc = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: sizeGlobalSheet[activeSheet - 1],
+    dispatch(unselectObjectKonva());
+    setTimeout(() => {
+      if (canvaGlobalRef != null) {
+        const img = document.createElement("img");
+        img.src = canvaGlobalRef.current!.toDataURL({
+          pixelRatio: 6,
         });
-        const imgWidth = sizeGlobalSheet[activeSheet - 1][0];
-        const imgHeight = sizeGlobalSheet[activeSheet - 1][1];
-        doc.addImage(newImage, "PNG", 0, 0, imgWidth, imgHeight);
-        doc.save("elaminas.pdf");
-      };
-    }
+        // img.src = canvaGlobalRef.current!.toImage();
+        document.body.appendChild(img);
+        img.onload = function () {
+          const canvaCut = document.createElement("canvas");
+          canvaCut.width = layerGlobalRef.current!.children[0].attrs.width;
+          canvaCut.height = layerGlobalRef.current!.children[0].attrs.height;
+          const ctx = canvaCut.getContext("2d")!;
+          console.log("Layer -> ", layerGlobalRef.current!.children[0].attrs);
+          ctx!.drawImage(
+            img,
+            layerGlobalRef.current!.children[0].attrs.x,
+            layerGlobalRef.current!.children[0].attrs.y,
+            layerGlobalRef.current!.children[0].attrs.width,
+            layerGlobalRef.current!.children[0].attrs.height,
+            0,
+            0,
+            layerGlobalRef.current!.children[0].attrs.width,
+            layerGlobalRef.current!.children[0].attrs.height
+          );
+          const newImage = document.createElement("img");
+          newImage.src = canvaCut.toDataURL("image/png", 1.0);
+          // document.body.appendChild(newImage);
+          // Create PDF download
+          const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: sizeGlobalSheet[activeSheet - 1],
+          });
+          const imgWidth = sizeGlobalSheet[activeSheet - 1][0];
+          const imgHeight = sizeGlobalSheet[activeSheet - 1][1];
+          doc.addImage(newImage, "PNG", 0, 0, imgWidth, imgHeight);
+          doc.save("elaminas.pdf");
+        };
+      }
+    }, 500);
   };
 
   const handleInGlobalZoom = () => {
