@@ -16,6 +16,7 @@ import {
 } from "../../../../../core/store/konva-editor/konva-editorSlice";
 import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../../editor-konva";
+import imageTest from "../../../../../assets/img/image_test.jpg";
 
 const WrapperMenuImagen = styled.div<{ isVisible: boolean }>`
   background: ${customPalette.grayLightColor};
@@ -290,12 +291,8 @@ const SubMenuImagen: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
           />
           <WrapperListLaminas>
             <WrapperItemsResults>
-              <LaminaItem
-                onClick={handleAddImage(
-                  "https://images.hola.com/imagenes/decoracion/20220810214947/plantas-con-flores-perennes-plantas-exterior-mc/1-125-376/vinca-t.jpg"
-                )}
-              >
-                <img src="https://images.hola.com/imagenes/decoracion/20220810214947/plantas-con-flores-perennes-plantas-exterior-mc/1-125-376/vinca-t.jpg" />
+              <LaminaItem onClick={handleAddImage(imageTest)}>
+                <img src={imageTest} />
               </LaminaItem>
               {listLaminas.map((lamina) => (
                 <LaminaItem

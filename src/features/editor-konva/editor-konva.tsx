@@ -1,10 +1,12 @@
 import React from "react";
-import { Stage, Layer, Text } from "react-konva";
+import { Stage, Layer } from "react-konva";
 import styled from "styled-components";
 import LayerEditor from "./components/layer-editor/layer-editor";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   addItemKonva,
+  changeActivePanelEditor,
+  deleteObjectKonva,
   getActiveComponentKonvaID,
   getCanvasHeight,
   getCanvasWidth,
@@ -13,6 +15,8 @@ import {
   getGlobalCoord,
   getListComponentsKonva,
   getOldPropertiesTextEditing,
+  getStatusApplication,
+  getStatusCursorCanva,
   unselectObjectKonva,
   updateActiveIDKonva,
   updateActiveMenuOption,
@@ -22,13 +26,16 @@ import {
 } from "../../core/store/konva-editor/konva-editorSlice";
 import MenuOptions from "./components/menu-options/menu-options";
 import SelectedOptions from "./components/selected-options/selected-options";
-import AlternativeOptions from "./components/alternative-options/alternative-options";
+import ZoomOptions from "./components/alternative-options/zoom-options";
 import GlobalItemKonva, {
   KonvaTypeItem,
 } from "./components/global-item-konva/global-item-konva";
 import OpenAIOptions from "./components/openai-options/openai-options";
 import { Html } from "react-konva-utils";
 import ModalImageKonva from "../editor/components/modal-image-konva/modal-image-konva";
+import MenuBarOptions from "./components/menu-bar-options/menu-bar-options";
+import downloadAnimation from "../../assets/json/download_animation.json";
+import Lottie from "lottie-react";
 
 const WrapperPage = styled.div`
   position: relative;
@@ -46,7 +53,13 @@ const WrapperPage = styled.div`
   }
 `;
 
-const MainStage = styled(Stage)`
+const MainStage = styled(Stage)<{ cursorStyle: number }>`
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  cursor: ${(p) => (p.cursorStyle == 1 ? "cursor" : "grab")};
+
   > canvas {
     display: block;
   }
@@ -63,12 +76,77 @@ const GlobalTextArea = styled.textarea<{
   border: 0;
   outline: none;
   resize: unset;
-  height: ${(p) => p.styleWidth}px;
-  width: ${(p) => p.styleHeight}px;
+  height: ${(p) => p.styleHeight + 5}px;
+  width: ${(p) => p.styleWidth + 5}px;
   font-size: ${(p) => p.currentTextFontSize}px;
   color: ${(p) => p.currentTextColor};
   font-family: ${(p) => p.currentTextFontFamily};
   text-align: ${(p) => p.currentTextAlign};
+`;
+const BackdropDownload = styled.div`
+  position: absolute;
+  background: #00000061;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+`;
+const LottieContainer = styled.div`
+  margin: auto;
+  backdrop-filter: blur(30px);
+  height: fit-content;
+  width: fit-content;
+  background: white;
+  border-radius: 20px;
+  position: relative;
+  padding: 30px 15px 0;
+
+  > p {
+    position: absolute;
+    text-align: center;
+    z-index: 2;
+    top 0;
+    font-size: 14px;
+  }
+  ::after {
+    content: "";
+    position: absolute;
+    background: rgb(252, 74, 65);
+    background: linear-gradient(
+      90deg,
+      rgba(252, 74, 65, 20%) 0%,
+      rgba(56, 62, 71, 20%) 100%
+    );
+    width: 80px;
+    height: 80px;
+    top: -30px;
+    left: -30px;
+    border-radius: 50%;
+    backdrop-filter: blur(30px);
+  }
+  ::before {
+    content: "";
+    position: absolute;
+    background: rgb(163, 254, 172);
+    background: linear-gradient(
+      90deg,
+      rgba(163, 254, 172, 20%) 0%,
+      rgba(111, 164, 242, 20%) 100%
+    );
+    width: 80px;
+    height: 80px;
+    bottom: -30px;
+    right: -30px;
+    border-radius: 50%;
+    backdrop-filter: blur(30px);
+  }
 `;
 export interface ComponentKonvaItem {
   id: string;
@@ -100,6 +178,8 @@ const EditorKonva: React.FC = () => {
   const valueZoom = useAppSelector(getConfigStageZoom);
   const textAreaStyles = useAppSelector(getCurrentStylesTextArea);
   const oldPropertiesText = useAppSelector(getOldPropertiesTextEditing);
+  const statusApplication = useAppSelector(getStatusApplication);
+  const statusCursorCanva = useAppSelector(getStatusCursorCanva);
   const dispatch = useAppDispatch();
 
   const layerRef = React.useRef<any>();
@@ -128,116 +208,135 @@ const EditorKonva: React.FC = () => {
       })
     );
   };
+  const handleReadKeyDown = (e: any) => {
+    if (activekonvaItem != "" && (e.keyCode == 8 || e.keyCode == 46)) {
+      dispatch(deleteObjectKonva());
+    }
+  };
 
   return (
     <WrapperPage>
-      <MainStage
-        ref={canvaRef}
-        width={canvasWidth}
-        height={canvasHeight}
-        onWheel={handleWheel}
-        scaleX={valueZoom.scale}
-        scaleY={valueZoom.scale}
-        x={valueZoom.x}
-        y={valueZoom.y}
-        onMouseDown={(e: any) => {
-          dispatch(updateActiveMenuOption(0));
-          const clickedOnEmpty = e.target === e.target.getStage();
-          clickedOnEmpty ?? dispatch(updateActiveIDKonva(""));
-        }}
-      >
-        <LayerEditor refLayer={layerRef} />
-        {listItemsKonva.map((item) => {
-          return (
-            <Layer key={item.id}>
-              <GlobalItemKonva
-                id={item.id}
-                type={item.type}
-                initialX={item.x}
-                initialY={item.y}
-                initialWidth={item.width}
-                initialHeight={item.height}
-                initialFill={item.fill}
-                initialText={item.text || ""}
-                initialImage={item.image || ""}
-                color={item.color || ""}
-                stroke={item.stroke || ""}
-                sizeStroke={item.sizeStroke || 0}
-                customFill={item.customFill || "black"}
-                customFontSize={item.customFontSize || 14}
-                customAlign={item.customAlign || "left"}
-                customFamily={item.customFamily || "arial"}
-                canvaRef={canvaRef}
-                isSelected={item.id == activekonvaItem}
-                onSelect={() => dispatch(updateActiveIDKonva(item.id))}
-                onChange={(newAttrs: ComponentKonvaItem) => {
+      <MenuBarOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
+      <div tabIndex={1} onKeyDown={handleReadKeyDown}>
+        <MainStage
+          ref={canvaRef}
+          width={canvasWidth}
+          height={canvasHeight}
+          onWheel={handleWheel}
+          scaleX={valueZoom.scale}
+          scaleY={valueZoom.scale}
+          x={valueZoom.x}
+          y={valueZoom.y}
+          draggable={statusCursorCanva == 2}
+          onMouseDown={(e: any) => {
+            dispatch(updateActiveMenuOption(0));
+            dispatch(changeActivePanelEditor(true));
+            const clickedOnEmpty = e.target === e.target.getStage();
+            clickedOnEmpty && dispatch(updateActiveIDKonva(""));
+          }}
+          cursorStyle={statusCursorCanva}
+        >
+          <LayerEditor refLayer={layerRef}>
+            {listItemsKonva.map((item) => {
+              return (
+                <GlobalItemKonva
+                  id={item.id}
+                  key={item.id}
+                  type={item.type}
+                  initialX={item.x}
+                  initialY={item.y}
+                  initialWidth={item.width}
+                  initialHeight={item.height}
+                  initialFill={item.fill}
+                  initialText={item.text || ""}
+                  initialImage={item.image || ""}
+                  color={item.color || ""}
+                  stroke={item.stroke || ""}
+                  sizeStroke={item.sizeStroke || 0}
+                  customFill={item.customFill || "black"}
+                  customFontSize={item.customFontSize || 14}
+                  customAlign={item.customAlign || "left"}
+                  customFamily={item.customFamily || "arial"}
+                  canvaRef={canvaRef}
+                  isSelected={item.id == activekonvaItem}
+                  onSelect={() => dispatch(updateActiveIDKonva(item.id))}
+                  onChange={(newAttrs: ComponentKonvaItem) => {
+                    dispatch(
+                      updateComponentKonva({
+                        id: activekonvaItem,
+                        x: newAttrs.x,
+                        y: newAttrs.y,
+                        width: newAttrs.width,
+                        height: newAttrs.height,
+                        fill: newAttrs.fill,
+                        text: newAttrs.text,
+                      } as ComponentKonvaItem)
+                    );
+                  }}
+                />
+              );
+            })}
+          </LayerEditor>
+          <Layer>
+            <Html
+              groupProps={{
+                x: globalCoord.x,
+                y: globalCoord.y,
+                width: globalCoord.width,
+                height: globalCoord.height,
+              }}
+              divProps={{ style: { opacity: 1 } }}
+            >
+              <GlobalTextArea
+                id="global-text-editor"
+                onBlur={() => {
+                  // Add new component
+                  const activeID = Date.now();
+                  const textArea: HTMLTextAreaElement | any =
+                    document.getElementById("global-text-editor")!;
                   dispatch(
-                    updateComponentKonva({
-                      id: activekonvaItem,
-                      x: newAttrs.x,
-                      y: newAttrs.y,
-                      width: newAttrs.width,
-                      height: newAttrs.height,
-                      fill: newAttrs.fill,
-                      text: newAttrs.text,
+                    addItemKonva({
+                      id: `text${activeID}`,
+                      type: KonvaTypeItem.TEXT,
+                      text: textArea.value,
+                      x: oldPropertiesText.x,
+                      y: oldPropertiesText.y,
+                      height: oldPropertiesText.height,
+                      width: oldPropertiesText.width,
+                      fill: oldPropertiesText.customFill,
+                      customFill: oldPropertiesText.customFill,
+                      customFontSize: oldPropertiesText.customFontSize,
+                      customAlign: oldPropertiesText.customAlign,
+                      customFamily: oldPropertiesText.customFamily,
                     } as ComponentKonvaItem)
                   );
+                  dispatch(updateActiveIDKonva(`text${activeID}`));
+                  dispatch(updateOldTextEditing());
                 }}
+                styleWidth={globalCoord.width}
+                styleHeight={globalCoord.height}
+                currentTextFontSize={textAreaStyles.currentTextFontSize}
+                currentTextFontFamily={textAreaStyles.currentTextFontFamily}
+                currentTextColor={textAreaStyles.currentTextColor}
+                currentTextAlign={textAreaStyles.currentTextAlign}
               />
-            </Layer>
-          );
-        })}
-        <Layer>
-          <Html
-            groupProps={{
-              x: globalCoord.x,
-              y: globalCoord.y,
-              width: globalCoord.width,
-              height: globalCoord.height,
-            }}
-            divProps={{ style: { opacity: 1 } }}
-          >
-            <GlobalTextArea
-              id="global-text-editor"
-              onBlur={() => {
-                // Add new component
-                const activeID = Date.now();
-                const textArea: HTMLTextAreaElement | any =
-                  document.getElementById("global-text-editor")!;
-                dispatch(
-                  addItemKonva({
-                    id: `text${activeID}`,
-                    type: KonvaTypeItem.TEXT,
-                    text: textArea.value,
-                    x: oldPropertiesText.x,
-                    y: oldPropertiesText.y,
-                    height: oldPropertiesText.height,
-                    width: oldPropertiesText.width,
-                    fill: oldPropertiesText.customFill,
-                    customFill: oldPropertiesText.customFill,
-                    customFontSize: oldPropertiesText.customFontSize,
-                    customAlign: oldPropertiesText.customAlign,
-                    customFamily: oldPropertiesText.customFamily,
-                  } as ComponentKonvaItem)
-                );
-                dispatch(updateActiveIDKonva(`text${activeID}`));
-                dispatch(updateOldTextEditing());
-              }}
-              styleWidth={globalCoord.width}
-              styleHeight={globalCoord.height}
-              currentTextFontSize={textAreaStyles.currentTextFontSize}
-              currentTextFontFamily={textAreaStyles.currentTextFontFamily}
-              currentTextColor={textAreaStyles.currentTextColor}
-              currentTextAlign={textAreaStyles.currentTextAlign}
-            />
-          </Html>
-        </Layer>
-      </MainStage>
+            </Html>
+          </Layer>
+        </MainStage>
+      </div>
       <MenuOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
-      <SelectedOptions />
-      <AlternativeOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
+      {/* <SelectedOptions /> */}
+      <ZoomOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
       <OpenAIOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
       <ModalImageKonva />
+      {statusApplication && (
+        <BackdropDownload>
+          <LottieContainer>
+            <p>Un momento, estamos configurando la descarga</p>
+            <Lottie animationData={downloadAnimation} loop={true} />
+          </LottieContainer>
+        </BackdropDownload>
+      )}
     </WrapperPage>
   );
 };

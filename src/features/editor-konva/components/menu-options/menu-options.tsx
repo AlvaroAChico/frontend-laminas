@@ -20,7 +20,7 @@ import SubMenuFiguras from "./sub-menu-figuras/sub-menu-figuras";
 
 const WrapperMenu = styled.div`
   position: absolute;
-  top: 6%;
+  top: 12%;
   left: 2%;
   background: ${customPalette.primaryColor};
   border-radius: 15px;

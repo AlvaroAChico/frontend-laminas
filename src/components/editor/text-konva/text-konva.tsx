@@ -73,7 +73,7 @@ const TextKonva: React.FC<IOwnProps> = ({
         fontFamily={customFamily} // Editable
         onTap={onSelect}
         onClick={onSelect}
-        onMouseOver={onSelect}
+        onMouseDown={onSelect}
         fontStyle="bold"
         onDragEnd={(e) => {
           setInitialProps({

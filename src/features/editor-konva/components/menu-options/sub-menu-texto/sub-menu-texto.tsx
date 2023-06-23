@@ -129,67 +129,7 @@ const WrapperDivider = styled.div`
   border: 1px solid #e4e4e4;
   width: 100%;
 `;
-const PropertyContainer = styled.div`
-  width: 100%;
-  border-bottom: 1px solid #e4e4e4;
-  display: flex;
-  justify-content: space-around;
-  padding: 6px;
-`;
-const PropertyTitle = styled.div`
-  width: inherit;
-  font-size: 14px;
-`;
-const PropertyTool = styled.div`
-  width: 100%;
-  text-align: right;
 
-  input[type="color"] {
-    -webkit-appearance: none;
-    border-radius: 6px;
-    border: none;
-    width: 35px;
-    height: 22px;
-  }
-  input[type="color"]::-webkit-color-swatch-wrapper {
-    border-radius: 6px;
-    padding: 0;
-  }
-  input[type="color"]::-webkit-color-swatch {
-    border-radius: 6px;
-    border: none;
-  }
-  input[type="range"]::-webkit-color-swatch {
-    outline: none;
-  }
-
-  select {
-    padding: 4px;
-    border-radius: 10px;
-    width: 100%;
-    outline: none;
-    border: 0.5px solid #b4b4b4;
-  }
-`;
-const WrapperAlign = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  column-gap: 6px;
-`;
-
-const ContainerAlign = styled.div<{ isActive: boolean }>`
-  background: ${(p) => (p.isActive ? "#b4ffbd" : "#f5f9ff")};
-  border: 0.5px solid #b4b4b4;
-  border-radius: 4px;
-  padding: 2px 5px;
-  cursor: pointer;
-
-  svg {
-    width: 15px;
-    color: black;
-  }
-`;
 const ArturitoAdsWrapper = styled.div`
   background: white;
   border: 0.2px solid #0066ff;
@@ -291,20 +231,31 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
 
   const handleAddText = (text?: string) => {
     const activeID = Date.now();
+    const txtComponent = document.createElement("div");
+    txtComponent.innerText = text?.trim() || "Doble click para editar";
+    txtComponent.style.width = "fit-content";
+    txtComponent.style.maxWidth = "300px";
+    txtComponent.style.height = "100%";
+    document.getElementById("root")!.appendChild(txtComponent);
+    const txtComponentWidth = txtComponent.clientWidth;
+    const txtComponentHeight = txtComponent.clientHeight;
+    const txtValue = txtComponent.innerText;
+    txtComponent.style.display = "none";
+    document.getElementById("root")!.removeChild(txtComponent);
     dispatch(
       addItemKonva({
         id: `text${activeID}`,
         type: KonvaTypeItem.TEXT,
         x: layerRef.current.children[0].attrs.x,
         y: layerRef.current.children[0].attrs.y,
-        height: 100,
-        width: 100,
+        height: txtComponentHeight,
+        width: txtComponentWidth + 10,
         fill: "black",
         customFill: "black",
         customFontSize: 14,
         customAlign: "left",
         customFamily: "arial",
-        text: text || "Doble click para editar",
+        text: txtValue || "Doble click para editar",
       } as ComponentKonvaItem)
     );
     dispatch(updateActiveIDKonva(`text${activeID}`));
@@ -326,62 +277,6 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
       </HeaderText>
       {stepActive == 1 && (
         <BodyCardTexto>
-          {/* <PropertyContainer>
-            <PropertyTitle>Color</PropertyTitle>
-            <PropertyTool>
-              <input type="color" />
-            </PropertyTool>
-          </PropertyContainer>
-          <PropertyContainer>
-            <PropertyTitle>Tamaño</PropertyTitle>
-            <PropertyTool>
-              <input type="range" min="6" max="80" step="1" />
-            </PropertyTool>
-          </PropertyContainer>
-          <PropertyContainer>
-            <PropertyTitle>Alineamiento</PropertyTitle>
-            <PropertyTool>
-              <WrapperAlign>
-                <ContainerAlign isActive={true}>
-                  <TextAlignLeft />
-                </ContainerAlign>
-                <ContainerAlign isActive={false}>
-                  <TextAlignCenter />
-                </ContainerAlign>
-                <ContainerAlign isActive={false}>
-                  <TextAlignJustify />
-                </ContainerAlign>
-                <ContainerAlign isActive={false}>
-                  <TextAlignRight />
-                </ContainerAlign>
-              </WrapperAlign>
-            </PropertyTool>
-          </PropertyContainer>
-          <PropertyContainer>
-            <PropertyTitle>Tipo de letra</PropertyTitle>
-            <PropertyTool>
-              <select className="sc-dIfARi dJaamm">
-                <option value="Arial">Arial</option>
-                <option value="Arial Black">Arial Black</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Tahoma">Tahoma</option>
-                <option value="Trebuchet MS">Trebuchet MS</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Georgia">Georgia</option>
-                <option value="American Typewriter">American Typewriter</option>
-                <option value="Andale Mono">Andale Mono</option>
-                <option value="Courier">Courier</option>
-                <option value="Lucida Console">Lucida Console</option>
-                <option value="Monaco">Monaco</option>
-                <option value="Bradley Hand">Bradley Hand</option>
-                <option value="Brush Script MT">Brush Script MT</option>
-                <option value="Luminari">Luminari</option>
-                <option value="Comic Sans MS">Comic Sans MS</option>
-                <option value="Helvetica">Helvetica</option>
-                <option value="Cambria">Cambria</option>
-              </select>
-            </PropertyTool>
-          </PropertyContainer> */}
           <ArturitoAdsWrapper onClick={handleUpdateStep(2)}>
             <div>
               <div>

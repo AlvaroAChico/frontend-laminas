@@ -13,7 +13,7 @@ const App: React.FC = () => {
   const dispatch = useAppDispatch();
 
   window.addEventListener("resize", () => {
-    dispatch(updateCanvasHeight(window.innerHeight));
+    dispatch(updateCanvasHeight(window.innerHeight - 50));
     dispatch(updateCanvasWidth(window.innerWidth));
   });
 

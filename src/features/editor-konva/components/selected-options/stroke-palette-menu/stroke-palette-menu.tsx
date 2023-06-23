@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { customPalette } from "../../../../../config/theme/theme";
-import { useAppDispatch } from "../../../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../../app/hooks";
 import {
+  getCurrentPropertiesKonva,
+  getStatusPanelEditor,
   updateStrokeFillFigure,
   updateStrokeSizeFigure,
 } from "../../../../../core/store/konva-editor/konva-editorSlice";
@@ -16,6 +18,7 @@ const WrapperStrokeOption = styled.div<{ status: boolean }>`
   width: fit-content;
   min-width: 150px;
   padding: 8px 10px;
+  z-index: 1;
 
   > div:nth-child(3) {
     color: white;
@@ -71,6 +74,8 @@ interface IOwnProps {
   status: boolean;
 }
 const StrokePaletteMenu: React.FC<IOwnProps> = ({ status }) => {
+  const currentPropertiesKonva = useAppSelector(getCurrentPropertiesKonva);
+  const statusPanelEditor = useAppSelector(getStatusPanelEditor);
   const dispatch = useAppDispatch();
 
   const handleChangeColor = (color: string) => {
@@ -80,6 +85,12 @@ const StrokePaletteMenu: React.FC<IOwnProps> = ({ status }) => {
     dispatch(updateStrokeSizeFigure(parseInt(`${size}`)));
   };
 
+  const isStrokeSelected = (sizeStroke: number): boolean => {
+    return currentPropertiesKonva.sizeStroke == sizeStroke;
+  };
+
+  if (statusPanelEditor) return null;
+
   return (
     <WrapperStrokeOption status={status}>
       <WrapperOptionStrokeColor>
@@ -88,6 +99,7 @@ const StrokePaletteMenu: React.FC<IOwnProps> = ({ status }) => {
           <ItemMenu>
             <input
               type="color"
+              defaultValue={currentPropertiesKonva.stroke || "black"}
               onInput={(e: any) => handleChangeColor(e.target.value)}
             />
           </ItemMenu>
@@ -98,16 +110,36 @@ const StrokePaletteMenu: React.FC<IOwnProps> = ({ status }) => {
         <div>
           <ItemMenu>
             <select onChange={(e: any) => handleChangeStroke(e.target.value)}>
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
-              <option value={5}>5</option>
-              <option value={6}>6</option>
-              <option value={7}>7</option>
-              <option value={8}>8</option>
-              <option value={9}>9</option>
-              <option value={10}>10</option>
+              <option selected={isStrokeSelected(1)} value={1}>
+                1
+              </option>
+              <option selected={isStrokeSelected(2)} value={2}>
+                2
+              </option>
+              <option selected={isStrokeSelected(3)} value={3}>
+                3
+              </option>
+              <option selected={isStrokeSelected(4)} value={4}>
+                4
+              </option>
+              <option selected={isStrokeSelected(5)} value={5}>
+                5
+              </option>
+              <option selected={isStrokeSelected(6)} value={6}>
+                6
+              </option>
+              <option selected={isStrokeSelected(7)} value={7}>
+                7
+              </option>
+              <option selected={isStrokeSelected(8)} value={8}>
+                8
+              </option>
+              <option selected={isStrokeSelected(9)} value={9}>
+                9
+              </option>
+              <option selected={isStrokeSelected(10)} value={10}>
+                10
+              </option>
             </select>
           </ItemMenu>
         </div>

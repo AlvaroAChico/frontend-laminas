@@ -1,8 +1,6 @@
-import React, { MutableRefObject } from "react";
+import React from "react";
 import { Rect, Transformer } from "react-konva";
-import { useAppSelector } from "../../../app/hooks";
-import { getActiveComponentKonvaID } from "../../../core/store/konva-editor/konva-editorSlice";
-
+import ArturitoIcon from "../../../assets/img/arturito-openai.png";
 export interface RectInitialProps {
   x: number;
   y: number;
@@ -53,7 +51,7 @@ const RectFigure: React.FC<IOwnProps> = ({
         {...shapeProps}
         onTap={onSelect}
         onClick={onSelect}
-        onMouseOver={onSelect}
+        onMouseDown={onSelect}
         fill={color}
         stroke={stroke}
         strokeWidth={sizeStroke}
@@ -83,6 +81,14 @@ const RectFigure: React.FC<IOwnProps> = ({
           });
           // onChange(initialProps);
         }}
+        onMouseEnter={(e: any) => {
+          const container = e.target.getStage().container();
+          container.style.cursor = "pointer";
+        }}
+        onMouseLeave={(e: any) => {
+          const container = e.target.getStage().container();
+          container.style.cursor = "default";
+        }}
       />
       {isSelected && (
         <Transformer
@@ -94,6 +100,7 @@ const RectFigure: React.FC<IOwnProps> = ({
             }
             return newBox;
           }}
+          rotateIcon='<svg><rect x="0" y="0" width="100" height="100" fill="red"/></svg>'
         />
       )}
     </React.Fragment>

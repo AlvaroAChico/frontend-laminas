@@ -37,6 +37,9 @@ export interface EditorState {
   stageZoom: ConfigStageZoom; // Solo para Stage
   textAreaStyles: ITextAreaCurrentStyle; // Solo para texto
   currentEditingText: ComponentKonvaItem;
+  isActivePanelEditor: boolean; // Flag para mostrar o desaparecer menus flotantes
+  isApplicationPaused: boolean;
+  statusCursorCanva: number;
 }
 
 const initialState: EditorState = {
@@ -46,7 +49,7 @@ const initialState: EditorState = {
     [297, 420],
   ],
   canvasWidth: window.innerWidth - 10,
-  canvasHeight: window.innerHeight - 4,
+  canvasHeight: window.innerHeight - 50,
   activeGlobalSheet: 1,
   activeMenuOption: 0,
   listComponentsKonva: [],
@@ -78,6 +81,9 @@ const initialState: EditorState = {
     customAlign: "",
     customFamily: "",
   } as ComponentKonvaItem,
+  isActivePanelEditor: true,
+  isApplicationPaused: false,
+  statusCursorCanva: 1,
 };
 
 export const konvaEditorSlice = createSlice({
@@ -124,6 +130,72 @@ export const konvaEditorSlice = createSlice({
     updateCanvasHeight: (state, action: PayloadAction<number>) => {
       state.canvasHeight = action.payload;
     },
+    changeActivePanelEditor: (state, action: PayloadAction<boolean>) => {
+      state.isActivePanelEditor = action.payload;
+    },
+    changeStatusApplication: (state, action: PayloadAction<boolean>) => {
+      state.isApplicationPaused = action.payload;
+    },
+    changeStatusCursorCanva: (state, action: PayloadAction<number>) => {
+      state.statusCursorCanva = action.payload;
+    },
+    // Solo para layers
+    updateFullUpActiveKonva: (state) => {
+      const objectIndex = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      )[0];
+      const listObjects = state.listComponentsKonva.filter(
+        (component) => component.id != state.activeKonvaComponentID
+      );
+      listObjects.push(objectIndex);
+      state.listComponentsKonva = listObjects;
+      state.activeKonvaComponentID = objectIndex.id;
+    },
+    updateUpActiveKonva: (state) => {
+      let currentKonvaComponent: ComponentKonvaItem = {} as ComponentKonvaItem;
+      let currentIndexComponent = 0;
+      state.listComponentsKonva.map((component, index) => {
+        if (component.id == state.activeKonvaComponentID) {
+          currentKonvaComponent = component;
+          currentIndexComponent = index;
+        }
+      })[0];
+      const listObjects = state.listComponentsKonva.filter(
+        (component) => component.id != state.activeKonvaComponentID
+      );
+      listObjects.splice(currentIndexComponent + 1, 0, currentKonvaComponent);
+      state.listComponentsKonva = listObjects;
+    },
+    updateDownActiveKonva: (state) => {
+      let currentKonvaComponent: ComponentKonvaItem = {} as ComponentKonvaItem;
+      let currentIndexComponent = 0;
+      state.listComponentsKonva.map((component, index) => {
+        if (component.id == state.activeKonvaComponentID) {
+          currentKonvaComponent = component;
+          currentIndexComponent = index;
+        }
+      })[0];
+      const listObjects = state.listComponentsKonva.filter(
+        (component) => component.id != state.activeKonvaComponentID
+      );
+      listObjects.splice(
+        currentIndexComponent > 0 ? currentIndexComponent - 1 : 0,
+        0,
+        currentKonvaComponent
+      );
+      state.listComponentsKonva = listObjects;
+    },
+    updateFullDownActiveKonva: (state) => {
+      const objectIndex = state.listComponentsKonva.filter(
+        (component) => component.id == state.activeKonvaComponentID
+      )[0];
+      const listObjects = state.listComponentsKonva.filter(
+        (component) => component.id != state.activeKonvaComponentID
+      );
+      listObjects.splice(0, 0, objectIndex);
+      state.listComponentsKonva = listObjects;
+      state.activeKonvaComponentID = objectIndex.id;
+    },
     // Estado de menu activo
     updateActiveMenuOption: (state, action: PayloadAction<number>) => {
       state.activeMenuOption = action.payload;
@@ -153,6 +225,12 @@ export const konvaEditorSlice = createSlice({
       const updatingItem = state.listComponentsKonva.filter(
         (component) => component.id == state.activeKonvaComponentID
       );
+      console.table({
+        x: updatingItem[0].x,
+        y: updatingItem[0].y,
+        width: updatingItem[0].width,
+        height: updatingItem[0].height,
+      });
       state.groupCoordGlobaltext.x = updatingItem[0].x;
       state.groupCoordGlobaltext.y = updatingItem[0].y;
       state.groupCoordGlobaltext.width = updatingItem[0].width;
@@ -240,6 +318,12 @@ export const {
   updateCanvasWidth,
   updateCanvasHeight,
   updateActiveMenuOption,
+  changeStatusCursorCanva, // Solo para Canvas
+  changeActivePanelEditor, // Solo para Canvas
+  updateFullUpActiveKonva, // Solo para Canvas
+  updateUpActiveKonva, // Solo para Canvas
+  updateDownActiveKonva, // Solo para Canvas
+  updateFullDownActiveKonva, // Solo para Canvas
   deleteObjectKonva, // Todos los objetos
   unselectObjectKonva, // Todos los objetos
   updateColorFillFigure, // Solo Figuras
@@ -256,6 +340,7 @@ export const {
   updateVisilibityImageEdit, // Solo Imagenes
   updateNewImageActiveEdit, // Solo Imagenes
   updateStageZoom, // Solo Stage
+  changeStatusApplication,
 } = konvaEditorSlice.actions;
 
 export const getSizeGlobalSheet = (state: RootState) =>
@@ -284,5 +369,15 @@ export const getCurrentStylesTextArea = (state: RootState) =>
   state.konvaEditor.textAreaStyles;
 export const getOldPropertiesTextEditing = (state: RootState) =>
   state.konvaEditor.currentEditingText;
+export const getStatusPanelEditor = (state: RootState) =>
+  state.konvaEditor.isActivePanelEditor;
+export const getStatusApplication = (state: RootState) =>
+  state.konvaEditor.isApplicationPaused;
+export const getStatusCursorCanva = (state: RootState) =>
+  state.konvaEditor.statusCursorCanva;
+export const getCurrentPropertiesKonva = (state: RootState) =>
+  state.konvaEditor.listComponentsKonva.filter(
+    (item) => item.id == state.konvaEditor.activeKonvaComponentID
+  )[0];
 
 export default konvaEditorSlice.reducer;

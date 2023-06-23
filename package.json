@@ -33,6 +33,7 @@
     "js-cookie": "^3.0.1",
     "jspdf": "^2.5.1",
     "konva": "^8.4.3",
+    "lottie-react": "^2.4.0",
     "moveable": "^0.43.1",
     "moveable-helper": "^0.4.0",
     "react": "^18.2.0",

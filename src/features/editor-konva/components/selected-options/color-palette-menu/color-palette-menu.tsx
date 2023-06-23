@@ -1,8 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import { customPalette } from "../../../../../config/theme/theme";
-import { useAppDispatch } from "../../../../../app/hooks";
-import { updateColorFillFigure } from "../../../../../core/store/konva-editor/konva-editorSlice";
+import { useAppDispatch, useAppSelector } from "../../../../../app/hooks";
+import {
+  getCurrentPropertiesKonva,
+  getStatusPanelEditor,
+  updateColorFillFigure,
+} from "../../../../../core/store/konva-editor/konva-editorSlice";
 
 const WrapperColorOption = styled.div<{ status: boolean }>`
   position: absolute;
@@ -13,6 +17,7 @@ const WrapperColorOption = styled.div<{ status: boolean }>`
   width: fit-content;
   min-width: 150px;
   padding: 8px 10px;
+  z-index: 1;
 
   > div:nth-child(2) {
     color: white;
@@ -68,11 +73,15 @@ interface IOwnProps {
   status: boolean;
 }
 const ColorPaletteMenu: React.FC<IOwnProps> = ({ status }) => {
+  const currentPropertiesKonva = useAppSelector(getCurrentPropertiesKonva);
+  const statusPanelEditor = useAppSelector(getStatusPanelEditor);
   const dispatch = useAppDispatch();
 
   const handleChangeColor = (color: string) => {
     dispatch(updateColorFillFigure(color));
   };
+
+  if (statusPanelEditor) return null;
 
   return (
     <WrapperColorOption status={status}>
@@ -82,6 +91,7 @@ const ColorPaletteMenu: React.FC<IOwnProps> = ({ status }) => {
           <ItemMenu>
             <input
               type="color"
+              defaultValue={currentPropertiesKonva.color || "black"}
               onInput={(e: any) => handleChangeColor(e.target.value)}
             />
           </ItemMenu>

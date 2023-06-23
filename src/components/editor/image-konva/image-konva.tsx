@@ -55,7 +55,7 @@ const ImageKonva: React.FC<IOwnProps> = ({
         fill={initialProps.fill}
         onTap={onSelect}
         onClick={onSelect}
-        onMouseOver={onSelect}
+        onMouseDown={onSelect}
         onDragEnd={(e) => {
           setInitialProps({
             ...initialProps,

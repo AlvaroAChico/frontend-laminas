@@ -1,17 +1,19 @@
 import React from "react";
-import { Circle, Layer, Rect } from "react-konva";
-import { useAppSelector } from "../../../../app/hooks";
+import { Layer, Rect } from "react-konva";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   getActiveGlobalSheet,
   getCanvasHeight,
   getCanvasWidth,
   getSizeGlobalSheet,
+  updateActiveIDKonva,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
 
 interface IOwnProps {
   refLayer: any;
+  children: any;
 }
-const LayerEditor: React.FC<IOwnProps> = ({ refLayer }) => {
+const LayerEditor: React.FC<IOwnProps> = ({ refLayer, children }) => {
   const sizeGlobalSheet = useAppSelector(getSizeGlobalSheet);
   const activeSheet = useAppSelector(getActiveGlobalSheet);
   const canvasWidth = useAppSelector(getCanvasWidth);
@@ -24,6 +26,7 @@ const LayerEditor: React.FC<IOwnProps> = ({ refLayer }) => {
   const [layerPDFHeight, setLayerPDFHeight] = React.useState(
     sizeGlobalSheet[activeSheet - 1][1] * heightCalc
   );
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     const heightCalc =
@@ -40,7 +43,7 @@ const LayerEditor: React.FC<IOwnProps> = ({ refLayer }) => {
   });
 
   return (
-    <Layer ref={refLayer}>
+    <Layer ref={refLayer} width={layerPDFWidth} height={layerPDFHeight}>
       <Rect
         x={canvasWidth / 2 - layerPDFWidth / 2}
         y={canvasHeight / 2 - layerPDFHeight / 2}
@@ -50,7 +53,11 @@ const LayerEditor: React.FC<IOwnProps> = ({ refLayer }) => {
         shadowColor="#797979e6"
         shadowBlur={12}
         draggable={false}
+        onMouseDown={() => {
+          dispatch(updateActiveIDKonva(""));
+        }}
       />
+      {children}
     </Layer>
   );
 };

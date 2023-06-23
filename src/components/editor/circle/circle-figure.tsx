@@ -59,7 +59,7 @@ const CircleFigure: React.FC<IOwnProps> = ({
         fill={color}
         onTap={onSelect}
         onClick={onSelect}
-        onMouseOver={onSelect}
+        onMouseDown={onSelect}
         stroke={stroke}
         strokeWidth={sizeStroke}
         onDragEnd={(e) => {
@@ -89,6 +89,15 @@ const CircleFigure: React.FC<IOwnProps> = ({
         }}
         radiusX={50}
         radiusY={50}
+        onMouseEnter={(e: any) => {
+          // style stage container:
+          const container = e.target.getStage().container();
+          container.style.cursor = "pointer";
+        }}
+        onMouseLeave={(e: any) => {
+          const container = e.target.getStage().container();
+          container.style.cursor = "default";
+        }}
       />
       {isSelected && (
         <Transformer
