@@ -39,6 +39,7 @@ import { ArrowIosDownward } from "@styled-icons/evaicons-solid/ArrowIosDownward"
 import { Hand } from "@styled-icons/fa-solid/Hand";
 import { Cursor } from "@styled-icons/fluentui-system-filled/Cursor";
 import LogoElaminas from "../../../../assets/img/logo.svg";
+import { breakpoints } from "../../../../constants/breakpoints";
 
 const baseCenter = styled.div`
   display: flex;
@@ -101,10 +102,14 @@ const ItemMenuOption = styled.div`
   justify-content: center;
   align-items: center;
   gap: 15px;
+`;
 
-  > div:nth-child(1) img {
-    width: 100px;
-    margin-right: 20px;
+const WrapperBarLogo = styled.div`
+  width: 100px;
+  margin-right: 20px;
+
+  ${breakpoints.tabletS} {
+    display: none;
   }
 `;
 
@@ -125,6 +130,12 @@ const WrapperPosition = styled.div`
 
   > svg {
     width: 15px;
+  }
+
+  ${breakpoints.tabletS} {
+    > span {
+      display: none;
+    }
   }
 `;
 const DropdownPosition = styled.div`
@@ -177,6 +188,12 @@ const WrapperDownload = styled.div`
 
     > svg {
       width: 15px;
+    }
+
+    ${breakpoints.tabletS} {
+      > span {
+        display: none;
+      }
     }
   }
 `;
@@ -311,9 +328,9 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
   return (
     <MenuBarWrapper>
       <ItemMenuOption>
-        <div>
+        <WrapperBarLogo>
           <img src={LogoElaminas} />
-        </div>
+        </WrapperBarLogo>
         {activeComponent.includes("text") && <OptionsText />}
         {activeComponent.includes("image") && (
           <WrapperOptionsImage>
@@ -354,7 +371,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
           {listComponentsKonva.length > 0 && activeComponent != "" && (
             <WrapperPosition onClick={handleShowPosition}>
               <Layers />
-              Position
+              <span>Position</span>
             </WrapperPosition>
           )}
           {statusMenuPosition && (
@@ -385,7 +402,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
         <ItemGeneralMenu>
           <WrapperDownload>
             <button onClick={downloadActivePanel}>
-              Descargar
+              <span>Descargar</span>
               <ArrowDownload />
             </button>
           </WrapperDownload>

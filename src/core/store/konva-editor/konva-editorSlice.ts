@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import { ComponentKonvaItem } from "../../../features/editor-konva/editor-konva";
+import { breakpoints } from "../../../constants/breakpoints";
 
 export interface GlobalCoordText {
   x: number;
@@ -40,6 +41,10 @@ export interface EditorState {
   isActivePanelEditor: boolean; // Flag para mostrar o desaparecer menus flotantes
   isApplicationPaused: boolean;
   statusCursorCanva: number;
+  statusBSSettings: boolean; // Menu solo para movil
+  statusBSImage: boolean; // Menu solo para movil
+  statusBSText: boolean; // Menu solo para movil
+  statusBSShape: boolean; // Menu solo para movil
 }
 
 const initialState: EditorState = {
@@ -49,7 +54,10 @@ const initialState: EditorState = {
     [297, 420],
   ],
   canvasWidth: window.innerWidth - 10,
-  canvasHeight: window.innerHeight - 50,
+  canvasHeight:
+    window.innerWidth < breakpoints.tabletSValue
+      ? window.innerHeight - 110
+      : window.innerHeight - 50,
   activeGlobalSheet: 1,
   activeMenuOption: 0,
   listComponentsKonva: [],
@@ -84,6 +92,10 @@ const initialState: EditorState = {
   isActivePanelEditor: true,
   isApplicationPaused: false,
   statusCursorCanva: 1,
+  statusBSSettings: false,
+  statusBSImage: false,
+  statusBSText: false,
+  statusBSShape: false,
 };
 
 export const konvaEditorSlice = createSlice({

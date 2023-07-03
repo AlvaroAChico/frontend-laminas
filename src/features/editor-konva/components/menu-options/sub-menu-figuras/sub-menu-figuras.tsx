@@ -15,10 +15,10 @@ import { CircleInitialProps } from "../../../../../components/editor/circle/circ
 import { ComponentKonvaItem } from "../../../editor-konva";
 import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 
-const WrapperMenuFiguras = styled.div<{ isVisible: boolean }>`
-  background: ${customPalette.grayLightColor};
-  box-shadow: 0px 4px 15px 6px rgba(98, 98, 98, 0.25);
-  position: absolute;
+const WrapperMenuFiguras = styled.div<{
+  isVisible: boolean;
+  isMobileActive: boolean;
+}>`
   width: fit-content;
   min-width: 300px;
   max-width: 600px;
@@ -28,6 +28,12 @@ const WrapperMenuFiguras = styled.div<{ isVisible: boolean }>`
   padding: 10px;
   z-index: 1;
   cursor: auto;
+
+  ${(p) =>
+    p.isMobileActive
+      ? ""
+      : `position: absolute; background: ${customPalette.grayLightColor};
+      box-shadow: 0px 4px 15px 6px rgba(98, 98, 98, 0.25);`};
   ${(p) => (p.isVisible ? "" : `display: none; width: 0; height: 0;`)};
 `;
 
@@ -78,9 +84,14 @@ interface IOwnProps {
   isVisible: boolean;
   canvaRef: MutableRefObject<HTMLCanvasElement | undefined>;
   layerRef: MutableRefObject<any>;
+  isMobileActive?: boolean;
 }
 
-const SubMenuFiguras: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
+const SubMenuFiguras: React.FC<IOwnProps> = ({
+  isVisible,
+  layerRef,
+  isMobileActive = false,
+}) => {
   const dispatch = useAppDispatch();
 
   const handleSelectCircle = () => {
@@ -139,7 +150,11 @@ const SubMenuFiguras: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
   };
 
   return (
-    <WrapperMenuFiguras id="menuFiguras" isVisible={isVisible}>
+    <WrapperMenuFiguras
+      id="menuFiguras"
+      isVisible={isVisible}
+      isMobileActive={isMobileActive}
+    >
       <HeaderText>
         <h3>Panel Figuras</h3>
         <p>

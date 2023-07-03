@@ -8,6 +8,7 @@ import {
   getSizeGlobalSheet,
   updateActiveIDKonva,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
+import { breakpoints } from "../../../../constants/breakpoints";
 
 interface IOwnProps {
   refLayer: any;
@@ -29,15 +30,19 @@ const LayerEditor: React.FC<IOwnProps> = ({ refLayer, children }) => {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
+    const valueReduce =
+      window.innerWidth < breakpoints.tabletSValue ? 0.8 : 0.3;
     const heightCalc =
-      window.innerHeight / sizeGlobalSheet[activeSheet - 1][1] - 0.3;
+      window.innerHeight / sizeGlobalSheet[activeSheet - 1][1] - valueReduce;
     setLayerPDFWidth(sizeGlobalSheet[activeSheet - 1][0] * heightCalc);
     setLayerPDFHeight(sizeGlobalSheet[activeSheet - 1][1] * heightCalc);
   }, [activeSheet]);
 
   window.addEventListener("resize", () => {
+    const valueReduce =
+      window.innerWidth < breakpoints.tabletSValue ? 0.8 : 0.3;
     const heightCalc =
-      window.innerHeight / sizeGlobalSheet[activeSheet - 1][1] - 0.3;
+      window.innerHeight / sizeGlobalSheet[activeSheet - 1][1] - valueReduce;
     setLayerPDFWidth(sizeGlobalSheet[activeSheet - 1][0] * heightCalc);
     setLayerPDFHeight(sizeGlobalSheet[activeSheet - 1][1] * heightCalc);
   });

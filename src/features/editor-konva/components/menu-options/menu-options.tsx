@@ -8,15 +8,14 @@ import { Shapes } from "@styled-icons/ionicons-solid/Shapes";
 import { ArrowIosBack } from "@styled-icons/evaicons-solid/ArrowIosBack";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
-  getActiveGlobalSheet,
   getActiveMenuOption,
-  updateActiveGlobalSheet,
   updateActiveMenuOption,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
 import SubMenuGeneral from "./sub-menu-general/sub-menu-general";
 import SubMenuImagen from "./sub-menu-imagen/sub-menu-imagen";
 import SubMenuTexto from "./sub-menu-texto/sub-menu-texto";
 import SubMenuFiguras from "./sub-menu-figuras/sub-menu-figuras";
+import { breakpoints } from "../../../../constants/breakpoints";
 
 const WrapperMenu = styled.div`
   position: absolute;
@@ -24,6 +23,10 @@ const WrapperMenu = styled.div`
   left: 2%;
   background: ${customPalette.primaryColor};
   border-radius: 15px;
+
+  ${breakpoints.tabletS} {
+    display: none;
+  }
 `;
 
 const baseCenterWithIcon = styled.div`

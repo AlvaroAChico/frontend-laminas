@@ -36,6 +36,7 @@ import ModalImageKonva from "../editor/components/modal-image-konva/modal-image-
 import MenuBarOptions from "./components/menu-bar-options/menu-bar-options";
 import downloadAnimation from "../../assets/json/download_animation.json";
 import Lottie from "lottie-react";
+import BottomNavigationPanel from "./components/bottom-navigation-panel/bottom-navigation-panel";
 
 const WrapperPage = styled.div`
   position: relative;
@@ -148,6 +149,9 @@ const LottieContainer = styled.div`
     backdrop-filter: blur(30px);
   }
 `;
+const WrapperKeyPress = styled.div`
+  position: relative;
+`;
 export interface ComponentKonvaItem {
   id: string;
   type: KonvaTypeItem;
@@ -217,7 +221,7 @@ const EditorKonva: React.FC = () => {
   return (
     <WrapperPage>
       <MenuBarOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
-      <div tabIndex={1} onKeyDown={handleReadKeyDown}>
+      <WrapperKeyPress tabIndex={1} onKeyDown={handleReadKeyDown}>
         <MainStage
           ref={canvaRef}
           width={canvasWidth}
@@ -323,11 +327,15 @@ const EditorKonva: React.FC = () => {
             </Html>
           </Layer>
         </MainStage>
-      </div>
-      <MenuOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
+        <MenuOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
+        <ZoomOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
+        <OpenAIOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
+      </WrapperKeyPress>
+      <BottomNavigationPanel
+        canvaGlobalRef={canvaRef}
+        layerGlobalRef={layerRef}
+      />
       {/* <SelectedOptions /> */}
-      <ZoomOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
-      <OpenAIOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
       <ModalImageKonva />
       {statusApplication && (
         <BackdropDownload>
