@@ -14,6 +14,7 @@ import { usePostIAForAppMutation } from "../../../../core/store/editor/editorAPI
 import { customPalette } from "../../../../config/theme/theme";
 import { KonvaTypeItem } from "../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../editor-konva";
+import { breakpoints } from "../../../../constants/breakpoints";
 
 const WrapperOptions = styled.div`
   position: absolute;
@@ -24,6 +25,11 @@ const WrapperOptions = styled.div`
   align-items: center;
   justify-content: center;
   row-gap: 15px;
+
+  ${breakpoints.tabletS} {
+    bottom: 5px;
+    right: 5px;
+  }
 `;
 const ContainerButton = styled.div`
   cursor: pointer;
@@ -45,6 +51,12 @@ const MainBoxArturito = styled.div`
   bottom: 60px;
   left: -300px;
   right: 60px;
+
+  ${breakpoints.tabletS} {
+    left: -210px;
+    bottom: 90px;
+    right: 10px;
+  }
 `;
 const BodyCardArturito = styled.div`
   width: 100%;
@@ -129,7 +141,7 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      console.log("KeyUp Arturito", initialQuestion);
+      // console.log("KeyUp Arturito", initialQuestion);
       handleQuestionArturito(initialQuestion);
     }
   };

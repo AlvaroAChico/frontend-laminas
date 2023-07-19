@@ -1,12 +1,13 @@
 import React from "react";
 import Cookies from "js-cookie";
-import EditorKonva from "./features/editor-konva/editor-konva";
 import { useAppDispatch } from "./app/hooks";
 import {
   updateCanvasHeight,
   updateCanvasWidth,
 } from "./core/store/konva-editor/konva-editorSlice";
 import { breakpoints } from "./constants/breakpoints";
+import { Outlet } from "react-router-dom";
+import { updateValueScroll } from "./core/store/landing/landingSlice";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,9 +23,15 @@ const App: React.FC = () => {
     dispatch(updateCanvasWidth(window.innerWidth));
   });
 
-  // return <EditorElaminas />;
-  // return <ElaminasEditor />;
-  return <EditorKonva />;
+  window.addEventListener("scroll", (e: any) => {
+    dispatch(updateValueScroll(window.scrollY));
+  });
+
+  return (
+    <React.Fragment>
+      <Outlet />
+    </React.Fragment>
+  );
 };
 
 export default App;

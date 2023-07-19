@@ -16,6 +16,7 @@ import { TextAlignRight } from "@styled-icons/fluentui-system-filled/TextAlignRi
 import { Trash } from "@styled-icons/fa-solid/Trash";
 import { ChevronUp } from "@styled-icons/boxicons-regular/ChevronUp";
 import { ChevronDown } from "@styled-icons/boxicons-regular/ChevronDown";
+import { breakpoints } from "../../../../../constants/breakpoints";
 
 const baseCenter = styled.div`
   display: flex;
@@ -52,6 +53,17 @@ const WrapperOptionsText = styled.div`
     width: 100%;
     outline: none;
     border: 0.5px solid #b4b4b4;
+
+    ${breakpoints.tabletS} {
+      min-width: 100px;
+    }
+  }
+
+  ${breakpoints.tabletS} {
+    max-width: 160px;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
   }
 `;
 
@@ -142,6 +154,10 @@ const CustomTrash = styled(Trash)`
   margin: auto;
   margin-left: 6px;
   cursor: pointer;
+
+  ${breakpoints.tabletS} {
+    width: 40px;
+  }
 `;
 
 const OptionsText: React.FC = () => {
@@ -329,7 +345,9 @@ const OptionsText: React.FC = () => {
           </option>
         </select>
       </ItemMenu>
-      <CustomTrash onClick={handleDeleteCurrentObject} />
+      <div>
+        <CustomTrash onClick={handleDeleteCurrentObject} />
+      </div>
     </WrapperOptionsText>
   );
 };

@@ -32,11 +32,13 @@ import GlobalItemKonva, {
 } from "./components/global-item-konva/global-item-konva";
 import OpenAIOptions from "./components/openai-options/openai-options";
 import { Html } from "react-konva-utils";
-import ModalImageKonva from "../editor/components/modal-image-konva/modal-image-konva";
+import ModalImageKonva from "./components/modal-image-konva/modal-image-konva";
 import MenuBarOptions from "./components/menu-bar-options/menu-bar-options";
 import downloadAnimation from "../../assets/json/download_animation.json";
 import Lottie from "lottie-react";
 import BottomNavigationPanel from "./components/bottom-navigation-panel/bottom-navigation-panel";
+import Cookies from "js-cookie";
+import { usePostLaminasByUUIDMutation } from "../../core/store/editor/editorAPI";
 
 const WrapperPage = styled.div`
   position: relative;
@@ -113,7 +115,7 @@ const LottieContainer = styled.div`
     position: absolute;
     text-align: center;
     z-index: 2;
-    top 0;
+    top: 0;
     font-size: 14px;
   }
   ::after {
@@ -185,6 +187,37 @@ const EditorKonva: React.FC = () => {
   const statusApplication = useAppSelector(getStatusApplication);
   const statusCursorCanva = useAppSelector(getStatusCursorCanva);
   const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    const laminaCode = Cookies.get("e_co");
+    if (laminaCode) {
+      searchLaminaByUUID(laminaCode);
+    }
+  }, []);
+
+  const [searchLaminaByUUID, resultSearch] = usePostLaminasByUUIDMutation();
+
+  React.useEffect(() => {
+    const activeID = Date.now();
+    if (
+      resultSearch?.data?.data[0]?.tbllmnaimgo != null &&
+      resultSearch?.data?.data[0]?.tbllmnaimgo != "" &&
+      resultSearch?.data?.data[0]?.tbllmnaimgo != undefined
+    ) {
+      dispatch(
+        addItemKonva({
+          id: `image${activeID}`,
+          type: KonvaTypeItem.IMAGE,
+          x: layerRef.current.children[0].attrs.x,
+          y: layerRef.current.children[0].attrs.y,
+          height: 200,
+          width: 300,
+          image: resultSearch?.data?.data[0]?.tbllmnaimgo,
+        } as ComponentKonvaItem)
+      );
+      dispatch(updateActiveIDKonva(`image${activeID}`));
+    }
+  }, [resultSearch]);
 
   const layerRef = React.useRef<any>();
   const canvaRef = React.useRef<HTMLCanvasElement>();

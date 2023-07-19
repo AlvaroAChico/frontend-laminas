@@ -26,9 +26,6 @@ import { ComponentKonvaItem } from "../../editor-konva";
 import ArturitoIMG from "../../../../assets/img/arturito-openai.png";
 
 const WrapperBottomNavigation = styled.div`
-  // position: absolute;
-  // bottom: 0;
-  // padding: 10px;
   width: 100%;
   z-index: 3;
 
@@ -39,8 +36,7 @@ const WrapperBottomNavigation = styled.div`
 
 const BottomNavigation = styled.div`
   height: 60px;
-  background: red;
-  border-radius: 50px;
+  background: #383e47;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-around;
@@ -48,17 +44,22 @@ const BottomNavigation = styled.div`
   flex-direction: row;
 `;
 const ItemNavigation = styled.div`
-  background: blue;
   width: 25%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius 50px;
   cursor: pointer;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  row-gap: 2px;
 
   > svg {
-    width: 15px;
+    width: 20px;
+  }
+  > span {
+    font-size: 12px;
   }
 `;
 const WrapperBodySettings = styled.div<{ isImage: boolean }>`
@@ -247,7 +248,7 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      console.log("KeyUp Arturito", initialQuestion);
+      // console.log("KeyUp Arturito", initialQuestion);
       handleQuestionArturito(initialQuestion);
     }
   };
@@ -289,15 +290,19 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
       <BottomNavigation>
         <ItemNavigation onClick={() => setStatusSettings(true)}>
           <SettingsOutline />
+          <span>General</span>
         </ItemNavigation>
         <ItemNavigation onClick={() => setStatusImage(true)}>
           <CardImage />
+          <span>Imagen</span>
         </ItemNavigation>
         <ItemNavigation onClick={() => setStatusText(true)}>
           <Text />
+          <span>Texto</span>
         </ItemNavigation>
         <ItemNavigation onClick={() => setStatusShapes(true)}>
           <Shapes />
+          <span>Figuras</span>
         </ItemNavigation>
       </BottomNavigation>
       <BottomSheet

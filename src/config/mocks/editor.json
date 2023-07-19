@@ -1,0 +1,44 @@
+{
+    "plan": {
+        "id": "1p93djq211",
+        "name": "basico"
+    },
+    "general": {
+        "watermark": false,
+        "enabled": [
+            "A4",
+            "A3",
+            "Oficio"
+        ]
+    },
+    "image": {
+        "enabled": [
+            "jpg",
+            "jpg,png",
+            "jpg,png,jpeg"
+        ]
+    },
+    "text": {
+        "enabled": "free",
+        "basic": [
+            "Arial",
+            "Time new roman"
+        ],
+        "premium": [
+            "Arial",
+            "Time new roman",
+            "forte"
+        ]
+    },
+    "figures": {},
+    "icons": {},
+    "arturito": {
+        "unlimited": false,
+        "amount": 30
+    },
+    "downloads": {
+        "amount": 30,
+        "currentDownloads": 20,
+        "missingDownloads": 30
+    }
+}

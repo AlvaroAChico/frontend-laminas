@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ImageBaseProps } from "../../../features/editor/components/editor/components/image-base/image-base";
-import { TextBaseProps } from "../../../features/editor/components/editor/components/text-base/text-base";
 import { RootState } from "../../store";
+import { TextBaseProps } from "../../../features/editor-konva/components/text-base/text-base";
+import { ImageBaseProps } from "../../../features/editor-konva/components/image-base/image-base";
 import { LaminaDefaultProps, LaminaResponse } from "./editorAPI";
 
 export interface EditorState {

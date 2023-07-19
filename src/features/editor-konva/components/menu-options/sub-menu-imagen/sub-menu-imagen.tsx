@@ -17,6 +17,7 @@ import {
 import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../../editor-konva";
 import imageTest from "../../../../../assets/img/image_test.jpg";
+import { ListenerMiddlewareInstance } from "@reduxjs/toolkit";
 
 const WrapperMenuImagen = styled.div<{
   isVisible: boolean;
@@ -246,12 +247,16 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
 
   const handleMoreResults = () => {
     setPageGetLaminas(pageGetLaminas + 1);
-    searchLaminaByWord(initialSearch);
   };
+
+  React.useEffect(() => {
+    searchLaminaByWord(initialSearch);
+  }, [pageGetLaminas]);
+
   React.useEffect(() => {
     if (resultSearch.data != null) {
       setDataPostResult(resultSearch.data);
-      const newData = listLaminas;
+      const newData: LaminaDefaultProps[] = [];
       resultSearch.data.data.map((item) => newData.push(item));
       setListLaminas(newData);
     }
@@ -270,7 +275,7 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
         x: layerRef.current.children[0].attrs.x,
         y: layerRef.current.children[0].attrs.y,
         height: 200,
-        width: 200,
+        width: 300,
         image: srcImage,
       } as ComponentKonvaItem)
     );
@@ -306,9 +311,9 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
           />
           <WrapperListLaminas>
             <WrapperItemsResults>
-              <LaminaItem onClick={handleAddImage(imageTest)}>
+              {/* <LaminaItem onClick={handleAddImage(imageTest)}>
                 <img src={imageTest} />
-              </LaminaItem>
+              </LaminaItem> */}
               {listLaminas.map((lamina) => (
                 <LaminaItem
                   key={`${Date.now()}${lamina.tbllmnanomb}`}

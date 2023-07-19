@@ -217,7 +217,7 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      console.log("KeyUp Arturito", initialQuestion);
+      // console.log("KeyUp Arturito", initialQuestion);
       handleQuestionArturito(initialQuestion);
     }
   };

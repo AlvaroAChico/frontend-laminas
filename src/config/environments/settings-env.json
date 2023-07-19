@@ -6,8 +6,9 @@
         "urlBase": "https://elaminas.com"
     },
     "api": {
-        "laminas": "https://elaminas.com/api"
+        "laminas": "https://elaminas.com/api",
+        "landing": "https://landing.elaminas.com/api"
     },
     "i18nDebug": false,
-    "environment": "dev"
+    "environment": "prod"
 }
