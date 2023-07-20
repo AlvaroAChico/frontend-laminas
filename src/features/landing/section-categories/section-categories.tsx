@@ -10,6 +10,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { listCategories } from "../../../config/mocks/list-categories";
 import CardCategory from "./components/card-category/card-category";
+import SectionMax from "../../../components/section-max/section-max";
 
 const WrapperCategories = styled.div`
   height: 100%;
@@ -115,7 +116,9 @@ const SectionCategories: React.FC = () => {
 
   return (
     <WrapperCategories>
-      <CustomTitle title="Clasificación por cursos" />
+      <SectionMax>
+        <CustomTitle title="Clasificación por cursos" />
+      </SectionMax>
       <WrapperCategoriesMain>
         <WrapperNavigationPrev
           onClick={() => {

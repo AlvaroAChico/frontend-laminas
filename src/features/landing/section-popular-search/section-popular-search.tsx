@@ -25,11 +25,9 @@ const ItemPopular = styled.div`
 `;
 const WrapperBookImg = styled.img`
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: -100px;
+  left: -100px;
   width: 280px;
-  margin-left: -100px;
-  margin-bottom: -100px;
   opacity: 0.2;
 `;
 
@@ -37,7 +35,9 @@ const SectionPopularSearch: React.FC = () => {
   return (
     <WrapperPopularSearch>
       <WrapperBookImg src={BookImg} />
-      <CustomTitle title="Búsquedas populares" />
+      <SectionMax>
+        <CustomTitle title="Búsquedas populares" />
+      </SectionMax>
       <SectionMax>
         <WrapperPopularSearch>
           {listPopularSearch.map((search) => (

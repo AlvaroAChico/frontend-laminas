@@ -1,5 +1,6 @@
 export const breakpoints = {
   default: "@media (min-width: 1024px)",
+  laptop: "@media (max-width: 1200px)",
   tabletL: "@media (max-width: 1024px)",
   tabletS: "@media (max-width: 768px)",
   phoneL: "@media (max-width: 580px)",

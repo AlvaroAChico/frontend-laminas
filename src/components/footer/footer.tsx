@@ -39,19 +39,16 @@ const SocialGrid = styled(Grid)`
 `;
 const WrapperBookImg = styled.img`
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: -20px;
+  left: -50px;
   width: 120px;
-  margin-left: -50px;
-  margin-bottom: -20px;
   opacity: 0.2;
 `;
 const WrapperRuleImg = styled.img`
   position: absolute;
   top: 0;
-  right: 0;
+  right: -60px;
   width: 150px;
-  margin-right: -60px;
   opacity: 0.2;
 `;
 

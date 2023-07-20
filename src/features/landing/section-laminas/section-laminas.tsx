@@ -12,6 +12,7 @@ import PencilImg from "../../../assets/img/pencil_icon.png";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import SectionMax from "../../../components/section-max/section-max";
 
 const WrapperSlider = styled.div`
   height: 100%;
@@ -64,8 +65,7 @@ const ItemSlick = styled.div`
 
 const WrapperPencilImg = styled.img`
   position: absolute;
-  margin-right: -130px;
-  right: 0;
+  right: -130px;
   width: 350px;
   bottom: 0;
   opacity: 0.2;
@@ -129,18 +129,20 @@ const SectionLaminas: React.FC = () => {
   return (
     <WrapperSlider>
       <WrapperPencilImg src={PencilImg} />
-      <CustomTitle
-        title="Láminas recomendadas del mes"
-        primaryAction={
-          <CustomButtom
-            style="SECONDARY"
-            borderStyle="OUTLINE"
-            title="Ver todas las láminas"
-            action={() => console.log}
-            Icon={ArrowIosForwardOutline}
-          />
-        }
-      />
+      <SectionMax>
+        <CustomTitle
+          title="Láminas recomendadas del mes"
+          primaryAction={
+            <CustomButtom
+              style="SECONDARY"
+              borderStyle="OUTLINE"
+              title="Ver todas las láminas"
+              action={() => console.log}
+              Icon={ArrowIosForwardOutline}
+            />
+          }
+        />
+      </SectionMax>
       <WrapperSliderMain>
         <WrapperNavigationPrev
           onClick={() => {
