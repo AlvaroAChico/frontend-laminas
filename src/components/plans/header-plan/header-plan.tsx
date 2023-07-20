@@ -5,17 +5,41 @@ import { StarFill } from '@styled-icons/bootstrap/StarFill'
 
 const HeaderPlanStyle = styled.div`
   position: relative;
-  border-radius: 20px;
+  border-radius: 15px;
   background: white;
   box-shadow: 0px 8px 6px 6px rgba(54, 54, 54, 0.17);
+  padding: 15px 0;
+
+  > img{
+    max-width: 90px;
+  }
+
+  > h6 {
+    text-transform: uppercase;
+    font-weight: 600;
+  }
 `
-const BarHeader = styled.div`
+const BarHeaderBase = styled.div`
+  border-radius: 50px 50px 0 0;
   position: absolute;
-  border-radius: 20px 20px 0 0;
-  height: 10px;
+  height: 15px;
+  width: 100%;
+  top: 0px;
+`
+const BarHeaderBasic = styled(BarHeaderBase)`
+  background: #0066FF;
+`
+const BarHeaderMedium = styled(BarHeaderBase)`
+  background: #55B65E;
+`
+const BarHeaderPremium = styled(BarHeaderBase)`
+  background: #BF953F;
 `
 
 const BaseDetails = styled.div`
+  > div{
+    opacity: 0.5;
+  }
   > div:nth-child(1){
     top: 30px;
     left: 25px;
@@ -72,30 +96,38 @@ interface IOwnProps{
 const HeaderPlan: React.FC<IOwnProps> = ({ title, image, animation, isRecommended }) => {
   return (
     <HeaderPlanStyle>
-        <BarHeader /> 
         {animation == "BASIC" && (
-          <ListDetailsBasic>
-            <div />
-            <div />
-            <div />
-            <div />
-          </ListDetailsBasic>
+          <>
+            <BarHeaderBasic /> 
+            <ListDetailsBasic>
+              <div />
+              <div />
+              <div />
+              <div />
+            </ListDetailsBasic>
+          </>
         )}
         {animation == "MEDIUM" && (
-          <ListDetailsMedium>
-            <div />
-            <div />
-            <div />
-            <div />
-          </ListDetailsMedium>
+          <>
+            <BarHeaderMedium />
+            <ListDetailsMedium>
+              <div />
+              <div />
+              <div />
+              <div />
+            </ListDetailsMedium>
+          </>
         )}
         {animation == "PREMIUM" && (
-          <ListDetailsPremium>
-            <div><StarFill /></div>
-            <div><StarFill /></div>
-            <div><StarFill /></div>
-            <div><StarFill /></div>
-          </ListDetailsPremium>
+          <>
+            <BarHeaderPremium />
+            <ListDetailsPremium>
+              <div><StarFill /></div>
+              <div><StarFill /></div>
+              <div><StarFill /></div>
+              <div><StarFill /></div>
+            </ListDetailsPremium>
+          </>
         )}
         <Box
           component="img"
@@ -107,9 +139,11 @@ const HeaderPlan: React.FC<IOwnProps> = ({ title, image, animation, isRecommende
           alt="Logo de Elaminas"
           src={image}
         />
-        <Typography>{title}</Typography>
+        {animation == "BASIC" && (<Typography variant="subtitle2" component="h6" color="#0066FF">{title}</Typography>)}
+        {animation == "MEDIUM" && (<Typography variant="subtitle2" component="h6" color="#55B65E">{title}</Typography>)}
+        {animation == "PREMIUM" && (<Typography variant="subtitle2" component="h6" color="#BF953F">{title}</Typography>)}
     </HeaderPlanStyle>
   )
 }
 
-export default HeaderPlan
+export default HeaderPlan;
