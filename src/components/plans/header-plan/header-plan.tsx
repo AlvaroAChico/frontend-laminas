@@ -9,6 +9,8 @@ const HeaderPlanStyle = styled.div`
   background: white;
   box-shadow: 0px 8px 6px 6px rgba(54, 54, 54, 0.17);
   padding: 15px 0;
+  height: 100%;
+  width: 100%;
 
   > img{
     max-width: 90px;

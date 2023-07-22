@@ -16,7 +16,7 @@ export const listLaminas = [
     nroView: 300,
   },
   {
-    id: 1,
+    id: 2,
     image: Lamina02Img,
     nroLamina: "016",
     name: "Mapa Hidrográfico",
@@ -25,7 +25,7 @@ export const listLaminas = [
     nroView: 300,
   },
   {
-    id: 1,
+    id: 3,
     image: Lamina03Img,
     nroLamina: "017",
     name: "Vertientes Hidrográficas",
@@ -34,7 +34,7 @@ export const listLaminas = [
     nroView: 300,
   },
   {
-    id: 1,
+    id: 4,
     image: Lamina04Img,
     nroLamina: "018",
     name: "Regiones Naturales",
@@ -43,7 +43,7 @@ export const listLaminas = [
     nroView: 300,
   },
   {
-    id: 1,
+    id: 5,
     image: Lamina05Img,
     nroLamina: "019",
     name: "Organización Cultural",
@@ -52,7 +52,7 @@ export const listLaminas = [
     nroView: 300,
   },
   {
-    id: 1,
+    id: 6,
     image: Lamina06Img,
     nroLamina: "020",
     name: "Imperio Incaico",

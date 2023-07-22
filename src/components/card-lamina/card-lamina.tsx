@@ -129,6 +129,7 @@ const CardLamina: React.FC<IOwnProps> = ({
   return (
     <Card
       sx={{
+        width: "100%",
         maxWidth: 345,
         margin: "auto",
         borderRadius: "20px",

@@ -7,6 +7,8 @@ import { Menu } from "@styled-icons/evaicons-solid/Menu";
 import { theme } from "../../config/theme/theme";
 import { useAppSelector } from "../../app/hooks";
 import { getValueScroll } from "../../core/store/landing/landingSlice";
+import { NavLink } from "react-router-dom";
+import './navbar-styles.css'
 
 const WrapperNavbar = styled.div<{ valueScroll: number }>`
   position: fixed;
@@ -57,13 +59,40 @@ const Navbar: React.FC = () => {
               columnGap={2}
             >
               <Grid xs={2}>
-                <Typography>Inicio</Typography>
+                <Typography>
+                  <NavLink
+                    to="/"
+                    className={({ isActive, isPending }) =>
+                      isPending ? "pending" : isActive ? "link-active" : "link-inactive"
+                    }
+                  >
+                    Inicio
+                  </NavLink>
+                </Typography>
               </Grid>
               <Grid xs={2}>
-                <Typography>Láminas</Typography>
+                <Typography>
+                  <NavLink
+                    to="/laminas"
+                    className={({ isActive, isPending }) =>
+                      isPending ? "pending" : isActive ? "link-active" : "link-inactive"
+                    }
+                  >
+                    Láminas
+                  </NavLink>
+                </Typography>
               </Grid>
               <Grid xs={2}>
-                <Typography>Planes</Typography>
+                <Typography>
+                  <NavLink
+                    to="/planes"
+                    className={({ isActive, isPending }) =>
+                      isPending ? "pending" : isActive ? "link-active" : "link-inactive"
+                    }
+                  >
+                    Planes
+                  </NavLink>
+                </Typography>
               </Grid>
               <Grid xs={2} textAlign={"right"}>
                 <CustomButtom

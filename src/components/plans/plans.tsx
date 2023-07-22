@@ -11,31 +11,85 @@ const TableStylesMain = styled.table`
   border-collapse: separate;
   border-spacing: 20px 10px;
 `;
-const ContainerBodyTable = styled.tbody`
+const ContainerHeadTable = styled.thead`
+  > tr th{
+    padding: 20px;
+  }
 
-> tr {
-  background: #f3f3f3;
+ > tr th:nth-child(3) > div img {
+   max-width: 95px !important;
+  }
+  > tr th:nth-child(4) > div img {
+    max-width: 110px !important;
+  }
+`
+
+const ContainerBodyTable = styled.tbody`
+  > tr {
+    background: #f3f3f3;
+    border-radius: 20px;
+  }
+  
+  > tr:nth-child(10){
+    background: white !important;
+
+    > td {
+      border: none !important;
+    }
+  }
+
+  > tr td:nth-child(1){
+    padding: 0 10px;
+  }
+  > tr td:nth-child(n+2){
+    text-align: center;
+    padding: 10px;
+    max-width: 150px;
+  }
+  > tr td:nth-child(2){
+    border-top: 0.5px solid #0066FF;
+    border-bottom: 0.5px solid #0066FF;
+  }
+  > tr td:nth-child(3){
+    border-top: 0.5px solid #55B65E;
+    border-bottom: 0.5px solid #55B65E;
+  }
+  > tr td:nth-child(4){
+    border-top: 0.5px solid #BF953F;
+    border-bottom: 0.5px solid #BF953F;
+  }
+`
+
+const ButtonBase = styled.div`
+  box-shadow: 0px 6px 12px 10px rgba(182, 182, 182, 0.25);
   border-radius: 20px;
-}
-> tr td:nth-child(1){
-  padding: 0 10px;
-}
-> tr td:nth-child(n+2){
-  text-align: center;
-  padding: 6px;
-}
-> tr td:nth-child(2){
-  border-top: 0.5px solid #0066FF;
-  border-bottom: 0.5px solid #0066FF;
-}
-> tr td:nth-child(3){
-  border-top: 0.5px solid #55B65E;
-  border-bottom: 0.5px solid #55B65E;
-}
-> tr td:nth-child(4){
-  border-top: 0.5px solid #BF953F;
-  border-bottom: 0.5px solid #BF953F;
-}
+  padding: 10px 20px;
+  cursor: pointer;
+  color: white;
+  width: 100%;
+`
+const CustomButtonBasic = styled(ButtonBase)`
+  background: #6FA4F2;
+`
+const CustomButtonMedium = styled(ButtonBase)`
+  background: #55B65E;
+`
+const CustomButtonPremium = styled(ButtonBase)`
+  background:linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+`
+
+const ContainerButtonsPay = styled.tr`
+  background: white !important;
+
+  > td {
+    border: none !important;
+  }
+  > td:nth-child(2){
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 400px !important;
+  }
 `
 
 interface IOwnProps {
@@ -51,20 +105,20 @@ const Plans: React.FC<IOwnProps> = ({
 }) => {
   return (
     <TableStylesMain>
-      <thead>
+      <ContainerHeadTable>
         <tr>
           <th />
           <th><HeaderPlan title="Básico" image={Plan01Img} animation="BASIC" isRecommended={false}/></th>
           <th><HeaderPlan title="Intermedio" image={Plan02Img} animation="MEDIUM" isRecommended={true}/></th>
           <th><HeaderPlan title="Premium" image={Plan03Img} animation="PREMIUM" isRecommended={false}/></th>
         </tr>
-      </thead>
+      </ContainerHeadTable>
       <ContainerBodyTable>
         <tr>
           <td><Typography variant="caption" component="span" fontWeight={"600"}>Precio</Typography></td>
-          <td><Typography variant="h5" component="h5" fontWeight={"600"} color="#0066FF">Free</Typography></td>
-          <td><Typography variant="h5" component="h5" fontWeight={"600"} color="#55B65E"><Typography variant="caption" component="span" fontWeight={600}>s/</Typography> 19.90</Typography></td>
-          <td><Typography variant="h5" component="h5" fontWeight={"600"} color="#BF953F"><Typography variant="caption" component="span" fontWeight={600}>s/</Typography> 29.90</Typography></td>
+          <td><Typography variant="h4" component="h4" fontWeight={"600"} color="#0066FF">Free</Typography></td>
+          <td><Typography variant="h4" component="h4" fontWeight={"600"} color="#55B65E"><Typography variant="caption" component="span" fontWeight={600}>s/</Typography> 19.90</Typography></td>
+          <td><Typography variant="h4" component="h4" fontWeight={"600"} color="#BF953F"><Typography variant="caption" component="span" fontWeight={600}>s/</Typography> 29.90</Typography></td>
         </tr>
         <tr>
           <td><Typography variant="caption" component="span" fontWeight={"600"}>Editor</Typography></td>
@@ -108,12 +162,24 @@ const Plans: React.FC<IOwnProps> = ({
           <td><Typography variant="caption" component="span">Soporte comercial</Typography></td>
           <td><Typography variant="caption" component="span">Soporte 24/7</Typography></td>
         </tr>
+        <ContainerButtonsPay>
+          <td />
+          <td>
+            <CustomButtonBasic>Registrarme</CustomButtonBasic>
+          </td>
+          <td><CustomButtonMedium>Comprar</CustomButtonMedium></td>
+          <td><CustomButtonPremium>Comprar</CustomButtonPremium></td>
+        </ContainerButtonsPay>
         <tr>
           <td />
-          <td><Typography variant="caption" component="span">Registrarme</Typography></td>
-          <td><Typography variant="caption" component="span">Comprar</Typography></td>
-          <td><Typography variant="caption" component="span">Comprar</Typography></td>
-        </tr>
+          <td>
+            <Typography fontSize={8} variant="caption" component="p" padding={0} sx={{ marginTop: "-15px"}}>
+              Solo debes registrarte y tus beneficios serán cargados cada mes
+            </Typography>
+          </td>
+          <td />
+          <td />
+        </tr  >
       </ContainerBodyTable>
     </TableStylesMain>
   );

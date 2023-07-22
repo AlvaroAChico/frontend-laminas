@@ -35,7 +35,6 @@ const Header: React.FC = () => {
   return (
     <HeaderBackground>
       <OverlayHeader />
-      {/* <Container maxWidth="sm"> */}
       <HeaderBody container justifyContent="center" alignItems="center">
         <Grid xs={10} justifyContent="center" alignItems="center">
           <SectionMax>
@@ -62,7 +61,6 @@ const Header: React.FC = () => {
           </SectionMax>
         </Grid>
       </HeaderBody>
-      {/* </Container> */}
     </HeaderBackground>
   );
 };

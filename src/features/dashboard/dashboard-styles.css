@@ -1,0 +1,18 @@
+.active-dashboard{
+    text-decoration: none;
+    border-radius: 15px;
+    background: white;
+    font-weight: 500;
+    color: #FC4A41;;
+    padding: 15px;
+    width: 100%;
+}
+.inactive-dashboard{
+    text-decoration: none;
+    border-radius: 15px;
+    background: #001C46;
+    font-weight: 300;
+    padding: 15px;
+    color: white;
+    width: 100%;
+}
