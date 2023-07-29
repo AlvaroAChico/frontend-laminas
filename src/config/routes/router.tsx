@@ -5,6 +5,12 @@ import LaminasPage from "../../features/laminas/laminas-page";
 import PlansPage from "../../features/plans/plans-page";
 import DashboardPage from "../../features/dashboard/dashboard-page";
 import EditorKonva from "../../features/editor-konva/editor-konva";
+
+import ProfileSection from "../../features/dashboard/components/profile/profile-section";
+import DownloadsSection from "../../features/dashboard/components/downloads/downloads-section";
+import SubscriptionSection from "../../features/dashboard/components/subscription/subscription-section";
+import FavouritesSection from "../../features/dashboard/components/favourites/favourites-section";
+
 import CustomLayout from "../../components/custom-layout/custom-layout";
 
 export const router = createBrowserRouter([
@@ -30,19 +36,19 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "perfil",
-            element: <>Perfil</>,
+            element: <ProfileSection />,
           },
           {
             path: "descargas",
-            element: <>Descargas</>,
+            element: <DownloadsSection />,
           },
           {
             path: "suscripcion",
-            element: <>Suscripcion</>,
+            element: <SubscriptionSection />,
           },
           {
             path: "favoritos",
-            element: <>Favoritos</>,
+            element: <FavouritesSection />,
           }
         ]
       },

@@ -8,19 +8,27 @@ let blocked_APP = false;
 let activeMocks_APP = true;
 let urlBaseProject_APP = "http://localhost";
 let environment_APP = "development";
+let recaptcha_key_APP = "";
+let recaptcha_secret_key_APP = "";
 let urlLaminas_API = "http://localhost:8000/api";
 let urlOpenAI_API = "http://localhost:8000/api";
 let urlLanding_API = "http://localhost:8000/api";
+let urlAuth_API = "http://localhost:8000/api";
+let urlSheets_API = "http://localhost:8000/api";
 
 if (settingsEnv.environment == "dev") {
   name_APP = settingsDEV.app.name;
   blocked_APP = settingsDEV.app.blocked;
   activeMocks_APP = settingsDEV.app.mocks;
   urlBaseProject_APP = settingsDEV.app.urlBase;
+  recaptcha_key_APP = settingsDEV.app.recaptcha_key;
+  recaptcha_secret_key_APP = settingsDEV.app.recaptcha_secret_key;
   environment_APP = settingsDEV.cloudEnv;
   urlLaminas_API = settingsDEV.api.laminas;
   urlOpenAI_API = settingsDEV.api.openai;
   urlLanding_API = settingsDEV.api.landing;
+  urlAuth_API = settingsDEV.api.auth;
+  urlSheets_API = settingsDEV.api.sheets;
 }
 
 if (settingsEnv.environment == "int") {
@@ -28,10 +36,14 @@ if (settingsEnv.environment == "int") {
   blocked_APP = settingsINT.app.blocked;
   activeMocks_APP = settingsINT.app.mocks;
   urlBaseProject_APP = settingsINT.app.urlBase;
-  environment_APP = settingsDEV.cloudEnv;
+  recaptcha_key_APP = settingsINT.app.recaptcha_key;
+  recaptcha_secret_key_APP = settingsINT.app.recaptcha_secret_key;
+  environment_APP = settingsINT.cloudEnv;
   urlLaminas_API = settingsINT.api.laminas;
-  urlOpenAI_API = settingsDEV.api.openai;
-  urlLanding_API = settingsDEV.api.landing;
+  urlOpenAI_API = settingsINT.api.openai;
+  urlLanding_API = settingsINT.api.landing;
+  urlAuth_API = settingsINT.api.auth;
+  urlSheets_API = settingsINT.api.sheets;
 }
 
 if (settingsEnv.environment == "prod") {
@@ -39,10 +51,14 @@ if (settingsEnv.environment == "prod") {
   blocked_APP = settingsPROD.app.blocked;
   activeMocks_APP = settingsPROD.app.mocks;
   urlBaseProject_APP = settingsPROD.app.urlBase;
-  environment_APP = settingsDEV.cloudEnv;
+  recaptcha_key_APP = settingsPROD.app.recaptcha_key;
+  recaptcha_secret_key_APP = settingsPROD.app.recaptcha_secret_key;
+  environment_APP = settingsPROD.cloudEnv;
   urlLaminas_API = settingsPROD.api.laminas;
-  urlOpenAI_API = settingsDEV.api.openai;
-  urlLanding_API = settingsDEV.api.landing;
+  urlOpenAI_API = settingsPROD.api.openai;
+  urlLanding_API = settingsPROD.api.landing;
+  urlAuth_API = settingsPROD.api.auth;
+  urlSheets_API = settingsPROD.api.sheets;
 }
 
 export const settingsAPP = {
@@ -51,11 +67,15 @@ export const settingsAPP = {
     blocked: blocked_APP,
     mocks: activeMocks_APP,
     urlBase: urlBaseProject_APP,
+    recaptchaKey: recaptcha_key_APP,
+    recaptchaSecretKey: recaptcha_secret_key_APP,
   },
   api: {
     landing: urlLanding_API,
     laminas: urlLaminas_API,
     openai: urlOpenAI_API,
+    auth: urlAuth_API,
+    sheets: urlSheets_API,
   },
   environment: environment_APP,
 };

@@ -5,8 +5,8 @@ import { settingsAPP } from "../../../config/environments/settings";
 
 const baseURLLanding = settingsAPP.api.laminas;
 
-export const landingApi = createApi({
-  reducerPath: "openAiAPI",
+export const appApi = createApi({
+  reducerPath: "appAPI",
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLLanding,
     prepareHeaders: (headers) => {
@@ -41,4 +41,4 @@ export const landingApi = createApi({
 });
 
 export const { useGetStatusUserDownloadsQuery, useGetListLaminasMutation } =
-  landingApi;
+  appApi;

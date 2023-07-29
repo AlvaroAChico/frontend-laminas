@@ -1,6 +1,6 @@
 import React, { ComponentElement } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { customPalette } from "../../config/theme/theme";
 
 const CustomButtonStyle = styled.button<{
@@ -20,6 +20,7 @@ const CustomButtonStyle = styled.button<{
   column-gap: 6px;
   justify-content: center;
   align-items: center;
+  outline: none;
 
   > svg {
     width: 100%;
@@ -29,6 +30,26 @@ const CustomButtonStyle = styled.button<{
   ${(p) => p.customStyle}
 `;
 const CustomButtonStyleLink = styled(Link)``;
+
+const rotate = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`
+
+const LoaderStyle = styled.span`
+  width: 25px;
+  height: 25px;
+  border: 3px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: ${rotate} 1s linear infinite;
+`;
 
 interface IColorsButton {
   borderColor: string;
@@ -43,7 +64,7 @@ interface IOwnProps {
   Icon?: React.ComponentType<any>;
   style: "PRIMARY" | "SECONDARY";
   borderStyle: "NONE" | "OUTLINE";
-  loading?: boolean;
+  isLoading?: boolean;
   action?: () => void;
   customStyle?: string;
 }
@@ -54,7 +75,7 @@ const CustomButtom: React.FC<IOwnProps> = ({
   link = "",
   Icon,
   style = "PRIMARY",
-  loading = false,
+  isLoading = false,
   borderStyle = "NONE",
   customStyle = "",
   action,
@@ -102,9 +123,17 @@ const CustomButtom: React.FC<IOwnProps> = ({
         txtColor={listColors.textColor}
         borderColor={listColors.borderColor}
         customStyle={customStyle}
+        onClick={() => {
+          if(!isLoading){
+            action();
+          }
+        }}
       >
-        {title}
-        {!!Icon && <Icon />}
+        {isLoading ? (
+          <LoaderStyle></LoaderStyle>
+        ): (
+          <>{title} {!!Icon && <Icon />}</>
+        )}
       </CustomButtonStyle>
     );
   }

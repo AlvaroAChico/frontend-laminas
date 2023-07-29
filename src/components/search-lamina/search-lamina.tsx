@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Search } from "@styled-icons/evaicons-solid/Search";
 import { customPalette } from "../../config/theme/theme";
 
-const WrapperSearch = styled.div`
+const WrapperSearch = styled.div<{ customStyle: string }>`
   background: #fff;
   box-shadow: 0px 6px 20px 10px rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12.5px);
@@ -18,6 +18,8 @@ const WrapperSearch = styled.div`
     border-radius: inherit;
     border: none;
   }
+
+  ${p => p.customStyle}
 `;
 
 const WrappeSearch = styled.div`
@@ -30,6 +32,7 @@ const WrappeSearch = styled.div`
   display: grid;
   place-items: center;
   padding: 20px;
+  cursor: pointer;
 
   > svg {
     width: 100%;
@@ -38,10 +41,20 @@ const WrappeSearch = styled.div`
   }
 `;
 
-const SearchLamina: React.FC = () => {
+interface IOwnProps {
+  placeHolder?: string;
+  action?: any;
+  customStyle?: string;
+}
+
+const SearchLamina: React.FC<IOwnProps> = ({
+  placeHolder = "Buscar imágenes o láminas",
+  action,
+  customStyle = ""
+}) => {
   return (
-    <WrapperSearch>
-      <input type="text" placeholder="Buscar imágenes o láminas" />
+    <WrapperSearch customStyle={customStyle}>
+      <input type="text" placeholder={placeHolder} />
       <WrappeSearch>
         <Search />
       </WrappeSearch>

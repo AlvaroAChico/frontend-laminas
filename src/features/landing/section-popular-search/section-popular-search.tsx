@@ -6,6 +6,7 @@ import { customPalette } from "../../../config/theme/theme";
 import { Typography } from "@mui/material";
 import SectionMax from "../../../components/section-max/section-max";
 import BookImg from "../../../assets//img/book_icon.png";
+import { useGetPopularSheetsQuery } from "../../../core/store/sheets/sheetsAPI";
 
 const WrapperPopularSearch = styled.div`
   display: flex;
@@ -32,6 +33,8 @@ const WrapperBookImg = styled.img`
 `;
 
 const SectionPopularSearch: React.FC = () => {
+  const { data, isError, isSuccess } = useGetPopularSheetsQuery("")
+
   return (
     <WrapperPopularSearch>
       <WrapperBookImg src={BookImg} />
@@ -40,7 +43,7 @@ const SectionPopularSearch: React.FC = () => {
       </SectionMax>
       <SectionMax>
         <WrapperPopularSearch>
-          {listPopularSearch.map((search) => (
+          {(data || []).map((search) => (
             <ItemPopular key={Date.now()}>
               <Typography variant="body1" component="span" textAlign={"center"}>
                 {search.name}

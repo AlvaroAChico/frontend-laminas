@@ -7,7 +7,11 @@ import {
 } from "./core/store/konva-editor/konva-editorSlice";
 import { breakpoints } from "./constants/breakpoints";
 import { Outlet } from "react-router-dom";
-import { updateValueScroll } from "./core/store/landing/landingSlice";
+import { updateValueScroll } from "./core/store/app-store/appSlice";
+import ModalLogin from './components/modals/modal-login'
+import ModalRegister from './components/modals/modal-register'
+import ModalCoupon from './components/modals/modal-coupon'
+import ModalRecover from './components/modals/modal-recover'
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -27,9 +31,15 @@ const App: React.FC = () => {
     dispatch(updateValueScroll(window.scrollY));
   });
 
+
   return (
     <React.Fragment>
       <Outlet />
+      {/* Section Modals */}
+      <ModalLogin />
+      <ModalRegister />
+      <ModalCoupon />
+      <ModalRecover />
     </React.Fragment>
   );
 };

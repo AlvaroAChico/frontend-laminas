@@ -16,7 +16,7 @@ const HeaderBackground = styled(Grid)`
   min-height: 400px;
   position: relative;
 
-  ${breakpoints.tabletS}{
+  @media (max-width: 899px){
     min-height: 750px;
   }
 `;

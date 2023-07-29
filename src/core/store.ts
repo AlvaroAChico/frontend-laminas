@@ -1,24 +1,34 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { laminasApi, openAiAPI } from "./store/editor/editorAPI";
-import { landingApi } from "./store/landing/landingAPI";
+import { laminasApi} from "./store/editor/editorAPI";
+import { openAiAPI } from "./store/openAi/openAiAPI";
+import { appApi } from "./store/app-store/appAPI";
+import { authAPI } from "./store/auth/authAPI";
+import { sheetsAPI } from "./store/sheets/sheetsAPI";
 import editorReducer from "./store/editor/editorSlice";
+import sheetsReducer from "./store/sheets/sheetsSlice";
+import temporalReducer from "./store/temporal/temporalSlice";
 import konvaEditorReducer from "./store/konva-editor/konva-editorSlice";
-import landingReducer from "./store/landing/landingSlice";
+import appReducer from "./store/app-store/appSlice";
 
 export const queryMiddleares = [
-  laminasApi.middleware,
+  appApi.middleware,
   openAiAPI.middleware,
-  landingApi.middleware,
+  authAPI.middleware,
+  sheetsAPI.middleware,
 ];
 
 export const store = configureStore({
   reducer: {
     editor: editorReducer,
     konvaEditor: konvaEditorReducer,
-    landing: landingReducer,
+    app: appReducer,
+    sheets: sheetsReducer,
+    temporal: temporalReducer,
     [laminasApi.reducerPath]: laminasApi.reducer,
     [openAiAPI.reducerPath]: openAiAPI.reducer,
-    [landingApi.reducerPath]: landingApi.reducer,
+    [appApi.reducerPath]: appApi.reducer,
+    [authAPI.reducerPath]: authAPI.reducer,
+    [sheetsAPI.reducerPath]: sheetsAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(queryMiddleares as any),

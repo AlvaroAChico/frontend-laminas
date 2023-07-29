@@ -1,6 +1,7 @@
 import React from "react";
 import CardLamina from "../../../components/card-lamina/card-lamina";
 import { listLaminas } from "../../../config/mocks/list-laminas";
+import { useGetRecommendedSheetsQuery } from "../../../core/store/sheets/sheetsAPI";
 import styled from "styled-components";
 import { breakpoints } from "../../../constants/breakpoints";
 import { ArrowIosBackOutline } from "@styled-icons/evaicons-outline/ArrowIosBackOutline";
@@ -35,9 +36,9 @@ const WrapperSliderMain = styled.div`
 
 const WrapperNavigation = styled.div`
   display: grid;
-  place-items: center;
-  position: absolute;
-  top: 0;
+      place-items: center;
+position: absolute;
+    top: 0;
   bottom: 0;
   margin: auto;
   z-index: 3;
@@ -73,6 +74,8 @@ const WrapperPencilImg = styled.img`
 
 const SectionLaminas: React.FC = () => {
   const sliderRef = React.useRef<any>(null);
+
+  const { data, isError, isSuccess } = useGetRecommendedSheetsQuery("")
 
   const settings = {
     dots: true,
@@ -127,54 +130,62 @@ const SectionLaminas: React.FC = () => {
   };
 
   return (
-    <WrapperSlider>
-      <WrapperPencilImg src={PencilImg} />
-      <SectionMax>
-        <CustomTitle
-          title="Láminas recomendadas del mes"
-          primaryAction={
-            <CustomButtom
-              style="SECONDARY"
-              borderStyle="OUTLINE"
-              title="Ver todas las láminas"
-              action={() => console.log}
-              Icon={ArrowIosForwardOutline}
+    <>
+      {((data || []).length > 0) && (
+        <WrapperSlider>
+          <WrapperPencilImg src={PencilImg} />
+          <SectionMax>
+            <CustomTitle
+              title="Láminas recomendadas del mes"
+              primaryAction={
+                <CustomButtom
+                  style="SECONDARY"
+                  borderStyle="OUTLINE"
+                  title="Ver todas las láminas"
+                  action={() => console.log}
+                  Icon={ArrowIosForwardOutline}
+                />
+              }
             />
-          }
-        />
-      </SectionMax>
-      <WrapperSliderMain>
-        <WrapperNavigationPrev
-          onClick={() => {
-            sliderRef!.current!.slickPrev();
-          }}
-        >
-          <ArrowIosBackOutline />
-        </WrapperNavigationPrev>
-        <Slider ref={sliderRef} {...settings}>
-          {listLaminas.map((lamina) => (
-            <ItemSlick key={Date.now()}>
-              <CardLamina
-                id={lamina.id}
-                image={lamina.image}
-                nroLamina={lamina.nroLamina}
-                name={lamina.name}
-                isFavourite={lamina.isFavourite}
-                nroDownloads={lamina.nroDownloads}
-                nroView={lamina.nroView}
-              />
-            </ItemSlick>
-          ))}
-        </Slider>
-        <WrapperNavigationNext
-          onClick={() => {
-            sliderRef!.current!.slickNext();
-          }}
-        >
-          <ArrowIosForwardOutline />
-        </WrapperNavigationNext>
-      </WrapperSliderMain>
-    </WrapperSlider>
+          </SectionMax>
+          <WrapperSliderMain>
+            {((data || []).length > 3) && (
+              <WrapperNavigationPrev
+                onClick={() => {
+                  sliderRef!.current!.slickPrev();
+                }}
+              >
+                <ArrowIosBackOutline />
+              </WrapperNavigationPrev>
+            )}
+            <Slider ref={sliderRef} {...settings}>
+              {(data || []).map((lamina) => (
+                <ItemSlick key={Date.now()}>
+                  <CardLamina
+                    id={lamina.id}
+                    image={lamina.front}
+                    nroLamina={lamina.code}
+                    name={lamina.name}
+                    isFavourite={false}
+                    nroDownloads={100}
+                    nroView={200}
+                  />
+                </ItemSlick>
+              ))}
+            </Slider>
+            {((data || []).length > 3) && (
+              <WrapperNavigationNext
+                onClick={() => {
+                  sliderRef!.current!.slickNext();
+                }}
+                >
+                <ArrowIosForwardOutline />
+              </WrapperNavigationNext>
+            )}
+          </WrapperSliderMain>
+        </WrapperSlider>
+      )}
+    </>
   );
 };
 

@@ -5,9 +5,11 @@ import SectionMax from '../../components/section-max/section-max'
 import CardLamina from '../../components/card-lamina/card-lamina'
 import { listLaminas } from '../../config/mocks/list-laminas'
 import CustomButtom from "../../components/custom-button/custom-button";
+import PlansMobile from "../../components/plans/plans-mobile";
 import { Phone } from "styled-icons/boxicons-solid";
 import Plans from "../../components/plans/plans";
 import { Typography, Grid } from '@mui/material'
+import { useMediaQuery } from "@mui/material";
 import styled from 'styled-components'
 
 const WrapperPlansPage = styled.div`
@@ -26,6 +28,7 @@ const WrapperPlans = styled.div`
 const PlansPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = React.useState(false);
   const [expanded, setExpanded] = React.useState<string | false>(false);
+  const QueriePhone = useMediaQuery('(min-width:768px)');
   const nroLaminas = 200;
   
   const handleChange =
@@ -43,7 +46,14 @@ const PlansPage: React.FC = () => {
       </SectionMax>
       <SectionMax>
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
-          <Grid xs={12} md={6} justifyContent={"center"} alignItems={"center"}>
+          <Grid
+            xs={12}
+            md={6}
+            justifyContent={"center"}
+            alignItems={"center"}
+            rowGap={2}
+            columnGap={2}
+          >
             <Typography variant="h6" component="span" fontWeight={300}>
               Y comienza a potenciar tu aprendizaje hoy mismo o contacta un
               asesor
@@ -55,6 +65,15 @@ const PlansPage: React.FC = () => {
             display="flex"
             justifyContent={"right"}
             alignItems={"right"}
+            rowGap={2}
+            columnGap={2}
+            sx={{
+              '@media (max-width: 768px)': {
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "10px 6px"
+              }
+            }}
           >
             <CustomButtom
               title="Contactar un asesor"
@@ -66,11 +85,20 @@ const PlansPage: React.FC = () => {
             />
           </Grid>
           <Grid xs={12} justifyContent={"center"} alignItems={"center"}>
-            <Plans
-              basicAction={() => console.log}
-              mediumAction={() => console.log}
-              premiumAction={() => console.log}
-            />
+            {QueriePhone && (
+              <Plans
+                basicAction={() => console.log}
+                mediumAction={() => console.log}
+                premiumAction={() => console.log}
+              />
+            )}
+            {!QueriePhone && (
+              <PlansMobile
+                basicAction={() => console.log}
+                mediumAction={() => console.log}
+                premiumAction={() => console.log}
+              />
+            )}
           </Grid>
         </Grid>
       </SectionMax>

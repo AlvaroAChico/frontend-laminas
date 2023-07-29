@@ -18,3 +18,49 @@
     color: white;
     text-decoration: none;
 }
+.link-mobile-active{
+    color: #85ff64;
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+    width: 100%;
+    padding-left: 15px;
+    margin: 15px 0;
+}
+.link-mobile-active:before{
+    content: "";
+    position: absolute;
+    background: white;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    margin: auto;
+    border-radius: 20px;
+}
+
+.link-mobile-inactive{
+    color: white;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+.sidebar-active{
+    color: #FC4A41 !important;
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+}
+.sidebar-active:before{
+    content: "";
+    position: absolute;
+    background: green;
+    bottom: 0;
+    left: -10px;
+    height: 100%;
+    width: 5px;
+    border-radius: 20px;
+}
+
+.sidebar-inactive{
+    text-decoration: none;
+}

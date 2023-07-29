@@ -12,6 +12,7 @@ import { Eye } from "@styled-icons/ionicons-outline/Eye";
 import { Edit } from "@styled-icons/fluentui-system-filled/Edit";
 import CustomButtom from "../custom-button/custom-button";
 import { customPalette } from "../../config/theme/theme";
+import { useNavigate } from "react-router-dom";
 
 const WrapperNroLamina = styled.div`
   display: flex;
@@ -126,6 +127,14 @@ const CardLamina: React.FC<IOwnProps> = ({
   nroDownloads,
   nroView,
 }) => {
+  const navigate = useNavigate();
+
+  const handleDownload = () => console.log
+  const handleEdit = () => {
+    navigate("/editor")
+  }
+  const handleView = () => console.log
+
   return (
     <Card
       sx={{
@@ -151,9 +160,8 @@ const CardLamina: React.FC<IOwnProps> = ({
             </Typography>
           </div>
           <div>
-            <Star />
+            {isFavourite ? <StarFill /> : <Star />}
           </div>
-          {/* <div><StarFill /></div> */}
         </WrapperNroLamina>
         <Typography gutterBottom variant="h6" component="h6" fontWeight={600}>
           {name}
@@ -190,7 +198,7 @@ const CardLamina: React.FC<IOwnProps> = ({
           </Typography>
           <Download />
         </CustomButtonStyle>
-        <CustomButtonStyle>
+        <CustomButtonStyle onClick={handleEdit}>
           <Typography variant="caption" component="span">
             Editar
           </Typography>
