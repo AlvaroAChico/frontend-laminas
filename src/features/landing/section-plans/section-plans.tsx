@@ -18,7 +18,7 @@ const WrapperPlans = styled.div`
 `;
 
 const SectionPlans: React.FC = () => {
-  const QueriePhone = useMediaQuery('(min-width:768px)');
+  const QueriePhone = useMediaQuery("(min-width:768px)");
 
   return (
     <WrapperPlans>
@@ -28,6 +28,7 @@ const SectionPlans: React.FC = () => {
       <SectionMax>
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Grid
+            item
             xs={12}
             md={6}
             justifyContent={"center"}
@@ -41,6 +42,7 @@ const SectionPlans: React.FC = () => {
             </Typography>
           </Grid>
           <Grid
+            item
             xs={12}
             md={6}
             display="flex"
@@ -49,11 +51,11 @@ const SectionPlans: React.FC = () => {
             rowGap={2}
             columnGap={2}
             sx={{
-              '@media (max-width: 768px)': {
+              "@media (max-width: 768px)": {
                 alignItems: "center",
                 justifyContent: "center",
-                margin: "10px 6px"
-              }
+                margin: "10px 6px",
+              },
             }}
           >
             <CustomButtom
@@ -65,7 +67,7 @@ const SectionPlans: React.FC = () => {
               customStyle={`width: fit-content; padding: 10px 30px; margin: 0;`}
             />
           </Grid>
-          <Grid xs={12} justifyContent={"center"} alignItems={"center"}>
+          <Grid item xs={12} justifyContent={"center"} alignItems={"center"}>
             {QueriePhone && (
               <Plans
                 basicAction={() => console.log}

@@ -10,11 +10,13 @@ let urlBaseProject_APP = "http://localhost";
 let environment_APP = "development";
 let recaptcha_key_APP = "";
 let recaptcha_secret_key_APP = "";
+// URLs APIs
 let urlLaminas_API = "http://localhost:8000/api";
 let urlOpenAI_API = "http://localhost:8000/api";
 let urlLanding_API = "http://localhost:8000/api";
 let urlAuth_API = "http://localhost:8000/api";
 let urlSheets_API = "http://localhost:8000/api";
+let urlCategories_API = "http://localhost:8000/api";
 
 if (settingsEnv.environment == "dev") {
   name_APP = settingsDEV.app.name;
@@ -29,6 +31,7 @@ if (settingsEnv.environment == "dev") {
   urlLanding_API = settingsDEV.api.landing;
   urlAuth_API = settingsDEV.api.auth;
   urlSheets_API = settingsDEV.api.sheets;
+  urlCategories_API = settingsDEV.api.categories;
 }
 
 if (settingsEnv.environment == "int") {
@@ -44,6 +47,8 @@ if (settingsEnv.environment == "int") {
   urlLanding_API = settingsINT.api.landing;
   urlAuth_API = settingsINT.api.auth;
   urlSheets_API = settingsINT.api.sheets;
+  urlSheets_API = settingsINT.api.sheets;
+  urlCategories_API = settingsINT.api.categories;
 }
 
 if (settingsEnv.environment == "prod") {
@@ -59,6 +64,7 @@ if (settingsEnv.environment == "prod") {
   urlLanding_API = settingsPROD.api.landing;
   urlAuth_API = settingsPROD.api.auth;
   urlSheets_API = settingsPROD.api.sheets;
+  urlCategories_API = settingsPROD.api.categories;
 }
 
 export const settingsAPP = {
@@ -76,6 +82,7 @@ export const settingsAPP = {
     openai: urlOpenAI_API,
     auth: urlAuth_API,
     sheets: urlSheets_API,
+    categories: urlCategories_API,
   },
   environment: environment_APP,
 };

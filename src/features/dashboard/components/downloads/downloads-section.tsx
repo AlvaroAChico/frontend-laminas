@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 import {
   Grid,
   Typography,
@@ -10,15 +10,15 @@ import {
   TableHead,
   TableRow,
   Table,
-  Paper
-} from '@mui/material'
+  Paper,
+} from "@mui/material";
 import SearchLamina from "../../../../components/search-lamina/search-lamina";
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 const WrapperDownloads = styled.div`
   position: relative;
   padding: 20px;
-`
+`;
 const TableContainerStyles = styled(TableContainer)`
   scrollbar-width: thin;
   scrollbar-color: #6969dd #e0e0e0;
@@ -34,10 +34,10 @@ const TableContainerStyles = styled(TableContainer)`
     background: #ffa95ad9;
     border-radius: 20px;
   }
-`
+`;
 
 const DownloadsSection: React.FC = () => {
-  const [downloadsNumber, setDownloadsNumber] = React.useState('');
+  const [downloadsNumber, setDownloadsNumber] = React.useState("");
 
   const handleChange = (event: SelectChangeEvent) => {
     setDownloadsNumber(event.target.value);
@@ -46,14 +46,17 @@ const DownloadsSection: React.FC = () => {
   return (
     <WrapperDownloads>
       <Grid container>
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <Typography variant="body2" component="p">
             Se han encontrado
-            <Typography component="span" color="red" fontWeight={600}> 20 </Typography>
+            <Typography component="span" color="red" fontWeight={600}>
+              {" "}
+              20{" "}
+            </Typography>
             descargas
           </Typography>
         </Grid>
-        <Grid xs={12} md={7} marginTop={2} alignSelf={"center"}>
+        <Grid item xs={12} md={7} marginTop={2} alignSelf={"center"}>
           <Typography
             variant="body1"
             component="span"
@@ -69,15 +72,17 @@ const DownloadsSection: React.FC = () => {
               width: "fit-content",
               padding: "5px",
               borderRadius: "20px",
-              maxHeight: "45px"
+              maxHeight: "45px",
             }}
           >
-            <MenuItem value={10} selected>10</MenuItem>
+            <MenuItem value={10} selected>
+              10
+            </MenuItem>
             <MenuItem value={15}>15</MenuItem>
             <MenuItem value={20}>20</MenuItem>
           </Select>
         </Grid>
-        <Grid xs={12} md={5} marginTop={2} alignSelf={"center"}>
+        <Grid item xs={12} md={5} marginTop={2} alignSelf={"center"}>
           <SearchLamina
             placeHolder="Buscar"
             customStyle={`
@@ -85,11 +90,15 @@ const DownloadsSection: React.FC = () => {
               background: #FFF;
               box-shadow: 0px 6px 20px 10px rgba(156, 156, 156, 0.25);
               backdrop-filter: blur(12.5px);
-              `}/>
+              `}
+          />
         </Grid>
-        <Grid xs={12} marginTop={2}>
-          <TableContainerStyles sx={{ border: "none"}}>
-            <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table">
+        <Grid item xs={12} marginTop={2}>
+          <TableContainerStyles sx={{ border: "none" }}>
+            <Table
+              sx={{ minWidth: 650, boxShadow: "none" }}
+              aria-label="simple table"
+            >
               <TableHead>
                 <TableRow>
                   <TableCell>
@@ -135,17 +144,53 @@ const DownloadsSection: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell><Typography variant="body2" component="p">Mapa Hidrográfico del Perú</Typography></TableCell>
-                  <TableCell><Typography variant="body2" component="p">2023-02-06 23:53:47</Typography></TableCell>
-                  <TableCell><Typography variant="body2" component="p">A4</Typography></TableCell>
-                  <TableCell><Typography variant="body2" component="p">Editor</Typography></TableCell>
+                <TableRow
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      Mapa Hidrográfico del Perú
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      2023-02-06 23:53:47
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      A4
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      Editor
+                    </Typography>
+                  </TableCell>
                 </TableRow>
-                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell><Typography variant="body2" component="p">Mapa Hidrográfico del Perú</Typography></TableCell>
-                  <TableCell><Typography variant="body2" component="p">2023-02-06 23:53:47</Typography></TableCell>
-                  <TableCell><Typography variant="body2" component="p">A4</Typography></TableCell>
-                  <TableCell><Typography variant="body2" component="p">Editor</Typography></TableCell>
+                <TableRow
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      Mapa Hidrográfico del Perú
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      2023-02-06 23:53:47
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      A4
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" component="p">
+                      Editor
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -153,7 +198,7 @@ const DownloadsSection: React.FC = () => {
         </Grid>
       </Grid>
     </WrapperDownloads>
-  )
-}
+  );
+};
 
-export default DownloadsSection
+export default DownloadsSection;

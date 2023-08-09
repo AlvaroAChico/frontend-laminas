@@ -1,6 +1,5 @@
 import React from "react";
 import CardLamina from "../../../components/card-lamina/card-lamina";
-import { listLaminas } from "../../../config/mocks/list-laminas";
 import { useGetRecommendedSheetsQuery } from "../../../core/store/sheets/sheetsAPI";
 import styled from "styled-components";
 import { breakpoints } from "../../../constants/breakpoints";
@@ -14,6 +13,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import SectionMax from "../../../components/section-max/section-max";
+import { settings } from "./config-slider";
+import { ISheetDefaultProps } from "../../../core/store/sheets/types/laminas-type";
 
 const WrapperSlider = styled.div`
   height: 100%;
@@ -36,9 +37,9 @@ const WrapperSliderMain = styled.div`
 
 const WrapperNavigation = styled.div`
   display: grid;
-      place-items: center;
-position: absolute;
-    top: 0;
+  place-items: center;
+  position: absolute;
+  top: 0;
   bottom: 0;
   margin: auto;
   z-index: 3;
@@ -75,63 +76,11 @@ const WrapperPencilImg = styled.img`
 const SectionLaminas: React.FC = () => {
   const sliderRef = React.useRef<any>(null);
 
-  const { data, isError, isSuccess } = useGetRecommendedSheetsQuery("")
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3,
-    responsive: [
-      {
-        breakpoint: 1200,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 992,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+  const { data } = useGetRecommendedSheetsQuery("");
 
   return (
     <>
-      {((data || []).length > 0) && (
+      {(data || []).length > 0 && (
         <WrapperSlider>
           <WrapperPencilImg src={PencilImg} />
           <SectionMax>
@@ -142,14 +91,14 @@ const SectionLaminas: React.FC = () => {
                   style="SECONDARY"
                   borderStyle="OUTLINE"
                   title="Ver todas las láminas"
-                  action={() => console.log}
                   Icon={ArrowIosForwardOutline}
+                  to={"/laminas"}
                 />
               }
             />
           </SectionMax>
           <WrapperSliderMain>
-            {((data || []).length > 3) && (
+            {(data || []).length > 3 && (
               <WrapperNavigationPrev
                 onClick={() => {
                   sliderRef!.current!.slickPrev();
@@ -159,26 +108,28 @@ const SectionLaminas: React.FC = () => {
               </WrapperNavigationPrev>
             )}
             <Slider ref={sliderRef} {...settings}>
-              {(data || []).map((lamina) => (
-                <ItemSlick key={Date.now()}>
-                  <CardLamina
-                    id={lamina.id}
-                    image={lamina.front}
-                    nroLamina={lamina.code}
-                    name={lamina.name}
-                    isFavourite={false}
-                    nroDownloads={100}
-                    nroView={200}
-                  />
-                </ItemSlick>
-              ))}
+              {(data || []).map((sheet: ISheetDefaultProps) => {
+                return (
+                  <ItemSlick key={sheet.code}>
+                    <CardLamina
+                      image={sheet.tira}
+                      nroLamina={sheet.code}
+                      name={sheet.name}
+                      isFavourite={sheet.isFavorite}
+                      nroDownloads={100}
+                      nroView={sheet.numberOfViews}
+                      infoSheet={sheet}
+                    />
+                  </ItemSlick>
+                );
+              })}
             </Slider>
-            {((data || []).length > 3) && (
+            {(data || []).length > 3 && (
               <WrapperNavigationNext
                 onClick={() => {
                   sliderRef!.current!.slickNext();
                 }}
-                >
+              >
                 <ArrowIosForwardOutline />
               </WrapperNavigationNext>
             )}

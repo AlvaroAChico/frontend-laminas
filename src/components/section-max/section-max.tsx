@@ -15,7 +15,7 @@ const MaxWidthSection = styled.div`
   padding: 10px 20px;
 
   ${breakpoints.laptop} {
-    padding: 20px 30px;
+    padding: 20px;
   }
 `;
 

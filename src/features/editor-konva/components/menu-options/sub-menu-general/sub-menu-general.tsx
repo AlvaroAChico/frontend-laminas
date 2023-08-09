@@ -9,6 +9,11 @@ import {
   updateActiveGlobalSheet,
 } from "../../../../../core/store/konva-editor/konva-editorSlice";
 import { useAppDispatch, useAppSelector } from "../../../../../app/hooks";
+import {
+  EFuncionality,
+  IFunctionality,
+} from "../../../../../core/store/auth/types/auth-types";
+import useDataUser from "../../../../../utils/hooks/use-data-user";
 
 const WrapperMenuGeneral = styled.div<{ isVisible: boolean }>`
   background: ${customPalette.grayLightColor};
@@ -100,11 +105,25 @@ interface IOwnProps {
   isVisible: boolean;
 }
 const SubMenuGeneral: React.FC<IOwnProps> = ({ isVisible }) => {
-  const dispatch = useAppDispatch();
   const sheetActive = useAppSelector(getActiveGlobalSheet);
+  const [funcSize, setFuncSize] = React.useState<IFunctionality>(
+    {} as IFunctionality
+  );
+  const dispatch = useAppDispatch();
 
   const handleUpdateGlobalSheet = (option: number) => () =>
     dispatch(updateActiveGlobalSheet(option));
+
+  const { handleGetDataUser } = useDataUser();
+
+  React.useEffect(() => {
+    const dataUser = handleGetDataUser();
+    setFuncSize(
+      (dataUser.functionalities || []).filter(
+        (func) => func.function == EFuncionality.FUNC_DOWNLOAD_SIZE
+      )[0]
+    );
+  }, []);
 
   return (
     <WrapperMenuGeneral id="menuGeneral" isVisible={isVisible}>
@@ -113,25 +132,30 @@ const SubMenuGeneral: React.FC<IOwnProps> = ({ isVisible }) => {
         <p>Selecciona el tamaño de la descarga del documento</p>
         <IconInfo />
       </HeaderText>
-      {menuSizeSheet.map((sheet) => (
-        <ItemSheet
-          key={sheet.idActive}
-          isActive={sheet.idActive == sheetActive}
-          onClick={handleUpdateGlobalSheet(sheet.idActive)}
-        >
-          <ImageSheet>
-            <div>{sheet.name}</div>
-          </ImageSheet>
-          <InfoSheet>
-            <h5>Medidas:</h5>
-            <p>Ancho: {sheet.width}mm</p>
-            <p>Alto: {sheet.height}mm</p>
-          </InfoSheet>
-          <WrapperIcon>
-            <NavigateNext />
-          </WrapperIcon>
-        </ItemSheet>
-      ))}
+      {menuSizeSheet.map((sheet) => {
+        if ((funcSize.formats || []).includes(sheet.name)) {
+          return (
+            <ItemSheet
+              key={sheet.idActive}
+              isActive={sheet.idActive == sheetActive}
+              onClick={handleUpdateGlobalSheet(sheet.idActive)}
+            >
+              <ImageSheet>
+                <div>{sheet.name}</div>
+              </ImageSheet>
+              <InfoSheet>
+                <h5>Medidas:</h5>
+                <p>Ancho: {sheet.width}mm</p>
+                <p>Alto: {sheet.height}mm</p>
+              </InfoSheet>
+              <WrapperIcon>
+                <NavigateNext />
+              </WrapperIcon>
+            </ItemSheet>
+          );
+        }
+        return null;
+      })}
     </WrapperMenuGeneral>
   );
 };

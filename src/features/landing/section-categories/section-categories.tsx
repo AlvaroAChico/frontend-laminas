@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { listCategories } from "../../../config/mocks/list-categories";
 import CardCategory from "./components/card-category/card-category";
 import SectionMax from "../../../components/section-max/section-max";
+import { useGetCategoriesQuery } from "../../../core/store/categories/categoriesAPI";
 
 const WrapperCategories = styled.div`
   height: 100%;
@@ -61,6 +62,8 @@ const ItemSlick = styled.div`
 
 const SectionCategories: React.FC = () => {
   const sliderRef = React.useRef<any>(null);
+
+  const { data } = useGetCategoriesQuery("");
 
   const settings = {
     dots: true,
@@ -128,7 +131,7 @@ const SectionCategories: React.FC = () => {
           <ArrowIosBackOutline />
         </WrapperNavigationPrev>
         <Slider ref={sliderRef} {...settings}>
-          {listCategories.map((category) => (
+          {(data || []).map((category) => (
             <ItemSlick key={Date.now()}>
               <CardCategory
                 id={category.id}

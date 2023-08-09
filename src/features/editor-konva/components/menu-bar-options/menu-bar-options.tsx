@@ -40,6 +40,12 @@ import { Hand } from "@styled-icons/fa-solid/Hand";
 import { Cursor } from "@styled-icons/fluentui-system-filled/Cursor";
 import LogoElaminas from "../../../../assets/img/logo.svg";
 import { breakpoints } from "../../../../constants/breakpoints";
+import { Tooltip } from "@mui/material";
+import {
+  getStatusAuthenticated,
+  updateStatusModalLogin,
+} from "../../../../core/store/app-store/appSlice";
+import Cookies from "js-cookie";
 
 const baseCenter = styled.div`
   display: flex;
@@ -237,6 +243,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
   const activeSheet = useAppSelector(getActiveGlobalSheet);
   const listComponentsKonva = useAppSelector(getListComponentsKonva);
   const statusCursor = useAppSelector(getStatusCursorCanva);
+  const isAuthenticated = useAppSelector(getStatusAuthenticated);
   const dispatch = useAppDispatch();
 
   const handleResetGlobalZoom = () => {
@@ -268,6 +275,11 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
   const handleDeleteCurrentObject = () => dispatch(deleteObjectKonva());
 
   const downloadActivePanel = () => {
+    const token = Cookies.get("auth_user");
+    if (!token) {
+      dispatch(updateStatusModalLogin(true));
+      return null;
+    }
     dispatch(unselectObjectKonva());
     handleResetGlobalZoom();
     dispatch(updateActiveMenuOption(0));
@@ -334,25 +346,35 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
         {activeComponent.includes("text") && <OptionsText />}
         {activeComponent.includes("image") && (
           <WrapperOptionsImage>
-            <ItemMenu onClick={handleCutImage}>
-              <Cut />
-            </ItemMenu>
-            <CustomTrash onClick={handleDeleteCurrentObject} />
+            <Tooltip title="Cortar" arrow>
+              <ItemMenu onClick={handleCutImage}>
+                <Cut />
+              </ItemMenu>
+            </Tooltip>
+            <Tooltip title="Borrar" arrow>
+              <CustomTrash onClick={handleDeleteCurrentObject} />
+            </Tooltip>
           </WrapperOptionsImage>
         )}
         {(activeComponent.includes("circle") ||
           activeComponent.includes("triangle") ||
           activeComponent.includes("rect")) && (
           <WrapperOptionsFigure>
-            <ItemMenu>
-              <ColorPalette onClick={handleColorPaletteClick} />
-              <ColorPaletteMenu status={statusSubMenuColor} />
-            </ItemMenu>
-            <ItemMenu>
-              <StrokeWidth onClick={handleStrokePaletteClick} />
-              <StrokePaletteMenu status={statusSubMenuStroke} />
-            </ItemMenu>
-            <CustomTrash onClick={handleDeleteCurrentObject} />
+            <Tooltip title="Color" arrow>
+              <ItemMenu>
+                <ColorPalette onClick={handleColorPaletteClick} />
+                <ColorPaletteMenu status={statusSubMenuColor} />
+              </ItemMenu>
+            </Tooltip>
+            <Tooltip title="Borde" arrow>
+              <ItemMenu>
+                <StrokeWidth onClick={handleStrokePaletteClick} />
+                <StrokePaletteMenu status={statusSubMenuStroke} />
+              </ItemMenu>
+            </Tooltip>
+            <Tooltip title="Borrar" arrow>
+              <CustomTrash onClick={handleDeleteCurrentObject} />
+            </Tooltip>
           </WrapperOptionsFigure>
         )}
       </ItemMenuOption>
@@ -360,10 +382,14 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
         <ItemGeneralMenu>
           <WrapperOptionsCanva isActiveCursor={statusCursor}>
             <div onClick={() => dispatch(changeStatusCursorCanva(1))}>
-              <Cursor />
+              <Tooltip title="Seleccionar" arrow>
+                <Cursor />
+              </Tooltip>
             </div>
             <div onClick={() => dispatch(changeStatusCursorCanva(2))}>
-              <Hand />
+              <Tooltip title="Arrastrar" arrow>
+                <Hand />
+              </Tooltip>
             </div>
           </WrapperOptionsCanva>
         </ItemGeneralMenu>

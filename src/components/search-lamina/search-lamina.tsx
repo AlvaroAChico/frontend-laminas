@@ -1,7 +1,15 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Search } from "@styled-icons/evaicons-solid/Search";
 import { customPalette } from "../../config/theme/theme";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { SearchForm, SearchSchema } from "../../core/models/search-model";
+import { useForm } from "react-hook-form";
+import {
+  getCurrentSearchWord,
+  updateCurrentSearchWord,
+} from "../../core/store/sheets/sheetsSlice";
 
 const WrapperSearch = styled.div<{ customStyle: string }>`
   background: #fff;
@@ -19,7 +27,7 @@ const WrapperSearch = styled.div<{ customStyle: string }>`
     border: none;
   }
 
-  ${p => p.customStyle}
+  ${(p) => p.customStyle}
 `;
 
 const WrappeSearch = styled.div`
@@ -33,6 +41,7 @@ const WrappeSearch = styled.div`
   place-items: center;
   padding: 20px;
   cursor: pointer;
+  align-content: center;
 
   > svg {
     width: 100%;
@@ -41,22 +50,79 @@ const WrappeSearch = styled.div`
   }
 `;
 
+const rotate = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoaderStyle = styled.span`
+  width: 25px;
+  height: 25px;
+  border: 3px solid #fff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: ${rotate} 1s linear infinite;
+`;
+
 interface IOwnProps {
   placeHolder?: string;
-  action?: any;
   customStyle?: string;
+  activeWord?: string;
+  handleSetData?: (value: any) => void;
+  handleKeyUp?: () => void;
+  isLoading?: boolean;
 }
 
 const SearchLamina: React.FC<IOwnProps> = ({
   placeHolder = "Buscar imágenes o láminas",
-  action,
-  customStyle = ""
+  customStyle = "",
+  isLoading = false,
+  handleSetData = () => console.log,
+  handleKeyUp = () => console.log,
 }) => {
+  const dispatch = useAppDispatch();
+  const activeWord = useAppSelector(getCurrentSearchWord);
+  const methods = useForm<SearchForm>({
+    resolver: yupResolver(SearchSchema),
+    defaultValues: {
+      sheet: "",
+    },
+  });
+
+  const { handleSubmit: submitWrapper, setValue } = methods;
+
+  const handleSubmit = React.useCallback((data: any) => {
+    handleSetData(data.sheet);
+    handleKeyUp();
+  }, []);
+  const handleChange = (e: any) => {
+    dispatch(updateCurrentSearchWord(e.target.value));
+    setValue("sheet", e.target.value);
+  };
+
+  const onKeyUp = (e: any) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      submitWrapper(handleSubmit)();
+    }
+  };
+
   return (
     <WrapperSearch customStyle={customStyle}>
-      <input type="text" placeholder={placeHolder} />
-      <WrappeSearch>
-        <Search />
+      <input
+        type="text"
+        placeholder={placeHolder}
+        onKeyUp={onKeyUp}
+        value={activeWord}
+        onChange={handleChange}
+      />
+      <WrappeSearch onClick={handleKeyUp}>
+        {isLoading ? <LoaderStyle></LoaderStyle> : <Search />}
       </WrappeSearch>
     </WrapperSearch>
   );

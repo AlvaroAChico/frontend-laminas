@@ -16,8 +16,14 @@ import {
 } from "../../../../../core/store/konva-editor/konva-editorSlice";
 import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../../editor-konva";
-import imageTest from "../../../../../assets/img/image_test.jpg";
-import { ListenerMiddlewareInstance } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
+import { updateStatusModalLogin } from "../../../../../core/store/app-store/appSlice";
+import {
+  EFuncionality,
+  IFunctionality,
+} from "../../../../../core/store/auth/types/auth-types";
+import useDataUser from "../../../../../utils/hooks/use-data-user";
+import toast, { Toaster } from "react-hot-toast";
 
 const WrapperMenuImagen = styled.div<{
   isVisible: boolean;
@@ -221,11 +227,25 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
   const [listLaminas, setListLaminas] = React.useState<LaminaDefaultProps[]>(
     []
   );
+  const [funcUploadImage, setFuncUploadImage] = React.useState<IFunctionality>(
+    {} as IFunctionality
+  );
   const [initialSearch, setInitialSearch] = React.useState({
     page: pageGetLaminas,
     word: "",
   });
   const dispatch = useAppDispatch();
+
+  const { handleGetDataUser } = useDataUser();
+
+  React.useEffect(() => {
+    const dataUser = handleGetDataUser();
+    setFuncUploadImage(
+      (dataUser.functionalities || []).filter(
+        (func) => func.function == EFuncionality.FUNC_UPLOAD_IMAGE
+      )[0]
+    );
+  }, []);
 
   const handleUpdateStep = (step: number) => () => setStepActive(step);
   const handleDragImage = () => {
@@ -267,6 +287,11 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
   }, []);
 
   const handleAddImage = (srcImage: string) => () => {
+    const token = Cookies.get("auth_user");
+    if (!token) {
+      dispatch(updateStatusModalLogin(true));
+      return null;
+    }
     const activeID = Date.now();
     dispatch(
       addItemKonva({
@@ -311,9 +336,6 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
           />
           <WrapperListLaminas>
             <WrapperItemsResults>
-              {/* <LaminaItem onClick={handleAddImage(imageTest)}>
-                <img src={imageTest} />
-              </LaminaItem> */}
               {listLaminas.map((lamina) => (
                 <LaminaItem
                   key={`${Date.now()}${lamina.tbllmnanomb}`}
@@ -352,8 +374,17 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
 
               reader.onload = function (e) {
                 if (typeof e!.target!.result === "string") {
-                  handleAddImage(e!.target!.result)();
-                  dispatch(updateActiveMenuOption(0));
+                  const ext = e!
+                    .target!.result.split(";")[0]
+                    .split("/")
+                    .pop()
+                    ?.toLowerCase();
+                  if ((funcUploadImage.formats || []).includes(ext!)) {
+                    handleAddImage(e!.target!.result)();
+                    dispatch(updateActiveMenuOption(0));
+                  } else {
+                    toast.error("Extensión no permitida");
+                  }
                 }
               };
               reader.readAsDataURL(e.dataTransfer.files[0]);
@@ -383,8 +414,16 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
                   if (e!.target!.files && e!.target!.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function (evt: any) {
-                      handleAddImage(evt!.target!.result)();
-                      dispatch(updateActiveMenuOption(0));
+                      const ext = e!
+                        .target!.files[0].name.split(".")
+                        .pop()
+                        .toLowerCase();
+                      if ((funcUploadImage.formats || []).includes(ext!)) {
+                        handleAddImage(evt!.target!.result)();
+                        dispatch(updateActiveMenuOption(0));
+                      } else {
+                        toast.error("Extensión no permitida");
+                      }
                     };
                     reader.readAsDataURL(e!.target!.files[0]);
                   }
@@ -394,6 +433,7 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
           </UploadImageContainer>
         </BodyCardImage>
       )}
+      <Toaster />
     </WrapperMenuImagen>
   );
 };

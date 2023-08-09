@@ -1,18 +1,19 @@
 {
-    "app": {
-        "name": "E-Laminas",
-        "blocked": true,
-        "mocks": false,
-        "urlBase": "https://elaminas.com",
-        "recaptcha_key": "6Lc_s0wUAAAAAMLAaTyS3mydujIMl3-D55BdhQ4-",
-        "recaptcha_secret_key": "6Lc_s0wUAAAAAMCArAIJ-bgK42uKD8fR0XC7La7O"
-    },
-    "api": {
-        "laminas": "https://elaminas.com/api",
-        "landing": "https://landing.elaminas.com/api",
-        "sheets": "http://localhost:8000/api",
-        "auth": "http://localhost:8000/api"
-    },
-    "i18nDebug": false,
-    "environment": "dev"
+  "app": {
+    "name": "E-Laminas",
+    "blocked": true,
+    "mocks": false,
+    "urlBase": "https://elaminas.com",
+    "recaptcha_key": "6Lc_s0wUAAAAAMLAaTyS3mydujIMl3-D55BdhQ4-",
+    "recaptcha_secret_key": "6Lc_s0wUAAAAAMCArAIJ-bgK42uKD8fR0XC7La7O"
+  },
+  "api": {
+    "laminas": "https://elaminas.com/api",
+    "landing": "https://landing.elaminas.com/api",
+    "auth": "http://localhost:8000/api",
+    "sheets": "http://localhost:8000/api",
+    "categories": "http://localhost:8000/api"
+  },
+  "i18nDebug": false,
+  "environment": "dev"
 }

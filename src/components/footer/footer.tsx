@@ -12,6 +12,7 @@ import {
 } from "styled-icons/boxicons-logos";
 import BookImg from "../../assets/img/book_icon.png";
 import RuleImg from "../../assets/img/rule_icon.png";
+import { NavLink } from "react-router-dom";
 
 const WrapperFooterMain = styled.div`
   background: ${customPalette.primaryColor};
@@ -60,8 +61,8 @@ const Footer: React.FC = () => {
         <WrapperRuleImg src={RuleImg} />
         <SectionMax>
           <Grid container rowGap={3}>
-            <Grid xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
-              <Grid xs={12}>
+            <Grid item xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
+              <Grid item xs={12}>
                 <Box
                   component="img"
                   sx={{
@@ -73,7 +74,7 @@ const Footer: React.FC = () => {
                   src={LogoWhiteImg}
                 />
               </Grid>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <Typography
                   variant="button"
                   component="span"
@@ -82,20 +83,20 @@ const Footer: React.FC = () => {
                   Industrial Innova SAC
                 </Typography>
               </Grid>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <Typography variant="body2" component="span" fontWeight={"100"}>
                   Calle Malecon Miramar 864
                 </Typography>
               </Grid>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <Typography variant="body2" component="span" fontWeight={"100"}>
                   Lima, Perú
                 </Typography>
               </Grid>
             </Grid>
-            <Grid xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
+            <Grid item xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
               <Grid container rowGap={1}>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <Typography
                     variant="button"
                     component="span"
@@ -104,38 +105,50 @@ const Footer: React.FC = () => {
                     Secciones
                   </Typography>
                 </Grid>
-                <Grid xs={12}>
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    fontWeight={"200"}
-                  >
-                    Láminas
-                  </Typography>
+                <Grid item xs={12}>
+                  <NavLink to="/">
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      fontWeight={"200"}
+                      color="white"
+                      sx={{ textDecoration: "none" }}
+                    >
+                      Inicio
+                    </Typography>
+                  </NavLink>
                 </Grid>
-                <Grid xs={12}>
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    fontWeight={"200"}
-                  >
-                    Planes
-                  </Typography>
+                <Grid item xs={12}>
+                  <NavLink to="/laminas">
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      fontWeight={"200"}
+                      color="white"
+                      sx={{ textDecoration: "none" }}
+                    >
+                      Láminas
+                    </Typography>
+                  </NavLink>
                 </Grid>
-                <Grid xs={12}>
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    fontWeight={"200"}
-                  >
-                    Perfil
-                  </Typography>
+                <Grid item xs={12}>
+                  <NavLink to="/planes">
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      fontWeight={"200"}
+                      color="white"
+                      sx={{ textDecoration: "none" }}
+                    >
+                      Planes
+                    </Typography>
+                  </NavLink>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
+            <Grid item xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
               <Grid container rowGap={1}>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <Typography
                     variant="button"
                     component="span"
@@ -144,7 +157,7 @@ const Footer: React.FC = () => {
                     Recursos
                   </Typography>
                 </Grid>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <Typography
                     variant="body2"
                     component="span"
@@ -153,7 +166,7 @@ const Footer: React.FC = () => {
                     Nosotros
                   </Typography>
                 </Grid>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <Typography
                     variant="body2"
                     component="span"
@@ -162,7 +175,7 @@ const Footer: React.FC = () => {
                     Contáctanos
                   </Typography>
                 </Grid>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <Typography
                     variant="body2"
                     component="span"
@@ -173,9 +186,9 @@ const Footer: React.FC = () => {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
+            <Grid item xs={12} sm={6} md={3} lg={3} textAlign={"center"}>
               <Grid container>
-                <Grid xs={12}>
+                <Grid item xs={12}>
                   <Typography
                     variant="button"
                     component="span"
@@ -184,7 +197,7 @@ const Footer: React.FC = () => {
                     Redes Sociales
                   </Typography>
                 </Grid>
-                <SocialGrid xs={12}>
+                <SocialGrid item xs={12}>
                   <Facebook />
                   <Instagram />
                   <Twitter />

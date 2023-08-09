@@ -1,5 +1,5 @@
-import React, { ComponentElement } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { customPalette } from "../../config/theme/theme";
 
@@ -29,7 +29,32 @@ const CustomButtonStyle = styled.button<{
 
   ${(p) => p.customStyle}
 `;
-const CustomButtonStyleLink = styled(Link)``;
+const CustomButtonStyleLink = styled.button<{
+  bgColor: string;
+  txtColor: string;
+  borderColor: string;
+  customStyle: string;
+}>`
+  border: 1px solid ${(p) => p.borderColor};
+  background: ${(p) => p.bgColor};
+  color: ${(p) => p.txtColor};
+  padding: 6px 10px;
+  border-radius: 20px;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  column-gap: 6px;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+
+  > svg {
+    width: 100%;
+    max-width: 20px;
+  }
+
+  ${(p) => p.customStyle}
+`;
 
 const rotate = keyframes`
   0% {
@@ -38,12 +63,12 @@ const rotate = keyframes`
   100% {
     transform: rotate(360deg);
   }
-`
+`;
 
 const LoaderStyle = styled.span`
   width: 25px;
   height: 25px;
-  border: 3px solid #FFF;
+  border: 3px solid #fff;
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;
@@ -124,22 +149,20 @@ const CustomButtom: React.FC<IOwnProps> = ({
         borderColor={listColors.borderColor}
         customStyle={customStyle}
         onClick={() => {
-          if(!isLoading){
+          if (!isLoading) {
             action();
           }
         }}
       >
         {isLoading ? (
           <LoaderStyle></LoaderStyle>
-        ): (
-          <>{title} {!!Icon && <Icon />}</>
+        ) : (
+          <>
+            {title} {!!Icon && <Icon />}
+          </>
         )}
       </CustomButtonStyle>
     );
-  }
-
-  if (to != "") {
-    return <CustomButtonStyleLink to={to}>{title}</CustomButtonStyleLink>;
   }
 
   return null;

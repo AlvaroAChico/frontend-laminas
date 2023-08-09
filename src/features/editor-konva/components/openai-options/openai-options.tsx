@@ -4,8 +4,6 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   addItemKonva,
   changeActivePanelEditor,
-  getActiveGlobalSheet,
-  getSizeGlobalSheet,
   getStatusPanelEditor,
   updateActiveIDKonva,
 } from "../../../../core/store/konva-editor/konva-editorSlice";

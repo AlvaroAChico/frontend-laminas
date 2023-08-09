@@ -8,7 +8,6 @@ import WaveIcon from "../../../assets/img/wave_icon.png";
 import CustomButtom from "../../../components/custom-button/custom-button";
 import { Phone } from "styled-icons/boxicons-regular";
 import RuleImg from "../../../assets/img/rule_icon.png";
-import {breakpoints} from '../../../constants/breakpoints'
 
 const WrapperTutorialMain = styled.div`
   background: rgba(85, 182, 94, 0.19);
@@ -97,7 +96,7 @@ const SectionTutorial: React.FC = () => {
       <WrapperRuleImg src={RuleImg} />
       <SectionMax>
         <Grid container>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Grid
               container
               justifyContent={"center"}
@@ -105,6 +104,7 @@ const SectionTutorial: React.FC = () => {
               textAlign={"center"}
             >
               <Grid
+                item
                 xs={12}
                 sm={12}
                 md={6}
@@ -125,6 +125,7 @@ const SectionTutorial: React.FC = () => {
                 </Typography>
               </Grid>
               <Grid
+                item
                 xs={12}
                 sm={12}
                 md={6}
@@ -151,9 +152,10 @@ const SectionTutorial: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Grid container>
               <Grid
+                item
                 xs={12}
                 sm={12}
                 md={6}
@@ -179,6 +181,7 @@ const SectionTutorial: React.FC = () => {
                 </WrapperPlayerSecond>
               </Grid>
               <Grid
+                item
                 xs={12}
                 sm={12}
                 md={6}

@@ -4,6 +4,14 @@ import styled from "styled-components";
 import { Grid, Typography } from "@mui/material";
 import SearchLamina from "../search-lamina/search-lamina";
 import SectionMax from "../section-max/section-max";
+import { useNavigate } from "react-router-dom";
+import {
+  getCurrentSearchWord,
+  updateCurrentSearchWord,
+} from "../../core/store/sheets/sheetsSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { APP_CONSTANS } from "../../constants/app";
+import useSearchSheet from "../../utils/hooks/use-search-sheet";
 
 const HeaderBackground = styled(Grid)`
   height: 100vh;
@@ -32,11 +40,13 @@ const HeaderBody = styled(Grid)`
 `;
 
 const Header: React.FC = () => {
+  const { handleSetData, handleKeyUp } = useSearchSheet();
+
   return (
     <HeaderBackground>
       <OverlayHeader />
       <HeaderBody container justifyContent="center" alignItems="center">
-        <Grid xs={10} justifyContent="center" alignItems="center">
+        <Grid item xs={10} justifyContent="center" alignItems="center">
           <SectionMax>
             <Typography
               variant="h2"
@@ -57,7 +67,10 @@ const Header: React.FC = () => {
             >
               Busca las mejores imágenes para tus tareas...
             </Typography>
-            <SearchLamina />
+            <SearchLamina
+              handleSetData={handleSetData}
+              handleKeyUp={handleKeyUp}
+            />
           </SectionMax>
         </Grid>
       </HeaderBody>

@@ -1,9 +1,10 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { laminasApi} from "./store/editor/editorAPI";
+import { laminasApi } from "./store/editor/editorAPI";
 import { openAiAPI } from "./store/openAi/openAiAPI";
 import { appApi } from "./store/app-store/appAPI";
 import { authAPI } from "./store/auth/authAPI";
 import { sheetsAPI } from "./store/sheets/sheetsAPI";
+import { categoriesAPI } from "./store/categories/categoriesAPI";
 import editorReducer from "./store/editor/editorSlice";
 import sheetsReducer from "./store/sheets/sheetsSlice";
 import temporalReducer from "./store/temporal/temporalSlice";
@@ -15,6 +16,7 @@ export const queryMiddleares = [
   openAiAPI.middleware,
   authAPI.middleware,
   sheetsAPI.middleware,
+  categoriesAPI.middleware,
 ];
 
 export const store = configureStore({
@@ -29,6 +31,7 @@ export const store = configureStore({
     [appApi.reducerPath]: appApi.reducer,
     [authAPI.reducerPath]: authAPI.reducer,
     [sheetsAPI.reducerPath]: sheetsAPI.reducer,
+    [categoriesAPI.reducerPath]: categoriesAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(queryMiddleares as any),

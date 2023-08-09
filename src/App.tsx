@@ -1,5 +1,4 @@
 import React from "react";
-import Cookies from "js-cookie";
 import { useAppDispatch } from "./app/hooks";
 import {
   updateCanvasHeight,
@@ -8,10 +7,11 @@ import {
 import { breakpoints } from "./constants/breakpoints";
 import { Outlet } from "react-router-dom";
 import { updateValueScroll } from "./core/store/app-store/appSlice";
-import ModalLogin from './components/modals/modal-login'
-import ModalRegister from './components/modals/modal-register'
-import ModalCoupon from './components/modals/modal-coupon'
-import ModalRecover from './components/modals/modal-recover'
+import ModalLogin from "./components/modals/modal-login";
+import ModalRegister from "./components/modals/modal-register";
+import ModalCoupon from "./components/modals/modal-coupon";
+import ModalRecover from "./components/modals/modal-recover";
+import ModalSheetDetail from "./components/modals/modal-sheet-detail";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -31,7 +31,6 @@ const App: React.FC = () => {
     dispatch(updateValueScroll(window.scrollY));
   });
 
-
   return (
     <React.Fragment>
       <Outlet />
@@ -40,6 +39,7 @@ const App: React.FC = () => {
       <ModalRegister />
       <ModalCoupon />
       <ModalRecover />
+      <ModalSheetDetail />
     </React.Fragment>
   );
 };

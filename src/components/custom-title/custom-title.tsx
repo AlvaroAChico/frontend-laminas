@@ -19,7 +19,7 @@ const CustomTitle: React.FC<IOwnProps> = ({ title, primaryAction = null }) => {
   return (
     <>
       <WrapperTitle container justifyContent={"space-between"}>
-        <Grid xs={12} sm={8} md={primaryAction != null ? 9 : 12}>
+        <Grid item xs={12} sm={8} md={primaryAction != null ? 9 : 12}>
           <Typography
             variant="h5"
             component="h5"
@@ -30,7 +30,7 @@ const CustomTitle: React.FC<IOwnProps> = ({ title, primaryAction = null }) => {
           </Typography>
         </Grid>
         {!!primaryAction && (
-          <Grid xs={12} sm={4} md={3}>
+          <Grid item xs={12} sm={4} md={3}>
             {primaryAction}
           </Grid>
         )}

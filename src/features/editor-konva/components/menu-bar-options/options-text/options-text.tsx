@@ -17,6 +17,7 @@ import { Trash } from "@styled-icons/fa-solid/Trash";
 import { ChevronUp } from "@styled-icons/boxicons-regular/ChevronUp";
 import { ChevronDown } from "@styled-icons/boxicons-regular/ChevronDown";
 import { breakpoints } from "../../../../../constants/breakpoints";
+import { Tooltip } from "@mui/material";
 
 const baseCenter = styled.div`
   display: flex;
@@ -183,170 +184,189 @@ const OptionsText: React.FC = () => {
 
   return (
     <WrapperOptionsText>
-      <ItemMenu>
-        <input
-          type="color"
-          defaultValue={currentPropertiesKonva.customFill || "#ffffff"}
-          onInput={(e: any) => handleChangeColor(e.target.value)}
-        />
-      </ItemMenu>
-      <ItemMenu>
-        <BoxEditSizeText>
-          <div>
-            <input
-              type="number"
-              value={currentPropertiesKonva.customFontSize}
-              onChange={(e: any) =>
-                dispatch(updateSizeRichText(e!.target.value))
-              }
-            />
-          </div>
-          <WrapperArrowsText>
+      <Tooltip title="Color">
+        <ItemMenu>
+          <input
+            type="color"
+            defaultValue={currentPropertiesKonva.customFill || "#ffffff"}
+            onInput={(e: any) => handleChangeColor(e.target.value)}
+          />
+        </ItemMenu>
+      </Tooltip>
+      <Tooltip title="Tamaño" arrow>
+        <ItemMenu>
+          <BoxEditSizeText>
             <div>
-              <ChevronUp
-                onClick={() =>
-                  dispatch(
-                    updateSizeRichText(
-                      (currentPropertiesKonva.customFontSize || 0) + 1
-                    )
-                  )
+              <input
+                type="number"
+                value={currentPropertiesKonva.customFontSize}
+                onChange={(e: any) =>
+                  dispatch(updateSizeRichText(e!.target.value))
                 }
               />
             </div>
-            <div>
-              <ChevronDown
-                onClick={() =>
-                  dispatch(
-                    updateSizeRichText(
-                      (currentPropertiesKonva.customFontSize || 1) <= 1
-                        ? 1
-                        : (currentPropertiesKonva.customFontSize || 1) - 1
+            <WrapperArrowsText>
+              <div>
+                <ChevronUp
+                  onClick={() =>
+                    dispatch(
+                      updateSizeRichText(
+                        (currentPropertiesKonva.customFontSize || 0) + 1
+                      )
                     )
-                  )
-                }
-              />
-            </div>
-          </WrapperArrowsText>
-        </BoxEditSizeText>
-      </ItemMenu>
+                  }
+                />
+              </div>
+              <div>
+                <ChevronDown
+                  onClick={() =>
+                    dispatch(
+                      updateSizeRichText(
+                        (currentPropertiesKonva.customFontSize || 1) <= 1
+                          ? 1
+                          : (currentPropertiesKonva.customFontSize || 1) - 1
+                      )
+                    )
+                  }
+                />
+              </div>
+            </WrapperArrowsText>
+          </BoxEditSizeText>
+        </ItemMenu>
+      </Tooltip>
       <ItemMenu>
         <WrapperAlign>
           <ContainerAlign
             isActive={currentPropertiesKonva.customAlign == "left"}
             onClick={() => handleChangeAlignText("left")}
           >
-            <TextAlignLeft />
+            <Tooltip title="Izquierda" arrow>
+              <TextAlignLeft />
+            </Tooltip>
           </ContainerAlign>
           <ContainerAlign
             isActive={currentPropertiesKonva.customAlign == "center"}
             onClick={() => handleChangeAlignText("center")}
           >
-            <TextAlignCenter />
+            <Tooltip title="Centrado" arrow>
+              <TextAlignCenter />
+            </Tooltip>
           </ContainerAlign>
           <ContainerAlign
             isActive={currentPropertiesKonva.customAlign == "justify"}
             onClick={() => handleChangeAlignText("justify")}
           >
-            <TextAlignJustify />
+            <Tooltip title="Justificado" arrow>
+              <TextAlignJustify />
+            </Tooltip>
           </ContainerAlign>
           <ContainerAlign
             isActive={currentPropertiesKonva.customAlign == "right"}
             onClick={() => handleChangeAlignText("right")}
           >
-            <TextAlignRight />
+            <Tooltip title="Derecha" arrow>
+              <TextAlignRight />
+            </Tooltip>
           </ContainerAlign>
         </WrapperAlign>
       </ItemMenu>
-      <ItemMenu>
-        <select onChange={(e: any) => handleChangeFamilyText(e.target.value)}>
-          <option selected={isFontFamilySelected("Arial")} value="Arial">
-            Arial
-          </option>
-          <option
-            selected={isFontFamilySelected("Arial Black")}
-            value="Arial Black"
-          >
-            Arial Black
-          </option>
-          <option selected={isFontFamilySelected("Verdana")} value="Verdana">
-            Verdana
-          </option>
-          <option selected={isFontFamilySelected("Tahoma")} value="Tahoma">
-            Tahoma
-          </option>
-          <option
-            selected={isFontFamilySelected("Trebuchet MS")}
-            value="Trebuchet MS"
-          >
-            Trebuchet MS
-          </option>
-          <option
-            selected={isFontFamilySelected("Times New Roman")}
-            value="Times New Roman"
-          >
-            Times New Roman
-          </option>
-          <option selected={isFontFamilySelected("Georgia")} value="Georgia">
-            Georgia
-          </option>
-          <option
-            selected={isFontFamilySelected("American Typewriter)")}
-            value="American Typewriter"
-          >
-            American Typewriter
-          </option>
-          <option
-            selected={isFontFamilySelected("Andale Mono")}
-            value="Andale Mono"
-          >
-            Andale Mono
-          </option>
-          <option selected={isFontFamilySelected("Courier")} value="Courier">
-            Courier
-          </option>
-          <option
-            selected={isFontFamilySelected("Lucida Console")}
-            value="Lucida Console"
-          >
-            Lucida Console
-          </option>
-          <option selected={isFontFamilySelected("Monaco")} value="Monaco">
-            Monaco
-          </option>
-          <option
-            selected={isFontFamilySelected("Bradley Hand")}
-            value="Bradley Hand"
-          >
-            Bradley Hand
-          </option>
-          <option
-            selected={isFontFamilySelected("Brush Script MT")}
-            value="Brush Script MT"
-          >
-            Brush Script MT
-          </option>
-          <option selected={isFontFamilySelected("Luminari")} value="Luminari">
-            Luminari
-          </option>
-          <option
-            selected={isFontFamilySelected("Comic Sans MS")}
-            value="Comic Sans MS"
-          >
-            Comic Sans MS
-          </option>
-          <option
-            selected={isFontFamilySelected("Helvetica")}
-            value="Helvetica"
-          >
-            Helvetica
-          </option>
-          <option selected={isFontFamilySelected("Cambria")} value="Cambria">
-            Cambria
-          </option>
-        </select>
-      </ItemMenu>
+      <Tooltip title="Fuente" arrow>
+        <ItemMenu>
+          <select onChange={(e: any) => handleChangeFamilyText(e.target.value)}>
+            <option selected={isFontFamilySelected("Arial")} value="Arial">
+              Arial
+            </option>
+            <option
+              selected={isFontFamilySelected("Arial Black")}
+              value="Arial Black"
+            >
+              Arial Black
+            </option>
+            <option selected={isFontFamilySelected("Verdana")} value="Verdana">
+              Verdana
+            </option>
+            <option selected={isFontFamilySelected("Tahoma")} value="Tahoma">
+              Tahoma
+            </option>
+            <option
+              selected={isFontFamilySelected("Trebuchet MS")}
+              value="Trebuchet MS"
+            >
+              Trebuchet MS
+            </option>
+            <option
+              selected={isFontFamilySelected("Times New Roman")}
+              value="Times New Roman"
+            >
+              Times New Roman
+            </option>
+            <option selected={isFontFamilySelected("Georgia")} value="Georgia">
+              Georgia
+            </option>
+            <option
+              selected={isFontFamilySelected("American Typewriter)")}
+              value="American Typewriter"
+            >
+              American Typewriter
+            </option>
+            <option
+              selected={isFontFamilySelected("Andale Mono")}
+              value="Andale Mono"
+            >
+              Andale Mono
+            </option>
+            <option selected={isFontFamilySelected("Courier")} value="Courier">
+              Courier
+            </option>
+            <option
+              selected={isFontFamilySelected("Lucida Console")}
+              value="Lucida Console"
+            >
+              Lucida Console
+            </option>
+            <option selected={isFontFamilySelected("Monaco")} value="Monaco">
+              Monaco
+            </option>
+            <option
+              selected={isFontFamilySelected("Bradley Hand")}
+              value="Bradley Hand"
+            >
+              Bradley Hand
+            </option>
+            <option
+              selected={isFontFamilySelected("Brush Script MT")}
+              value="Brush Script MT"
+            >
+              Brush Script MT
+            </option>
+            <option
+              selected={isFontFamilySelected("Luminari")}
+              value="Luminari"
+            >
+              Luminari
+            </option>
+            <option
+              selected={isFontFamilySelected("Comic Sans MS")}
+              value="Comic Sans MS"
+            >
+              Comic Sans MS
+            </option>
+            <option
+              selected={isFontFamilySelected("Helvetica")}
+              value="Helvetica"
+            >
+              Helvetica
+            </option>
+            <option selected={isFontFamilySelected("Cambria")} value="Cambria">
+              Cambria
+            </option>
+          </select>
+        </ItemMenu>
+      </Tooltip>
       <div>
-        <CustomTrash onClick={handleDeleteCurrentObject} />
+        <Tooltip title="Borrar" arrow>
+          <CustomTrash onClick={handleDeleteCurrentObject} />
+        </Tooltip>
       </div>
     </WrapperOptionsText>
   );

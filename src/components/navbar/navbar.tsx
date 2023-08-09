@@ -10,32 +10,32 @@ import {
   MenuItem,
   Divider,
   ListItemIcon,
-  Drawer
+  Drawer,
 } from "@mui/material";
 import CustomButtom from "../custom-button/custom-button";
 import LogoImg from "../../assets/img/logo.svg";
 import { theme } from "../../config/theme/theme";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { 
+import {
   getValueScroll,
   getStatusAuthenticated,
   updateStatusModalLogin,
   updateStatusModalRegister,
-  updateStatusAuthenticated
+  updateStatusAuthenticated,
 } from "../../core/store/app-store/appSlice";
 import { NavLink } from "react-router-dom";
 import AvatarImg from "../../assets/img/avatar_nav.png";
 import { customPalette } from "../../config/theme/theme";
-import { useStartLogoutMutation } from '../../core/store/auth/authAPI'
-import { IAuthData } from '../../core/store/auth/types/auth-types'
-import './navbar-styles.css'
+import { useStartLogoutMutation } from "../../core/store/auth/authAPI";
+import { IAuthData } from "../../core/store/auth/types/auth-types";
+import "./navbar-styles.css";
 
-import { Bars } from '@styled-icons/fa-solid/Bars'
-import { PersonCircle } from '@styled-icons/bootstrap/PersonCircle'
-import { Download } from '@styled-icons/evaicons-solid/Download'
-import { Card } from '@styled-icons/ionicons-sharp/Card'
-import { StarFill } from '@styled-icons/bootstrap/StarFill'
-import { LogOut } from '@styled-icons/ionicons-outline/LogOut'
+import { Bars } from "@styled-icons/fa-solid/Bars";
+import { PersonCircle } from "@styled-icons/bootstrap/PersonCircle";
+import { Download } from "@styled-icons/evaicons-solid/Download";
+import { Card } from "@styled-icons/ionicons-sharp/Card";
+import { StarFill } from "@styled-icons/bootstrap/StarFill";
+import { LogOut } from "@styled-icons/ionicons-outline/LogOut";
 import BookImg from "../../assets/img/book_icon.png";
 import RuleImg from "../../assets/img/rule_icon.png";
 import Cookies from "js-cookie";
@@ -56,10 +56,10 @@ const WrapperNavbar = styled.div<{ valueScroll: number }>`
   transition: 0.5s;
 `;
 const GridBurguerMenu = styled(Grid)`
-> svg {
-  width: 100%;
-  max-width: 40px;
-}
+  > svg {
+    width: 100%;
+    max-width: 40px;
+  }
 `;
 
 const WrapperNavMobileMenu = styled.div`
@@ -73,7 +73,7 @@ const WrapperNavMobileMenu = styled.div`
   padding: 5px;
   position: relative;
   overflow: hidden;
-`
+`;
 const WrapperBookImg = styled.img`
   position: absolute;
   bottom: -20px;
@@ -93,8 +93,8 @@ const Navbar: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [statusNavMobile, setStatusNavMobile] = React.useState(false);
   const QueriePhone = useMediaQuery(theme.breakpoints.down("sm"));
-  const isAuthenticated = useAppSelector(getStatusAuthenticated)
-  const [startLogout, resultLogout] = useStartLogoutMutation()
+  const isAuthenticated = useAppSelector(getStatusAuthenticated);
+  const [startLogout, resultLogout] = useStartLogoutMutation();
   const valueScroll = useAppSelector(getValueScroll);
   const open = Boolean(anchorEl);
   const dispatch = useAppDispatch();
@@ -106,209 +106,233 @@ const Navbar: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleViewLogin = () => dispatch(updateStatusModalLogin(true))
-  const handleViewRegister = () => dispatch(updateStatusModalRegister(true))
+  const handleViewLogin = () => dispatch(updateStatusModalLogin(true));
+  const handleViewRegister = () => dispatch(updateStatusModalRegister(true));
 
   return (
     <>
-    <WrapperNavbar valueScroll={valueScroll}>
-      <Grid container alignItems={"center"}>
-        <Grid xs={6} sm={3} md={3} xl={6} textAlign={"left"}>
-          <Box
-            component="img"
-            sx={{
-              padding: "4px",
-              maxWidth: { xs: 160, sm: 140, md: 160 },
-            }}
-            alt="Logo de Elaminas"
-            src={LogoImg}
-          />
-        </Grid>
-        {!QueriePhone && (
-          <Grid sm={9} md={9} xl={6} textAlign={"center"}>
-            <Grid
-              container
-              alignItems={"right"}
-              justifyContent={"right"}
-              columnGap={2}
-            >
-              <Grid xs={2}>
-                <Typography>
-                  <NavLink
-                    to="/"
-                    className={({ isActive }) => isActive ? "link-active" : "link-inactive"}
-                  >
-                    Inicio
-                  </NavLink>
-                </Typography>
-              </Grid>
-              <Grid xs={2}>
-                <Typography>
-                  <NavLink
-                    to="/laminas"
-                    className={({ isActive }) => isActive ? "link-active" : "link-inactive"}
-                  >
-                    Láminas
-                  </NavLink>
-                </Typography>
-              </Grid>
-              <Grid xs={2}>
-                <Typography>
-                  <NavLink
-                    to="/planes"
-                    className={({ isActive }) => isActive ? "link-active" : "link-inactive"}
-                  >
-                    Planes
-                  </NavLink>
-                </Typography>
-              </Grid>
-              {!isAuthenticated && (
-                <>
-                  <Grid xs={2} textAlign={"right"}>
-                    <CustomButtom
-                      title="Ingresar"
-                      style="PRIMARY"
-                      borderStyle="OUTLINE"
-                      action={handleViewLogin}
-                      customStyle={`
+      <WrapperNavbar valueScroll={valueScroll}>
+        <Grid container alignItems={"center"}>
+          <Grid item xs={6} sm={3} md={3} xl={6} textAlign={"left"}>
+            <Box
+              component="img"
+              sx={{
+                padding: "4px",
+                maxWidth: { xs: 160, sm: 140, md: 160 },
+              }}
+              alt="Logo de Elaminas"
+              src={LogoImg}
+            />
+          </Grid>
+          {!QueriePhone && (
+            <Grid item sm={9} md={9} xl={6} textAlign={"center"}>
+              <Grid
+                container
+                alignItems={"right"}
+                justifyContent={"right"}
+                columnGap={2}
+              >
+                <Grid item xs={2}>
+                  <Typography>
+                    <NavLink
+                      to="/"
+                      className={({ isActive }) =>
+                        isActive ? "link-active" : "link-inactive"
+                      }
+                    >
+                      Inicio
+                    </NavLink>
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography>
+                    <NavLink
+                      to="/laminas"
+                      className={({ isActive }) =>
+                        isActive ? "link-active" : "link-inactive"
+                      }
+                    >
+                      Láminas
+                    </NavLink>
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography>
+                    <NavLink
+                      to="/planes"
+                      className={({ isActive }) =>
+                        isActive ? "link-active" : "link-inactive"
+                      }
+                    >
+                      Planes
+                    </NavLink>
+                  </Typography>
+                </Grid>
+                {!isAuthenticated && (
+                  <>
+                    <Grid item xs={2} textAlign={"right"}>
+                      <CustomButtom
+                        title="Ingresar"
+                        style="PRIMARY"
+                        borderStyle="OUTLINE"
+                        action={handleViewLogin}
+                        customStyle={`
                       border-color: white;
                       color: white;
                     `}
+                      />
+                    </Grid>
+                    <Grid item xs={2} textAlign={"right"}>
+                      <CustomButtom
+                        title="Unirme"
+                        style="SECONDARY"
+                        borderStyle="NONE"
+                        action={handleViewRegister}
+                      />
+                    </Grid>
+                  </>
+                )}
+                {isAuthenticated && (
+                  <Grid item xs={1}>
+                    <Avatar
+                      alt="Avatar"
+                      src={AvatarImg}
+                      onClick={handleClick}
                     />
-                  </Grid>
-                  <Grid xs={2} textAlign={"right"}>
-                    <CustomButtom
-                      title="Unirme"
-                      style="SECONDARY"
-                      borderStyle="NONE"
-                      action={handleViewRegister}
-                    />
-                  </Grid>
-                </>
-              )}
-              {isAuthenticated && (
-                <Grid item xs={1}>
-                  <Avatar alt="Avatar" src={AvatarImg} onClick={handleClick}/>
-                  <Menu
-                    anchorEl={anchorEl}
-                    id="account-menu"
-                    open={open}
-                    onClose={handleClose}
-                    onClick={handleClose}
-                    PaperProps={{
-                      elevation: 0,
-                      sx: {
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                        padding: "10px 15px",
-                        borderRadius: "15px",
-                        mt: 1.5,
-                        '& svg': {
-                          width: 16,
-                          height: 16,
-                          ml: -0.5,
-                          mr: 2,
-                          color: customPalette.primaryColor
+                    <Menu
+                      anchorEl={anchorEl}
+                      id="account-menu"
+                      open={open}
+                      onClose={handleClose}
+                      onClick={handleClose}
+                      PaperProps={{
+                        elevation: 0,
+                        sx: {
+                          overflow: "visible",
+                          filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                          padding: "10px 15px",
+                          borderRadius: "15px",
+                          mt: 1.5,
+                          "& svg": {
+                            width: 16,
+                            height: 16,
+                            ml: -0.5,
+                            mr: 2,
+                            color: customPalette.primaryColor,
+                          },
+                          "&:before": {
+                            content: '""',
+                            display: "block",
+                            position: "absolute",
+                            top: 0,
+                            right: 15,
+                            width: 10,
+                            height: 10,
+                            bgcolor: "background.paper",
+                            transform: "translateY(-50%) rotate(45deg)",
+                            zIndex: 0,
+                          },
+                          "& a": {
+                            color: customPalette.primaryColor,
+                          },
                         },
-                        '&:before': {
-                          content: '""',
-                          display: 'block',
-                          position: 'absolute',
-                          top: 0,
-                          right: 15,
-                          width: 10,
-                          height: 10,
-                          bgcolor: 'background.paper',
-                          transform: 'translateY(-50%) rotate(45deg)',
-                          zIndex: 0,
-                        },
-                        '& a': {
-                          color: customPalette.primaryColor
-                        }
-                      },
-                    }}
-                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                  >
-                    <MenuItem onClick={handleClose}>
-                      <PersonCircle />
-                      <NavLink
-                        to="/dashboard/perfil"
-                        className={({ isActive }) => isActive ? "sidebar-active" : "sidebar-inactive"}
+                      }}
+                      transformOrigin={{ horizontal: "right", vertical: "top" }}
+                      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                    >
+                      <MenuItem onClick={handleClose}>
+                        <PersonCircle />
+                        <NavLink
+                          to="/dashboard/perfil"
+                          className={({ isActive }) =>
+                            isActive ? "sidebar-active" : "sidebar-inactive"
+                          }
+                        >
+                          Mi Perfil
+                        </NavLink>
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>
+                        <Download />
+                        <NavLink
+                          to="/dashboard/descargas"
+                          className={({ isActive }) =>
+                            isActive ? "sidebar-active" : "sidebar-inactive"
+                          }
+                        >
+                          Descargas
+                        </NavLink>
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>
+                        <Card />
+                        <NavLink
+                          to="/dashboard/suscripcion"
+                          className={({ isActive }) =>
+                            isActive ? "sidebar-active" : "sidebar-inactive"
+                          }
+                        >
+                          Suscripción
+                        </NavLink>
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>
+                        <StarFill />
+                        <NavLink
+                          to="/dashboard/favoritos"
+                          className={({ isActive }) =>
+                            isActive ? "sidebar-active" : "sidebar-inactive"
+                          }
+                        >
+                          Favoritos
+                        </NavLink>
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem
+                        onClick={handleClose}
+                        sx={{ color: customPalette.secondaryColor }}
                       >
-                        Mi Perfil
-                      </NavLink>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                      <Download />
-                      <NavLink
-                        to="/dashboard/descargas"
-                        className={({ isActive }) => isActive ? "sidebar-active" : "sidebar-inactive"}
-                      >
-                        Descargas
-                      </NavLink>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                      <Card />
-                      <NavLink
-                        to="/dashboard/suscripcion"
-                        className={({ isActive }) => isActive ? "sidebar-active" : "sidebar-inactive"}
-                      >
-                        Suscripción
-                      </NavLink>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                      <StarFill />
-                      <NavLink
-                        to="/dashboard/favoritos"
-                        className={({ isActive }) => isActive ? "sidebar-active" : "sidebar-inactive"}
-                      >
-                        Favoritos
-                      </NavLink>
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem onClick={handleClose} sx={{ color: customPalette.secondaryColor }}>
-                      <ListItemIcon  sx={{ 
-                        '& svg': {
-                          color: customPalette.secondaryColor,
-                          width: "16px",
-                          height: "16px",
-                        }
-                      }}>
-                        <LogOut />
-                      </ListItemIcon>
-                      <Typography
-                        variant="caption"
-                        component="span"
-                        onClick={() => {
-                          startLogout("")
-                          dispatch(updateStatusAuthenticated(false));
-                          Cookies.remove("auth_user")
-                          location.reload();
-                        }}
-                      >
-                        Cerrar Sesión
-                      </Typography>
-                    </MenuItem>
-                  </Menu>
-                </Grid>
-              )}
+                        <ListItemIcon
+                          sx={{
+                            "& svg": {
+                              color: customPalette.secondaryColor,
+                              width: "16px",
+                              height: "16px",
+                            },
+                          }}
+                        >
+                          <LogOut />
+                        </ListItemIcon>
+                        <Typography
+                          variant="caption"
+                          component="span"
+                          onClick={() => {
+                            startLogout("");
+                            dispatch(updateStatusAuthenticated(false));
+                            Cookies.remove("auth_user");
+                            location.reload();
+                          }}
+                        >
+                          Cerrar Sesión
+                        </Typography>
+                      </MenuItem>
+                    </Menu>
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-        {QueriePhone && (
-          <GridBurguerMenu
-            xs={6}
-            textAlign={"right"}
-            onClick={() => setStatusNavMobile(true)}
-            sx={{ cursor: 'pointer' }}
-          >
-            <Bars />
-          </GridBurguerMenu>
-        )}
-      </Grid>
-    </WrapperNavbar>
-    <Drawer
+          )}
+          {QueriePhone && (
+            <GridBurguerMenu
+              item
+              xs={6}
+              textAlign={"right"}
+              onClick={() => setStatusNavMobile(true)}
+              sx={{ cursor: "pointer" }}
+            >
+              <Bars />
+            </GridBurguerMenu>
+          )}
+        </Grid>
+      </WrapperNavbar>
+      <Drawer
         anchor={"left"}
         open={statusNavMobile}
         onClose={() => setStatusNavMobile(false)}
@@ -331,48 +355,51 @@ const Navbar: React.FC = () => {
                   item
                   xs={12}
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'left',
-                    columnGap: '10px',
-                    '> div': {
-                      display: 'flex',
-                      flexDirection: 'column',
-                      rowGap: '6px'
+                    display: "flex",
+                    justifyContent: "left",
+                    columnGap: "10px",
+                    "> div": {
+                      display: "flex",
+                      flexDirection: "column",
+                      rowGap: "6px",
                     },
-                    '> div a:nth-child(1)': {
-                      color: 'white',
-                      textDecoration: 'none'
+                    "> div a:nth-child(1)": {
+                      color: "white",
+                      textDecoration: "none",
                     },
-                    '> div span': {
-                      fontSize: '10px',
-                      color: '#f4ff1f',
-                      cursor: 'pointer'
-                    }
+                    "> div span": {
+                      fontSize: "10px",
+                      color: "#f4ff1f",
+                      cursor: "pointer",
+                    },
                   }}
                 >
-                  <Avatar alt="Avatar" src={AvatarImg} onClick={handleClick}/>
+                  <Avatar alt="Avatar" src={AvatarImg} onClick={handleClick} />
                   <div>
-                    <NavLink to="/dashboard/perfil">
-                      Mi Perfil
-                    </NavLink>
+                    <NavLink to="/dashboard/perfil">Mi Perfil</NavLink>
                     <Typography
-                        variant="caption"
-                        component="span"
-                        onClick={() => {
-                          startLogout("")
-                          dispatch(updateStatusAuthenticated(false));
-                          Cookies.remove("auth_user")
-                          location.reload();
-                        }}
-                      >
-                        Cerrar Sesión
-                      </Typography>
+                      variant="caption"
+                      component="span"
+                      onClick={() => {
+                        startLogout("");
+                        dispatch(updateStatusAuthenticated(false));
+                        Cookies.remove("auth_user");
+                        location.reload();
+                      }}
+                    >
+                      Cerrar Sesión
+                    </Typography>
                   </div>
                 </Grid>
               )}
               {!isAuthenticated && (
                 <>
-                  <Grid xs={5} textAlign={"center"} sx={{ margin: 'auto' }}>
+                  <Grid
+                    item
+                    xs={5}
+                    textAlign={"center"}
+                    sx={{ margin: "auto" }}
+                  >
                     <CustomButtom
                       title="Ingresar"
                       style="PRIMARY"
@@ -384,7 +411,12 @@ const Navbar: React.FC = () => {
                     `}
                     />
                   </Grid>
-                  <Grid xs={5} textAlign={"center"} sx={{ margin: 'auto' }}>
+                  <Grid
+                    item
+                    xs={5}
+                    textAlign={"center"}
+                    sx={{ margin: "auto" }}
+                  >
                     <CustomButtom
                       title="Unirme"
                       style="SECONDARY"
@@ -394,84 +426,88 @@ const Navbar: React.FC = () => {
                   </Grid>
                 </>
               )}
-              <Grid
-                xs={12}
-                sx={{ marginTop: '20px', padding: '10px' }}
-              >
+              <Grid item xs={12} sx={{ marginTop: "20px", padding: "10px" }}>
                 <Typography>
                   <NavLink
                     to="/"
-                    className={({ isActive }) => isActive ? "link-mobile-active" : "link-mobile-inactive"}
+                    className={({ isActive }) =>
+                      isActive ? "link-mobile-active" : "link-mobile-inactive"
+                    }
                   >
                     Inicio
                   </NavLink>
                 </Typography>
               </Grid>
-              <Grid
-                xs={12}
-                sx={{ padding: '10px' }}
-              >
+              <Grid item xs={12} sx={{ padding: "10px" }}>
                 <Typography>
                   <NavLink
                     to="/laminas"
-                    className={({ isActive }) => isActive ? "link-mobile-active" : "link-mobile-inactive"}
+                    className={({ isActive }) =>
+                      isActive ? "link-mobile-active" : "link-mobile-inactive"
+                    }
                   >
                     Láminas
                   </NavLink>
                 </Typography>
               </Grid>
-              <Grid
-                xs={12}
-                sx={{ padding: '10px' }}
-              >
+              <Grid item xs={12} sx={{ padding: "10px" }}>
                 <Typography>
                   <NavLink
                     to="/planes"
-                    className={({ isActive }) => isActive ? "link-mobile-active" : "link-mobile-inactive"}
+                    className={({ isActive }) =>
+                      isActive ? "link-mobile-active" : "link-mobile-inactive"
+                    }
                   >
                     Planes
                   </NavLink>
                 </Typography>
               </Grid>
-              <Grid
-                xs={12}
-                sx={{ padding: '10px' }}
-              >
-                <Typography>
-                  <NavLink
-                    to="/dashboard/descargas"
-                    className={({ isActive }) => isActive ? "link-mobile-active" : "link-mobile-inactive"}
-                  >
-                    Descargas
-                  </NavLink>
-                </Typography>
-              </Grid>
-              <Grid
-                xs={12}
-                sx={{ padding: '10px' }}
-              >
-                <Typography>
-                  <NavLink
-                    to="/dashboard/suscripcion"
-                    className={({ isActive }) => isActive ? "link-mobile-active" : "link-mobile-inactive"}
-                  >
-                    Subscripción
-                  </NavLink>
-                </Typography>
-              </Grid>
-              <Grid
-                xs={12}
-                sx={{ padding: '10px' }}
-              >
-                <Typography>
-                  <NavLink
-                    to="/dashboard/favoritos"
-                    className={({ isActive }) => isActive ? "link-mobile-active" : "link-mobile-inactive"}
-                  >
-                    Favoritos
-                  </NavLink>
-                </Typography>
-              </Grid>
+              {isAuthenticated && (
+                <>
+                  <Grid item xs={12} sx={{ padding: "10px" }}>
+                    <Typography>
+                      <NavLink
+                        to="/dashboard/descargas"
+                        className={({ isActive }) =>
+                          isActive
+                            ? "link-mobile-active"
+                            : "link-mobile-inactive"
+                        }
+                      >
+                        Descargas
+                      </NavLink>
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sx={{ padding: "10px" }}>
+                    <Typography>
+                      <NavLink
+                        to="/dashboard/suscripcion"
+                        className={({ isActive }) =>
+                          isActive
+                            ? "link-mobile-active"
+                            : "link-mobile-inactive"
+                        }
+                      >
+                        Subscripción
+                      </NavLink>
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sx={{ padding: "10px" }}>
+                    <Typography>
+                      <NavLink
+                        to="/dashboard/favoritos"
+                        className={({ isActive }) =>
+                          isActive
+                            ? "link-mobile-active"
+                            : "link-mobile-inactive"
+                        }
+                      >
+                        Favoritos
+                      </NavLink>
+                    </Typography>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </div>
         </WrapperNavMobileMenu>

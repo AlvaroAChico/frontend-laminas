@@ -1,44 +1,83 @@
 {
-    "plan": {
-        "id": "1p93djq211",
-        "name": "basico"
-    },
-    "general": {
-        "watermark": false,
-        "enabled": [
-            "A4",
-            "A3",
-            "Oficio"
-        ]
-    },
-    "image": {
-        "enabled": [
-            "jpg",
-            "jpg,png",
-            "jpg,png,jpeg"
-        ]
-    },
-    "text": {
-        "enabled": "free",
-        "basic": [
-            "Arial",
-            "Time new roman"
-        ],
-        "premium": [
-            "Arial",
-            "Time new roman",
-            "forte"
-        ]
-    },
-    "figures": {},
-    "icons": {},
-    "arturito": {
-        "unlimited": false,
-        "amount": 30
-    },
-    "downloads": {
+  "plan": {
+    "id": "1p93djq211",
+    "name": "basico"
+  },
+  "functionallities": {
+    "general": [
+      {
+        "function": "FUNC_DOWNLOAD_SIZE",
+        "description": "Lista de tamaños de descargas permitidos",
+        "enabled": true,
+        "amount": null,
+        "formats": ["A4", "A3"],
+        "fonts": null,
+        "unlimited": null
+      }
+    ],
+    "images": [
+      {
+        "function": "FUNC_LIST_SHEETS",
+        "description": "Lista de láminas",
+        "enabled": true,
+        "amount": null,
+        "formats": null,
+        "fonts": null,
+        "unlimited": null
+      },
+      {
+        "function": "FUNC_UPLOAD_IMAGE",
+        "description": "Subir imagenes desde el ordenador",
+        "enabled": true,
+        "amount": null,
+        "formats": ["PNG, JPG"],
+        "fonts": null,
+        "unlimited": null
+      }
+    ],
+    "text": [
+      {
+        "function": "FUNC_UPLOAD_IMAGE",
+        "description": "Subir imagenes desde el ordenador",
+        "enabled": true,
+        "amount": null,
+        "formats": ["PNG, JPG"],
+        "fonts": ["ARIAL", "TIMES NEW ROMAN"],
+        "unlimited": null
+      }
+    ],
+    "figures": [
+      {
+        "function": "FUNC_ADD_FIGURE",
+        "description": "Agregar figuras geométricas básicas",
+        "enabled": true,
+        "amount": null,
+        "formats": ["CIRCLE", "RECT", "TRIANGLE"],
+        "fonts": null,
+        "unlimited": null
+      }
+    ],
+    "arturito": [
+      {
+        "function": "FUNC_CONSULTING",
+        "description": "Funcionalidad de realizar consultas con Arturito",
+        "enabled": true,
         "amount": 30,
-        "currentDownloads": 20,
-        "missingDownloads": 30
-    }
+        "formats": null,
+        "fonts": null,
+        "unlimited": true
+      }
+    ],
+    "downloads": [
+      {
+        "function": "FUNC_DOWNLOADS",
+        "description": "Realizar descargas en diferentes formatos",
+        "enabled": true,
+        "amount": 30,
+        "formats": ["PNG", "PDF"],
+        "fonts": null,
+        "unlimited": null
+      }
+    ]
+  }
 }

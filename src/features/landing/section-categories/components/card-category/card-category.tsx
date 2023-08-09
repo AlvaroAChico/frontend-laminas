@@ -42,7 +42,7 @@ interface IOwnProps {
   image: string;
 }
 
-const CardCategory: React.FC<IOwnProps> = ({ id, name, image }) => {
+const CardCategory: React.FC<IOwnProps> = ({ name, image }) => {
   return (
     <CardCategoryBackground cardImage={image}>
       <OverlayCategory />

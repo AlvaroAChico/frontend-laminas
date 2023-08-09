@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import CustomTitle from "../../../components/custom-title/custom-title";
-import { listPopularSearch } from "../../../config/mocks/list-popular-search";
 import { customPalette } from "../../../config/theme/theme";
 import { Typography } from "@mui/material";
 import SectionMax from "../../../components/section-max/section-max";
@@ -33,7 +32,7 @@ const WrapperBookImg = styled.img`
 `;
 
 const SectionPopularSearch: React.FC = () => {
-  const { data, isError, isSuccess } = useGetPopularSheetsQuery("")
+  const { data } = useGetPopularSheetsQuery("");
 
   return (
     <WrapperPopularSearch>

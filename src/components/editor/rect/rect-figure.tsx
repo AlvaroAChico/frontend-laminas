@@ -1,6 +1,6 @@
 import React from "react";
 import { Rect, Transformer } from "react-konva";
-import ArturitoIcon from "../../../assets/img/arturito-openai.png";
+
 export interface RectInitialProps {
   x: number;
   y: number;

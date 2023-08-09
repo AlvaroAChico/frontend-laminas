@@ -16,6 +16,7 @@ import SubMenuImagen from "./sub-menu-imagen/sub-menu-imagen";
 import SubMenuTexto from "./sub-menu-texto/sub-menu-texto";
 import SubMenuFiguras from "./sub-menu-figuras/sub-menu-figuras";
 import { breakpoints } from "../../../../constants/breakpoints";
+import { getDataUserAuth } from "../../../../core/store/app-store/appSlice";
 
 const WrapperMenu = styled.div`
   position: absolute;
@@ -66,8 +67,8 @@ const MenuOptions: React.FC<IOwnProps> = ({
   canvaGlobalRef,
   layerGlobalRef,
 }) => {
-  const dispatch = useAppDispatch();
   const activeMenu = useAppSelector(getActiveMenuOption);
+  const dispatch = useAppDispatch();
 
   const handleActiveMenu = (option: number) => () =>
     dispatch(updateActiveMenuOption(option));
@@ -108,7 +109,7 @@ const MenuOptions: React.FC<IOwnProps> = ({
           />
         </ItemMenu>
       </ContainerItems>
-      <ItemBack>
+      <ItemBack onClick={() => window.history.back()}>
         <ArrowIosBack />
         Regresar
       </ItemBack>

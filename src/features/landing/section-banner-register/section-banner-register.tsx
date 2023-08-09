@@ -5,7 +5,9 @@ import { Grid, Typography } from "@mui/material";
 import { customPalette } from "../../../config/theme/theme";
 import { Facebook, Google } from "styled-icons/bootstrap";
 import { Email } from "@styled-icons/material-outlined/Email";
-import {breakpoints} from '../../../constants/breakpoints'
+import { breakpoints } from "../../../constants/breakpoints";
+import { useAppDispatch } from "../../../app/hooks";
+import { updateStatusModalRegister } from "../../../core/store/app-store/appSlice";
 
 const HeaderBackground = styled(Grid)`
   background-image: url(${BannerImg});
@@ -16,7 +18,7 @@ const HeaderBackground = styled(Grid)`
   min-height: 400px;
   position: relative;
 
-  @media (max-width: 899px){
+  @media (max-width: 899px) {
     min-height: 750px;
   }
 `;
@@ -70,11 +72,15 @@ const ButtonEmail = styled(ButtonSocialRegister)`
 `;
 
 const SectionBannerRegister: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  const handleOpenRegister = () => dispatch(updateStatusModalRegister(true));
   return (
     <HeaderBackground>
       <OverlayHeader />
       <HeaderBody container justifyContent="center" alignItems="center">
         <Grid
+          item
           xs={12}
           md={6}
           justifyContent="center"
@@ -92,6 +98,7 @@ const SectionBannerRegister: React.FC = () => {
           </Typography>
         </Grid>
         <Grid
+          item
           xs={12}
           md={6}
           justifyContent="center"
@@ -100,6 +107,7 @@ const SectionBannerRegister: React.FC = () => {
         >
           <WrapperSocialRegister container padding={4} rowGap={2}>
             <ButtonGoogle
+              item
               xs={12}
               display="flex"
               justifyContent="center"
@@ -112,6 +120,7 @@ const SectionBannerRegister: React.FC = () => {
               </Typography>
             </ButtonGoogle>
             <ButtonFacebook
+              item
               xs={12}
               display="flex"
               justifyContent="center"
@@ -124,18 +133,20 @@ const SectionBannerRegister: React.FC = () => {
               </Typography>
             </ButtonFacebook>
             <ButtonEmail
+              item
               xs={12}
               display="flex"
               justifyContent="center"
               alignItems="center"
               columnGap={2}
+              onClick={handleOpenRegister}
             >
               <Email />
               <Typography variant="caption" component="span">
                 Registrarse con Email
               </Typography>
             </ButtonEmail>
-            <Grid xs={12} justifyContent="center" alignItems="center">
+            <Grid item xs={12} justifyContent="center" alignItems="center">
               <Typography variant="caption" component="span">
                 Al hacer click en <strong>Registrar Cuenta</strong> o
                 registrarse a través de Facebook o Google esta aceptando las

@@ -1,27 +1,37 @@
-import * as React from 'react';
-import { Typography, Modal, Fade, Box, Backdrop, Grid, Divider, Snackbar, Alert } from '@mui/material';
+import * as React from "react";
+import {
+  Typography,
+  Modal,
+  Fade,
+  Box,
+  Backdrop,
+  Grid,
+  Divider,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import {
   getStatusModalRegister,
   updateStatusModalRegister,
   updateStatusModalLogin,
-  updateStatusAuthenticated
-} from '../../core/store/app-store/appSlice'
-import CustomButton from '../../components/custom-button/custom-button'
-import { RightArrowAlt } from '@styled-icons/boxicons-regular/RightArrowAlt'
-import { SignupForm, SignupSchema } from '../../core/models/register-model';
-import { IRegister, IAuthData } from '../../core/store/auth/types/auth-types'
-import { useStartRegisterMutation } from '../../core/store/auth/authAPI'
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { settingsAPP } from '../../config/environments/settings'
-import { useAppSelector, useAppDispatch } from '../../app/hooks'
+  updateStatusAuthenticated,
+} from "../../core/store/app-store/appSlice";
+import CustomButton from "../../components/custom-button/custom-button";
+import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
+import { SignupForm, SignupSchema } from "../../core/models/register-model";
+import { IRegister, IAuthData } from "../../core/store/auth/types/auth-types";
+import { useStartRegisterMutation } from "../../core/store/auth/authAPI";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { settingsAPP } from "../../config/environments/settings";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { Facebook, Google } from "styled-icons/bootstrap";
-import { customPalette } from '../../config/theme/theme'
-import { yupResolver } from '@hookform/resolvers/yup';
+import { customPalette } from "../../config/theme/theme";
+import { yupResolver } from "@hookform/resolvers/yup";
 import RuleImg from "../../assets/img/rule_icon.png";
 import BookImg from "../../assets/img/book_icon.png";
-import LogoImg from '../../assets/img/logo.svg'
+import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
-import styled from 'styled-components'
+import styled from "styled-components";
 import Cookies from "js-cookie";
 
 const BoxStyle = styled(Box)`
@@ -37,7 +47,7 @@ const BoxStyle = styled(Box)`
   border-radius: 20px;
   overflow: hidden;
 
-  > div:nth-child(1){
+  > div:nth-child(1) {
     background: ${customPalette.secondaryColor};
     width: 3px;
     position: absolute;
@@ -48,12 +58,12 @@ const BoxStyle = styled(Box)`
     border-radius: 20px;
     height: 100%;
   }
-`
+`;
 const GridCaptcha = styled(Grid)`
-  > div div div:nth-child(1){
+  > div div div:nth-child(1) {
     margin: auto;
   }
-`
+`;
 
 const WrapperBookImg = styled.img`
   position: absolute;
@@ -112,31 +122,34 @@ const FormContainer = styled.div`
     text-align: right;
     padding-right: 15px;
   }
-`
+`;
 const ContainerEmailStyle = styled.div<{ errorStyle: boolean }>`
   > input {
-    border: ${p => p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"}
+    border: ${(p) =>
+      p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"};
   }
-`
+`;
 const ContainerPassStyle = styled.div<{ errorStyle: boolean }>`
-> input {
-  border: ${p => p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"}
-}
-`
+  > input {
+    border: ${(p) =>
+      p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"};
+  }
+`;
 const ContainerPassConfirmStyle = styled.div<{ errorStyle: boolean }>`
-> input {
-  border: ${p => p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"}
-}
-`
+  > input {
+    border: ${(p) =>
+      p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"};
+  }
+`;
 const ErrorMessage = styled.span`
   font-size: 10px;
   color: red;
   margin-top: 6px;
-`
+`;
 
 const ModalRegister: React.FC = () => {
-  const [startRegister, resultRegister] = useStartRegisterMutation()
-  const [statusSnackbar, setStatusSnackbar] = React.useState(false)
+  const [startRegister, resultRegister] = useStartRegisterMutation();
+  const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const isStatus = useAppSelector(getStatusModalRegister);
   const dispatch = useAppDispatch();
 
@@ -154,47 +167,55 @@ const ModalRegister: React.FC = () => {
     handleSubmit: submitWrapper,
     formState: { errors },
     register,
-    setValue
+    setValue,
   } = methods;
 
   const handleSubmit = React.useCallback((data: any) => {
     startRegister({
       email: data.email,
       password: data.password,
-      passConfirmation: data.passConfirmation
-    })
+      passConfirmation: data.passConfirmation,
+    });
   }, []);
 
   const handleChangeLogin = () => {
-    dispatch(updateStatusModalRegister(false))
-    dispatch(updateStatusModalLogin(true))
-  }
+    dispatch(updateStatusModalRegister(false));
+    dispatch(updateStatusModalLogin(true));
+  };
 
   function onChange(value: any) {
-    if(value != ""){
-      setValue("recaptcha", value)
+    if (value != "") {
+      setValue("recaptcha", value);
     }
   }
 
+  const handleKeyUp = (e: any) => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      submitWrapper(handleSubmit)();
+    }
+  };
+
   React.useEffect(() => {
-    if(resultRegister.data != null){
+    if (resultRegister.data != null) {
       const authData: IAuthData = {
-        user: resultRegister.data['0'],
+        user: resultRegister.data["0"],
         roles: resultRegister.data.roles,
-        token: resultRegister.data.token
+        token: resultRegister.data.token,
+        plan: resultRegister.data.plan,
+        functionalities: resultRegister.data.functionalities,
       } as IAuthData;
       Cookies.set("auth_user", JSON.stringify(authData));
       dispatch(updateStatusAuthenticated(false));
-      dispatch(updateStatusModalRegister(false))
-      location.reload()
+      dispatch(updateStatusModalRegister(false));
+      location.reload();
     }
-  }, [resultRegister.isSuccess])
+  }, [resultRegister.isSuccess]);
 
   React.useEffect(() => {
-    if(resultRegister.isError){
-      setStatusSnackbar(true)
+    if (resultRegister.isError) {
+      setStatusSnackbar(true);
     }
-  }, [resultRegister.isError])
+  }, [resultRegister.isError]);
 
   return (
     <>
@@ -223,7 +244,7 @@ const ModalRegister: React.FC = () => {
                   sx={{
                     padding: "4px",
                     maxWidth: { xs: 160, sm: 140, md: 160 },
-                    margin: "auto"
+                    margin: "auto",
                   }}
                   alt="Logo de Elaminas"
                   src={LogoImg}
@@ -249,7 +270,9 @@ const ModalRegister: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <FormContainer>
-                <ContainerEmailStyle errorStyle={!!(errors.email as any)?.message}>
+                <ContainerEmailStyle
+                  errorStyle={!!(errors.email as any)?.message}
+                >
                   <Typography
                     variant="caption"
                     component="label"
@@ -260,12 +283,17 @@ const ModalRegister: React.FC = () => {
                   <input
                     placeholder="Correo electronico"
                     type="email"
+                    onKeyUp={handleKeyUp}
                     required
                     {...register("email")}
                   />
-                  {!!(errors.email as any)?.message && <ErrorMessage>{errors?.email?.message}</ErrorMessage>}
+                  {!!(errors.email as any)?.message && (
+                    <ErrorMessage>{errors?.email?.message}</ErrorMessage>
+                  )}
                 </ContainerEmailStyle>
-                <ContainerPassStyle errorStyle={!!(errors.email as any)?.message}>
+                <ContainerPassStyle
+                  errorStyle={!!(errors.email as any)?.message}
+                >
                   <Typography
                     variant="caption"
                     component="span"
@@ -276,12 +304,17 @@ const ModalRegister: React.FC = () => {
                   <input
                     placeholder="Contraseña"
                     type="password"
+                    onKeyUp={handleKeyUp}
                     required
                     {...register("password")}
                   />
-                  {!!(errors.password as any)?.message && <ErrorMessage>{errors?.password?.message}</ErrorMessage>}
+                  {!!(errors.password as any)?.message && (
+                    <ErrorMessage>{errors?.password?.message}</ErrorMessage>
+                  )}
                 </ContainerPassStyle>
-                <ContainerPassConfirmStyle errorStyle={!!(errors.email as any)?.message}>
+                <ContainerPassConfirmStyle
+                  errorStyle={!!(errors.email as any)?.message}
+                >
                   <Typography
                     variant="caption"
                     component="span"
@@ -292,15 +325,21 @@ const ModalRegister: React.FC = () => {
                   <input
                     placeholder="Repetir contraseña"
                     type="password"
+                    onKeyUp={handleKeyUp}
                     required
                     {...register("passConfirmation")}
                   />
-                  {!!(errors.passConfirmation as any)?.message && <ErrorMessage>{errors?.passConfirmation?.message}</ErrorMessage>}
+                  {!!(errors.passConfirmation as any)?.message && (
+                    <ErrorMessage>
+                      {errors?.passConfirmation?.message}
+                    </ErrorMessage>
+                  )}
                 </ContainerPassConfirmStyle>
               </FormContainer>
             </Grid>
             <GridCaptcha
-              item xs={12}
+              item
+              xs={12}
               justifyContent="center"
               alignItems="center"
               marginTop={3}
@@ -311,7 +350,9 @@ const ModalRegister: React.FC = () => {
                 sitekey={settingsAPP.app.recaptchaKey}
                 onChange={onChange}
               />
-              {!!(errors.recaptcha as any)?.message && <ErrorMessage>{errors?.recaptcha?.message}</ErrorMessage>}
+              {!!(errors.recaptcha as any)?.message && (
+                <ErrorMessage>{errors?.recaptcha?.message}</ErrorMessage>
+              )}
             </GridCaptcha>
             <Grid item xs={12} justifyContent="center" alignItems="center">
               <CustomButton
@@ -346,6 +387,7 @@ const ModalRegister: React.FC = () => {
               flexDirection="row"
             >
               <ButtonGoogle
+                item
                 xs={12}
                 display="flex"
                 justifyContent="center"
@@ -358,6 +400,7 @@ const ModalRegister: React.FC = () => {
                 </Typography>
               </ButtonGoogle>
               <ButtonFacebook
+                item
                 xs={12}
                 display="flex"
                 justifyContent="center"
@@ -386,7 +429,7 @@ const ModalRegister: React.FC = () => {
                 color={customPalette.secondaryColor}
                 onClick={handleChangeLogin}
                 marginLeft="5px"
-                sx={{ cursor: 'pointer  '}}
+                sx={{ cursor: "pointer  " }}
               >
                 Inicia Sesión
               </Typography>
@@ -401,7 +444,7 @@ const ModalRegister: React.FC = () => {
       >
         <Alert
           severity="error"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
           onClose={() => setStatusSnackbar(false)}
           elevation={6}
         >
@@ -410,6 +453,6 @@ const ModalRegister: React.FC = () => {
       </Snackbar>
     </>
   );
-}
+};
 
-export default ModalRegister
+export default ModalRegister;
