@@ -8,11 +8,11 @@ import {
   updateActiveIDKonva,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
 import ArturitoIMG from "../../../../assets/img/arturito-openai.png";
-import { usePostIAForAppMutation } from "../../../../core/store/editor/editorAPI";
 import { customPalette } from "../../../../config/theme/theme";
 import { KonvaTypeItem } from "../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../editor-konva";
 import { breakpoints } from "../../../../constants/breakpoints";
+import { usePostIAForAppMutation } from "../../../../core/store/openAi/openAiAPI";
 
 const WrapperOptions = styled.div`
   position: absolute;

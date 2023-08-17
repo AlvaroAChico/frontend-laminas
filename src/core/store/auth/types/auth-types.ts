@@ -2,6 +2,24 @@ export interface ILogin {
   email: string;
   password: string;
 }
+export interface ILoginByGoogle {
+  access_token: string;
+  authuser: string;
+  expires_in: number;
+  prompt: string;
+  scope: string;
+  token_type: string;
+}
+export interface ILoginByGoogleResponse {
+  id: string;
+  email: string;
+  verified_email: boolean;
+  name: string;
+  given_name: string;
+  family_name: string;
+  picture: string;
+  locale: string;
+}
 export interface IRegister {
   email: string;
   password: string;
@@ -49,8 +67,8 @@ export interface RoleDTO {
 }
 
 export interface IFunctionality {
-  id: 1;
-  name: "general";
+  id: number;
+  name: string;
   function: EFuncionality;
   description: string;
   enabled: boolean;

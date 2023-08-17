@@ -4,7 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Grid, CardActions, Skeleton } from "@mui/material";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Star } from "@styled-icons/bootstrap/Star";
 import { StarFill } from "@styled-icons/bootstrap/StarFill";
 import { Download } from "@styled-icons/evaicons-solid/Download";
@@ -19,6 +19,9 @@ import {
   updateCurrentSheetDetail,
   updateStatusModalSheetDetail,
 } from "../../core/store/app-store/appSlice";
+import Cookies from "js-cookie";
+import { IAuthData } from "../../core/store/auth/types/auth-types";
+import { APP_CONSTANS } from "../../constants/app";
 
 const WrapperNroLamina = styled.div`
   display: flex;
@@ -115,8 +118,29 @@ const CustomCardActions = styled(CardActions)`
   }
 `;
 
+const rotate = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoaderStyle = styled.span`
+  width: 25px;
+  height: 25px;
+  border: 3px solid #dddddd;
+  border-bottom-color: ${customPalette.secondaryColor};
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: ${rotate} 1s linear infinite;
+`;
+
 interface IOwnProps {
   id?: number;
+  uuid?: string;
   image: string;
   nroLamina: string;
   name: string;
@@ -124,9 +148,13 @@ interface IOwnProps {
   nroDownloads: number;
   nroView: number;
   infoSheet: ISheetDefaultProps;
+  handleAddFavoriteSheet?: (uuid: string) => void;
+  handleDeleteFavoriteSheet?: (uuid: string) => void;
+  isLoadingDelete: boolean;
+  isLoadingAdd: boolean;
 }
 const CardLamina: React.FC<IOwnProps> = ({
-  id,
+  uuid = "",
   image,
   nroLamina,
   name,
@@ -134,12 +162,17 @@ const CardLamina: React.FC<IOwnProps> = ({
   nroDownloads,
   nroView,
   infoSheet,
+  handleAddFavoriteSheet = () => console.log,
+  handleDeleteFavoriteSheet = () => console.log,
+  isLoadingDelete,
+  isLoadingAdd,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [statusLoading, setStatusLoading] = React.useState(true);
 
   const handleDownload = () => console.log;
+
   const handleEdit = () => {
     navigate("/editor");
   };
@@ -158,12 +191,41 @@ const CardLamina: React.FC<IOwnProps> = ({
         isActive: infoSheet.isActive,
         createdAt: infoSheet.createdAt,
         tira: infoSheet.tira,
+        categories: infoSheet.categories,
       } as ISheetDefaultProps)
     );
     dispatch(updateStatusModalSheetDetail(true));
   };
 
   const handleLoaded = () => setStatusLoading(false);
+
+  const [blobImage, setBlobImage] = React.useState<any>();
+
+  async function fetchBlob() {
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    let token = "";
+    if (dataUser != null && dataUser != undefined) {
+      const user = JSON.parse(dataUser) as IAuthData;
+      token = user.token;
+    }
+
+    const response = await fetch(image, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const imageBlob = await response.blob();
+      const imageObjectURL = URL.createObjectURL(imageBlob);
+      setBlobImage(imageObjectURL);
+    }
+  }
+
+  React.useEffect(() => {
+    fetchBlob();
+  }, []);
 
   return (
     <>
@@ -179,8 +241,7 @@ const CardLamina: React.FC<IOwnProps> = ({
       >
         <CardMedia
           component="img"
-          image={image}
-          alt={name}
+          image={blobImage}
           sx={{ maxHeight: "170px", objectPosition: "top" }}
           onLoad={handleLoaded}
         />
@@ -196,7 +257,27 @@ const CardLamina: React.FC<IOwnProps> = ({
             </div>
             {isFavourite != null && (
               <>
-                <div>{isFavourite ? <StarFill /> : <Star />}</div>
+                <div>
+                  {isFavourite ? (
+                    <>
+                      {!isLoadingDelete ? (
+                        <StarFill
+                          onClick={() => handleDeleteFavoriteSheet(uuid)}
+                        />
+                      ) : (
+                        <LoaderStyle></LoaderStyle>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {!isLoadingAdd ? (
+                        <Star onClick={() => handleAddFavoriteSheet(uuid)} />
+                      ) : (
+                        <LoaderStyle></LoaderStyle>
+                      )}
+                    </>
+                  )}
+                </div>
               </>
             )}
           </WrapperNroLamina>
@@ -241,7 +322,7 @@ const CardLamina: React.FC<IOwnProps> = ({
             </Typography>
             <Edit />
           </CustomButtonStyle>
-          <CustomButtonStyle>
+          <CustomButtonStyle onClick={handleView}>
             <Typography variant="caption" component="span">
               Ver
             </Typography>

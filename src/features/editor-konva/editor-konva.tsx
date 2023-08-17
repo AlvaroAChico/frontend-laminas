@@ -39,6 +39,10 @@ import Lottie from "lottie-react";
 import BottomNavigationPanel from "./components/bottom-navigation-panel/bottom-navigation-panel";
 import Cookies from "js-cookie";
 import { usePostLaminasByUUIDMutation } from "../../core/store/editor/editorAPI";
+import WebFont from "webfontloader";
+import useAuth from "../../utils/hooks/use-auth";
+import useDataUser from "../../utils/hooks/use-data-user";
+import { EFuncionality } from "../../core/store/auth/types/auth-types";
 
 const WrapperPage = styled.div`
   position: relative;
@@ -83,7 +87,7 @@ const GlobalTextArea = styled.textarea<{
   width: ${(p) => p.styleWidth + 5}px;
   font-size: ${(p) => p.currentTextFontSize}px;
   color: ${(p) => p.currentTextColor};
-  font-family: ${(p) => p.currentTextFontFamily};
+  font-family: "${(p) => p.currentTextFontFamily}" !important;
   text-align: ${(p) => p.currentTextAlign};
 `;
 const BackdropDownload = styled.div`
@@ -250,6 +254,32 @@ const EditorKonva: React.FC = () => {
       dispatch(deleteObjectKonva());
     }
   };
+
+  const { handleGetFuncionalities } = useDataUser();
+
+  React.useEffect(() => {
+    const listFunc = handleGetFuncionalities();
+
+    const functionalities = (listFunc || []).filter(
+      (func) => func.function == EFuncionality.FUNC_LIST_FONTS
+    )[0];
+    if (functionalities != null && functionalities.fonts != null) {
+      const fonts = functionalities.fonts;
+      if (fonts != null) {
+        WebFont.load({
+          google: {
+            families: fonts,
+          },
+        });
+      }
+    } else {
+      WebFont.load({
+        google: {
+          families: ["Arial", "Baskerville", "Calibri", "Cambria"],
+        },
+      });
+    }
+  }, []);
 
   return (
     <WrapperPage>

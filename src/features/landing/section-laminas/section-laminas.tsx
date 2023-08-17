@@ -116,9 +116,14 @@ const SectionLaminas: React.FC = () => {
                       nroLamina={sheet.code}
                       name={sheet.name}
                       isFavourite={sheet.isFavorite}
+                      uuid={sheet.uuid}
                       nroDownloads={100}
                       nroView={sheet.numberOfViews}
                       infoSheet={sheet}
+                      handleAddFavoriteSheet={() => console.log}
+                      handleDeleteFavoriteSheet={() => console.log}
+                      isLoadingAdd={false}
+                      isLoadingDelete={false}
                     />
                   </ItemSlick>
                 );

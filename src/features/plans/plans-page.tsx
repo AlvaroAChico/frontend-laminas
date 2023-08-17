@@ -10,6 +10,8 @@ import { Typography, Grid } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import useSearchSheet from "../../utils/hooks/use-search-sheet";
+import { updateStatusModalPayment } from "../../core/store/app-store/appSlice";
+import { useAppDispatch } from "../../app/hooks";
 
 const WrapperPlansPage = styled.div`
   padding: 20px;
@@ -27,6 +29,11 @@ const WrapperPlans = styled.div`
 const PlansPage: React.FC = () => {
   const QueriePhone = useMediaQuery("(min-width:768px)");
   const { handleSetData, handleKeyUp } = useSearchSheet();
+  const dispatch = useAppDispatch();
+
+  const handleOpenWhatsapp = () => {
+    window.open("https://wa.link/8o4p6t", "_blank");
+  };
 
   return (
     <>
@@ -82,7 +89,7 @@ const PlansPage: React.FC = () => {
                   style="PRIMARY"
                   borderStyle="NONE"
                   Icon={Phone}
-                  action={() => console.log}
+                  action={handleOpenWhatsapp}
                   customStyle={`width: fit-content; padding: 10px 30px; margin: 0;`}
                 />
               </Grid>
@@ -94,9 +101,13 @@ const PlansPage: React.FC = () => {
               >
                 {QueriePhone && (
                   <Plans
-                    basicAction={() => console.log}
-                    mediumAction={() => console.log}
-                    premiumAction={() => console.log}
+                    basicAction={() => dispatch(updateStatusModalPayment(true))}
+                    mediumAction={() =>
+                      dispatch(updateStatusModalPayment(true))
+                    }
+                    premiumAction={() =>
+                      dispatch(updateStatusModalPayment(true))
+                    }
                   />
                 )}
                 {!QueriePhone && (

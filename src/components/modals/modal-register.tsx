@@ -20,7 +20,7 @@ import CustomButton from "../../components/custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
 import { SignupForm, SignupSchema } from "../../core/models/register-model";
 import { IRegister, IAuthData } from "../../core/store/auth/types/auth-types";
-import { useStartRegisterMutation } from "../../core/store/auth/authAPI";
+import { useStartRegisterByEmailMutation } from "../../core/store/auth/authAPI";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
@@ -33,6 +33,7 @@ import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
 import Cookies from "js-cookie";
+import { APP_CONSTANS } from "../../constants/app";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -148,7 +149,7 @@ const ErrorMessage = styled.span`
 `;
 
 const ModalRegister: React.FC = () => {
-  const [startRegister, resultRegister] = useStartRegisterMutation();
+  const [startRegister, resultRegister] = useStartRegisterByEmailMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const isStatus = useAppSelector(getStatusModalRegister);
   const dispatch = useAppDispatch();
@@ -202,9 +203,12 @@ const ModalRegister: React.FC = () => {
         roles: resultRegister.data.roles,
         token: resultRegister.data.token,
         plan: resultRegister.data.plan,
-        functionalities: resultRegister.data.functionalities,
       } as IAuthData;
-      Cookies.set("auth_user", JSON.stringify(authData));
+      Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
+      localStorage.setItem(
+        APP_CONSTANS.AUTH_FUNCIONALITIES,
+        JSON.stringify(resultRegister.data.functionalities)
+      );
       dispatch(updateStatusAuthenticated(false));
       dispatch(updateStatusModalRegister(false));
       location.reload();

@@ -12,6 +12,7 @@ import ModalRegister from "./components/modals/modal-register";
 import ModalCoupon from "./components/modals/modal-coupon";
 import ModalRecover from "./components/modals/modal-recover";
 import ModalSheetDetail from "./components/modals/modal-sheet-detail";
+import ModalPayment from "./components/modals/modal-payment";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -40,6 +41,7 @@ const App: React.FC = () => {
       <ModalCoupon />
       <ModalRecover />
       <ModalSheetDetail />
+      <ModalPayment />
     </React.Fragment>
   );
 };

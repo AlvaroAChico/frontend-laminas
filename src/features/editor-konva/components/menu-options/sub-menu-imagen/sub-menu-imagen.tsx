@@ -3,12 +3,8 @@ import { InfoOutline } from "@styled-icons/evaicons-outline/InfoOutline";
 import styled, { keyframes } from "styled-components";
 import { customPalette } from "../../../../../config/theme/theme";
 import { CloudUpload } from "@styled-icons/material-sharp/CloudUpload";
-import {
-  LaminaDefaultProps,
-  LaminaResponse,
-  usePostLaminasByWordMutation,
-} from "../../../../../core/store/editor/editorAPI";
-import { useAppDispatch } from "../../../../../app/hooks";
+import { LaminaResponse } from "../../../../../core/store/editor/editorAPI";
+import { useAppDispatch, useAppSelector } from "../../../../../app/hooks";
 import {
   addItemKonva,
   updateActiveIDKonva,
@@ -17,13 +13,27 @@ import {
 import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../../editor-konva";
 import Cookies from "js-cookie";
-import { updateStatusModalLogin } from "../../../../../core/store/app-store/appSlice";
+import { updateStatusModalRegister } from "../../../../../core/store/app-store/appSlice";
 import {
   EFuncionality,
+  IAuthData,
   IFunctionality,
 } from "../../../../../core/store/auth/types/auth-types";
 import useDataUser from "../../../../../utils/hooks/use-data-user";
 import toast, { Toaster } from "react-hot-toast";
+import { APP_CONSTANS } from "../../../../../constants/app";
+import { useGetAllSheetsPaginateMutation } from "../../../../../core/store/sheets/sheetsAPI";
+
+import {
+  ISheetDefaultProps,
+  ISheetsResponse,
+} from "../../../../../core/store/sheets/types/laminas-type";
+import SheetItem from "./sheet-item/sheet-item";
+import {
+  addSheetEditor,
+  getListSheetsEditor,
+  updateAllSheetsEditor,
+} from "../../../../../core/store/sheets/sheetsSlice";
 
 const WrapperMenuImagen = styled.div<{
   isVisible: boolean;
@@ -175,19 +185,7 @@ const WrapperItemsResults = styled.div`
   max-height: 250px;
   overflow-x: hidden;
 `;
-const LaminaItem = styled.div`
-  width: 30%;
-  max-width: 100px;
-  cursor: pointer;
 
-  img {
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    text-align: center;
-    padding: 2px;
-  }
-`;
 const ButtonMoreResults = styled.div`
   width: 100%;
   border-radius: 12px;
@@ -222,26 +220,23 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
 }) => {
   const [stepActive, setStepActive] = React.useState(1);
   const [activeDragImage, setActiveDragImage] = React.useState(false);
-  const [pageGetLaminas, setPageGetLaminas] = React.useState(1);
-  const [dataPostResult, setDataPostResult] = React.useState<LaminaResponse>();
-  const [listLaminas, setListLaminas] = React.useState<LaminaDefaultProps[]>(
-    []
-  );
+  const [dataPostResult, setDataPostResult] = React.useState<ISheetsResponse>();
+  const [optionQuery, setOptionQuery] = React.useState<number>(1);
+  const [wordSearch, setWordSearch] = React.useState<string>("");
+  const [pageSearch, setPageSearch] = React.useState<number>(1);
   const [funcUploadImage, setFuncUploadImage] = React.useState<IFunctionality>(
     {} as IFunctionality
   );
-  const [initialSearch, setInitialSearch] = React.useState({
-    page: pageGetLaminas,
-    word: "",
-  });
+  const listSheets = useAppSelector(getListSheetsEditor);
   const dispatch = useAppDispatch();
+  const sizeSearch = "2";
 
-  const { handleGetDataUser } = useDataUser();
+  const { handleGetFuncionalities } = useDataUser();
 
   React.useEffect(() => {
-    const dataUser = handleGetDataUser();
+    const listFunc = handleGetFuncionalities();
     setFuncUploadImage(
-      (dataUser.functionalities || []).filter(
+      (listFunc || []).filter(
         (func) => func.function == EFuncionality.FUNC_UPLOAD_IMAGE
       )[0]
     );
@@ -251,47 +246,96 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
   const handleDragImage = () => {
     document.getElementById("input-file-image")?.click();
   };
-  const handleChangeText = (word: string) =>
-    setInitialSearch({
-      page: pageGetLaminas,
-      word,
-    });
+  const handleChangeText = (word: string) => {
+    setWordSearch(word);
+  };
+  const handleMoreResults = () => {
+    setOptionQuery(2);
+    setPageSearch(pageSearch + 1);
+    handleGetSheets();
+  };
 
-  const [searchLaminaByWord, resultSearch] = usePostLaminasByWordMutation();
+  const [getAllSheetsPaginate, resultSheets] =
+    useGetAllSheetsPaginateMutation();
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      searchLaminaByWord(initialSearch);
+      setOptionQuery(1);
+      handleGetSheets();
     }
   };
 
-  const handleMoreResults = () => {
-    setPageGetLaminas(pageGetLaminas + 1);
-  };
-
-  React.useEffect(() => {
-    searchLaminaByWord(initialSearch);
-  }, [pageGetLaminas]);
-
-  React.useEffect(() => {
-    if (resultSearch.data != null) {
-      setDataPostResult(resultSearch.data);
-      const newData: LaminaDefaultProps[] = [];
-      resultSearch.data.data.map((item) => newData.push(item));
-      setListLaminas(newData);
-    }
-  }, [resultSearch]);
-
-  React.useEffect(() => {
-    searchLaminaByWord(initialSearch);
+  const handleGetSheets = React.useCallback(() => {
+    getAllSheetsPaginate({
+      page: pageSearch,
+      size: sizeSearch,
+      word: wordSearch,
+    });
   }, []);
 
-  const handleAddImage = (srcImage: string) => () => {
-    const token = Cookies.get("auth_user");
-    if (!token) {
-      dispatch(updateStatusModalLogin(true));
-      return null;
+  React.useEffect(() => {
+    if (resultSheets != null && resultSheets.data != null) {
+      if (resultSheets!.data) {
+        setDataPostResult(resultSheets!.data);
+        if (optionQuery == 1) {
+          // Replace list
+          clearSheetsEditor();
+          ((resultSheets!.data!.data as ISheetDefaultProps[]) || []).map(
+            (dataSheet) => {
+              updateDataWithBlob(dataSheet);
+            }
+          );
+        }
+        if (optionQuery == 2) {
+          // Update list
+          ((resultSheets!.data!.data as ISheetDefaultProps[]) || []).map(
+            (dataSheet) => {
+              updateDataWithBlob(dataSheet);
+            }
+          );
+        }
+      }
     }
+  }, [resultSheets]);
+
+  const clearSheetsEditor = () =>
+    dispatch(updateAllSheetsEditor([] as ISheetDefaultProps[]));
+
+  const updateDataWithBlob = async (data: ISheetDefaultProps) => {
+    const token = verifyAuth();
+
+    const image = data.tira || "";
+    const response = await fetch(image, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const imageBlob = await response.blob();
+      const imageObjectURL = URL.createObjectURL(imageBlob);
+      const newData = { ...data, tira: imageObjectURL };
+      dispatch(addSheetEditor(newData));
+    }
+  };
+
+  React.useEffect(() => {
+    handleGetFuncionalities();
+    dispatch(updateAllSheetsEditor([] as ISheetDefaultProps[]));
+    handleGetSheets();
+  }, []);
+
+  const verifyAuth = React.useCallback(() => {
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    if (dataUser != null && dataUser != undefined) {
+      const user = JSON.parse(dataUser) as IAuthData;
+      return user.token;
+    }
+    return null;
+  }, []);
+
+  const handleAddImage = (srcImage: string) => {
     const activeID = Date.now();
     dispatch(
       addItemKonva({
@@ -332,20 +376,22 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
             type="text"
             onKeyUp={handleKeyUp}
             onChange={(e: any) => handleChangeText(e.target.value)}
-            defaultValue={initialSearch.word}
+            defaultValue={wordSearch}
           />
           <WrapperListLaminas>
             <WrapperItemsResults>
-              {listLaminas.map((lamina) => (
-                <LaminaItem
-                  key={`${Date.now()}${lamina.tbllmnanomb}`}
-                  onClick={handleAddImage(lamina.tbllmnaimgo)}
-                >
-                  <img src={lamina.tbllmnaimgo} />
-                </LaminaItem>
-              ))}
+              {listSheets.map((sheet) => {
+                return (
+                  <SheetItem
+                    key={`${Date.now()}_${sheet.name}`}
+                    name={sheet.name}
+                    image={sheet.tira}
+                    handleAddImage={handleAddImage}
+                  />
+                );
+              })}
             </WrapperItemsResults>
-            {resultSearch.isLoading ? (
+            {resultSheets.isLoading ? (
               <LoaderWrapper />
             ) : (
               dataPostResult?.nextPageUrl != null && (
@@ -379,11 +425,19 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
                     .split("/")
                     .pop()
                     ?.toLowerCase();
-                  if ((funcUploadImage.formats || []).includes(ext!)) {
-                    handleAddImage(e!.target!.result)();
-                    dispatch(updateActiveMenuOption(0));
+                  if (verifyAuth()) {
+                    if (
+                      (funcUploadImage.formats || []).includes(
+                        ext!.toUpperCase()
+                      )
+                    ) {
+                      handleAddImage(e!.target!.result);
+                      dispatch(updateActiveMenuOption(0));
+                    } else {
+                      toast.error("Extensión no permitida");
+                    }
                   } else {
-                    toast.error("Extensión no permitida");
+                    dispatch(updateStatusModalRegister(true));
                   }
                 }
               };
@@ -418,11 +472,19 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
                         .target!.files[0].name.split(".")
                         .pop()
                         .toLowerCase();
-                      if ((funcUploadImage.formats || []).includes(ext!)) {
-                        handleAddImage(evt!.target!.result)();
-                        dispatch(updateActiveMenuOption(0));
+                      if (verifyAuth()) {
+                        if (
+                          (funcUploadImage.formats || []).includes(
+                            ext!.toUpperCase()
+                          )
+                        ) {
+                          handleAddImage(evt!.target!.result);
+                          dispatch(updateActiveMenuOption(0));
+                        } else {
+                          toast.error("Extensión no permitida");
+                        }
                       } else {
-                        toast.error("Extensión no permitida");
+                        dispatch(updateStatusModalRegister(true));
                       }
                     };
                     reader.readAsDataURL(e!.target!.files[0]);

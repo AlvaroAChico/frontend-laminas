@@ -15,7 +15,7 @@ import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../../editor-konva";
 import ArturitoIMG from "../../../../../assets/img/arturito-openai.png";
 import { ArrowIosForwardOutline } from "@styled-icons/evaicons-outline/ArrowIosForwardOutline";
-import { usePostIAForAppMutation } from "../../../../../core/store/editor/editorAPI";
+import { usePostIAForAppMutation } from "../../../../../core/store/openAi/openAiAPI";
 
 const WrapperMenuTexto = styled.div<{ isVisible: boolean }>`
   background: ${customPalette.grayLightColor};

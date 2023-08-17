@@ -20,6 +20,10 @@ const WrapperPlans = styled.div`
 const SectionPlans: React.FC = () => {
   const QueriePhone = useMediaQuery("(min-width:768px)");
 
+  const handleOpenWhatsapp = () => {
+    window.open("https://wa.link/8o4p6t", "_blank");
+  };
+
   return (
     <WrapperPlans>
       <SectionMax>
@@ -63,7 +67,7 @@ const SectionPlans: React.FC = () => {
               style="PRIMARY"
               borderStyle="NONE"
               Icon={Phone}
-              action={() => console.log}
+              action={handleOpenWhatsapp}
               customStyle={`width: fit-content; padding: 10px 30px; margin: 0;`}
             />
           </Grid>

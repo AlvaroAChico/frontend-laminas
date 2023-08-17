@@ -1,3 +1,5 @@
+import { string } from "yup";
+
 export interface IPopularSearch {
   id: number;
   name: string;
@@ -30,7 +32,7 @@ export interface ISheetDefaultProps {
   description: string;
   id: string;
   uuid: string;
-  isFavorite: false;
+  isFavorite: boolean;
   isMostSeen: boolean;
   isRecommended: boolean;
   isHorizontal: boolean;
@@ -40,4 +42,23 @@ export interface ISheetDefaultProps {
   createdAt: string;
   tira: string;
   numberOfViews: number;
+  categories: ICategory[];
+  tags: ITag[];
+}
+
+export interface ICategory {
+  id: number;
+  name: string;
+  image: string;
+  status: string;
+  isActive: boolean;
+  createdAt: string;
+}
+export interface ITag {
+  id: number;
+  name: string;
+  image: string;
+  status: string;
+  isActive: boolean;
+  createdAt: string;
 }

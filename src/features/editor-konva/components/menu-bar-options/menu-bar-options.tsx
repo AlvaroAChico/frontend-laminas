@@ -44,8 +44,10 @@ import { Tooltip } from "@mui/material";
 import {
   getStatusAuthenticated,
   updateStatusModalLogin,
+  updateStatusModalRegister,
 } from "../../../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
+import { APP_CONSTANS } from "../../../../constants/app";
 
 const baseCenter = styled.div`
   display: flex;
@@ -274,12 +276,16 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
 
   const handleDeleteCurrentObject = () => dispatch(deleteObjectKonva());
 
-  const downloadActivePanel = () => {
-    const token = Cookies.get("auth_user");
-    if (!token) {
-      dispatch(updateStatusModalLogin(true));
-      return null;
+  const verifyDownloadFromUser = () => {
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    if (dataUser != null && dataUser != undefined) {
+      downloadActivePanel();
+    } else {
+      dispatch(updateStatusModalRegister(true));
     }
+  };
+
+  const downloadActivePanel = () => {
     dispatch(unselectObjectKonva());
     handleResetGlobalZoom();
     dispatch(updateActiveMenuOption(0));
@@ -427,7 +433,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
         </ItemGeneralMenu>
         <ItemGeneralMenu>
           <WrapperDownload>
-            <button onClick={downloadActivePanel}>
+            <button onClick={verifyDownloadFromUser}>
               <span>Descargar</span>
               <ArrowDownload />
             </button>

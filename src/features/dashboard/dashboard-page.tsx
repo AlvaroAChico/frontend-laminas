@@ -11,8 +11,13 @@ import Plans from "../../components/plans/plans";
 import { Typography, Grid, useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import { theme, customPalette } from "../../config/theme/theme";
-import { IAuthData } from "../../core/store/auth/types/auth-types";
 import {
+  IAuthData,
+  IFunctionality,
+} from "../../core/store/auth/types/auth-types";
+import {
+  updateDataFunctionality,
+  updateDataToken,
   updateDataUserAuth,
   updateStatusAuthenticated,
 } from "../../core/store/app-store/appSlice";
@@ -21,6 +26,7 @@ import { useAppDispatch } from "../../app/hooks";
 import "./dashboard-styles.css";
 import { Bars } from "@styled-icons/fa-solid/Bars";
 import useSearchSheet from "../../utils/hooks/use-search-sheet";
+import { APP_CONSTANS } from "../../constants/app";
 
 const WrapperDashboardPage = styled.div`
   padding: 10px;
@@ -66,18 +72,25 @@ const DashboardPage: React.FC = () => {
     };
 
   React.useEffect(() => {
-    const authCookie = Cookies.get("auth_user");
-    if (authCookie != null && authCookie != undefined) {
-      const authUser: IAuthData = JSON.parse(authCookie);
-      dispatch(updateDataUserAuth(authUser));
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    if (dataUser != null && dataUser != undefined) {
+      const user = JSON.parse(dataUser) as IAuthData;
+      dispatch(updateDataToken(user.token));
+      const functionalityUser = localStorage.getItem(
+        APP_CONSTANS.AUTH_FUNCIONALITIES
+      );
+      if (functionalityUser != null && functionalityUser != undefined) {
+        const funcUser = JSON.parse(functionalityUser) as IFunctionality[];
+        dispatch(updateDataFunctionality(funcUser));
+      }
       dispatch(updateStatusAuthenticated(true));
     } else {
       navigate("/");
     }
   }, []);
 
-  const authCookie = Cookies.get("auth_user");
-  if (authCookie == null && authCookie == undefined) {
+  const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+  if (dataUser == null || dataUser == undefined) {
     return null;
   }
 

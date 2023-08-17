@@ -114,12 +114,12 @@ const SubMenuGeneral: React.FC<IOwnProps> = ({ isVisible }) => {
   const handleUpdateGlobalSheet = (option: number) => () =>
     dispatch(updateActiveGlobalSheet(option));
 
-  const { handleGetDataUser } = useDataUser();
+  const { handleGetFuncionalities } = useDataUser();
 
   React.useEffect(() => {
-    const dataUser = handleGetDataUser();
+    const listFunc = handleGetFuncionalities();
     setFuncSize(
-      (dataUser.functionalities || []).filter(
+      (listFunc || []).filter(
         (func) => func.function == EFuncionality.FUNC_DOWNLOAD_SIZE
       )[0]
     );
@@ -132,30 +132,34 @@ const SubMenuGeneral: React.FC<IOwnProps> = ({ isVisible }) => {
         <p>Selecciona el tamaño de la descarga del documento</p>
         <IconInfo />
       </HeaderText>
-      {menuSizeSheet.map((sheet) => {
-        if ((funcSize.formats || []).includes(sheet.name)) {
-          return (
-            <ItemSheet
-              key={sheet.idActive}
-              isActive={sheet.idActive == sheetActive}
-              onClick={handleUpdateGlobalSheet(sheet.idActive)}
-            >
-              <ImageSheet>
-                <div>{sheet.name}</div>
-              </ImageSheet>
-              <InfoSheet>
-                <h5>Medidas:</h5>
-                <p>Ancho: {sheet.width}mm</p>
-                <p>Alto: {sheet.height}mm</p>
-              </InfoSheet>
-              <WrapperIcon>
-                <NavigateNext />
-              </WrapperIcon>
-            </ItemSheet>
-          );
-        }
-        return null;
-      })}
+      {funcSize &&
+        funcSize.formats &&
+        menuSizeSheet.map((sheet) => {
+          if (funcSize.formats) {
+            if ((funcSize.formats || []).includes(sheet.name)) {
+              return (
+                <ItemSheet
+                  key={sheet.idActive}
+                  isActive={sheet.idActive == sheetActive}
+                  onClick={handleUpdateGlobalSheet(sheet.idActive)}
+                >
+                  <ImageSheet>
+                    <div>{sheet.name}</div>
+                  </ImageSheet>
+                  <InfoSheet>
+                    <h5>Medidas:</h5>
+                    <p>Ancho: {sheet.width}mm</p>
+                    <p>Alto: {sheet.height}mm</p>
+                  </InfoSheet>
+                  <WrapperIcon>
+                    <NavigateNext />
+                  </WrapperIcon>
+                </ItemSheet>
+              );
+            }
+          }
+          return null;
+        })}
     </WrapperMenuGeneral>
   );
 };

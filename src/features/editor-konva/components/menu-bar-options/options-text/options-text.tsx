@@ -18,6 +18,12 @@ import { ChevronUp } from "@styled-icons/boxicons-regular/ChevronUp";
 import { ChevronDown } from "@styled-icons/boxicons-regular/ChevronDown";
 import { breakpoints } from "../../../../../constants/breakpoints";
 import { Tooltip } from "@mui/material";
+import WebFont from "webfontloader";
+import {
+  EFuncionality,
+  IFunctionality,
+} from "../../../../../core/store/auth/types/auth-types";
+import useDataUser from "../../../../../utils/hooks/use-data-user";
 
 const baseCenter = styled.div`
   display: flex;
@@ -163,6 +169,9 @@ const CustomTrash = styled(Trash)`
 
 const OptionsText: React.FC = () => {
   const currentPropertiesKonva = useAppSelector(getCurrentPropertiesKonva);
+  const [funcFonts, setFuncFonts] = React.useState<IFunctionality>(
+    {} as IFunctionality
+  );
   const dispatch = useAppDispatch();
 
   const handleChangeColor = (color: string) => {
@@ -181,6 +190,17 @@ const OptionsText: React.FC = () => {
   const isFontFamilySelected = (fontFamily: string): boolean => {
     return currentPropertiesKonva.customFamily == fontFamily;
   };
+
+  const { handleGetFuncionalities } = useDataUser();
+
+  React.useEffect(() => {
+    const listFunc = handleGetFuncionalities();
+    setFuncFonts(
+      (listFunc || []).filter(
+        (func) => func.function == EFuncionality.FUNC_LIST_FONTS
+      )[0]
+    );
+  }, []);
 
   return (
     <WrapperOptionsText>
@@ -273,93 +293,52 @@ const OptionsText: React.FC = () => {
       <Tooltip title="Fuente" arrow>
         <ItemMenu>
           <select onChange={(e: any) => handleChangeFamilyText(e.target.value)}>
-            <option selected={isFontFamilySelected("Arial")} value="Arial">
-              Arial
-            </option>
-            <option
-              selected={isFontFamilySelected("Arial Black")}
-              value="Arial Black"
-            >
-              Arial Black
-            </option>
-            <option selected={isFontFamilySelected("Verdana")} value="Verdana">
-              Verdana
-            </option>
-            <option selected={isFontFamilySelected("Tahoma")} value="Tahoma">
-              Tahoma
-            </option>
-            <option
-              selected={isFontFamilySelected("Trebuchet MS")}
-              value="Trebuchet MS"
-            >
-              Trebuchet MS
-            </option>
-            <option
-              selected={isFontFamilySelected("Times New Roman")}
-              value="Times New Roman"
-            >
-              Times New Roman
-            </option>
-            <option selected={isFontFamilySelected("Georgia")} value="Georgia">
-              Georgia
-            </option>
-            <option
-              selected={isFontFamilySelected("American Typewriter)")}
-              value="American Typewriter"
-            >
-              American Typewriter
-            </option>
-            <option
-              selected={isFontFamilySelected("Andale Mono")}
-              value="Andale Mono"
-            >
-              Andale Mono
-            </option>
-            <option selected={isFontFamilySelected("Courier")} value="Courier">
-              Courier
-            </option>
-            <option
-              selected={isFontFamilySelected("Lucida Console")}
-              value="Lucida Console"
-            >
-              Lucida Console
-            </option>
-            <option selected={isFontFamilySelected("Monaco")} value="Monaco">
-              Monaco
-            </option>
-            <option
-              selected={isFontFamilySelected("Bradley Hand")}
-              value="Bradley Hand"
-            >
-              Bradley Hand
-            </option>
-            <option
-              selected={isFontFamilySelected("Brush Script MT")}
-              value="Brush Script MT"
-            >
-              Brush Script MT
-            </option>
-            <option
-              selected={isFontFamilySelected("Luminari")}
-              value="Luminari"
-            >
-              Luminari
-            </option>
-            <option
-              selected={isFontFamilySelected("Comic Sans MS")}
-              value="Comic Sans MS"
-            >
-              Comic Sans MS
-            </option>
-            <option
-              selected={isFontFamilySelected("Helvetica")}
-              value="Helvetica"
-            >
-              Helvetica
-            </option>
-            <option selected={isFontFamilySelected("Cambria")} value="Cambria">
-              Cambria
-            </option>
+            {funcFonts &&
+              funcFonts.fonts &&
+              (funcFonts.fonts || []).map((font) => {
+                console.log("Fuente -> ", font);
+                return (
+                  <option
+                    key={Date.now()}
+                    selected={isFontFamilySelected(font)}
+                    value={font}
+                  >
+                    {font}
+                  </option>
+                );
+              })}
+            {funcFonts == null && (
+              <>
+                <option
+                  key={Date.now()}
+                  selected={isFontFamilySelected("Arial")}
+                  value={"Arial"}
+                >
+                  {"Arial"}
+                </option>
+                <option
+                  key={Date.now()}
+                  selected={isFontFamilySelected("Baskerville")}
+                  value={"Baskerville"}
+                >
+                  {"Baskerville"}
+                </option>
+                <option
+                  key={Date.now()}
+                  selected={isFontFamilySelected("Calibri")}
+                  value={"Calibri"}
+                >
+                  {"Calibri"}
+                </option>
+                <option
+                  key={Date.now()}
+                  selected={isFontFamilySelected("Cambria")}
+                  value={"Cambria"}
+                >
+                  {"Cambria"}
+                </option>
+              </>
+            )}
           </select>
         </ItemMenu>
       </Tooltip>

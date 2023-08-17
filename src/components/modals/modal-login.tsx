@@ -19,22 +19,30 @@ import {
 } from "../../core/store/app-store/appSlice";
 import CustomButton from "../../components/custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
-import { useStartLoginMutation } from "../../core/store/auth/authAPI";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import {
+  useStartLoginByGoogleMutation,
+  useStartLoginByEmailMutation,
+} from "../../core/store/auth/authAPI";
+import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { ILogin, IAuthData } from "../../core/store/auth/types/auth-types";
+import {
+  IAuthData,
+  ILoginByGoogle,
+} from "../../core/store/auth/types/auth-types";
 import { SigninForm, SigninSchema } from "../../core/models/login-model";
 import { Facebook, Google } from "styled-icons/bootstrap";
 import { customPalette } from "../../config/theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import RuleImg from "../../assets/img/rule_icon.png";
 import BookImg from "../../assets/img/book_icon.png";
 import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
 import Cookies from "js-cookie";
+import { APP_CONSTANS } from "../../constants/app";
+import { useGoogleLogin } from "@react-oauth/google";
+import FacebookLogin from "react-facebook-login";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -142,9 +150,11 @@ const ErrorMessage = styled.span`
 `;
 
 const ModalLogin: React.FC = () => {
-  const [startLogin, resultLogin] = useStartLoginMutation();
+  const [startLogin, resultLogin] = useStartLoginByEmailMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const isStatus = useAppSelector(getStatusModalLogin);
+  const [profile, setProfile] = React.useState([]);
+  const [user, setUser] = React.useState<ILoginByGoogle>({} as ILoginByGoogle);
   const dispatch = useAppDispatch();
 
   const methods = useForm<SigninForm>({
@@ -198,9 +208,12 @@ const ModalLogin: React.FC = () => {
         roles: resultLogin.data.roles,
         token: resultLogin.data.token,
         plan: resultLogin.data.plan,
-        functionalities: resultLogin.data.functionalities,
       } as IAuthData;
-      Cookies.set("auth_user", JSON.stringify(authData));
+      Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
+      localStorage.setItem(
+        APP_CONSTANS.AUTH_FUNCIONALITIES,
+        JSON.stringify(resultLogin.data.functionalities)
+      );
       dispatch(updateStatusAuthenticated(true));
       dispatch(updateStatusModalLogin(false));
       location.reload();
@@ -212,6 +225,33 @@ const ModalLogin: React.FC = () => {
       setStatusSnackbar(true);
     }
   }, [resultLogin.isError]);
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse as ILoginByGoogle),
+    onError: (error: any) => console.log("Login Failed:", error),
+  });
+
+  const [startLoginByGoogle, resultsGoogle] = useStartLoginByGoogleMutation();
+
+  React.useEffect(() => {
+    console.log("1 User");
+    if (
+      user != null &&
+      user.access_token != null &&
+      user.access_token != undefined
+    ) {
+      console.log("2 User", user);
+      startLoginByGoogle(user.access_token);
+    }
+    console.log("3 User");
+  }, [user]);
+
+  React.useEffect(() => {
+    if (resultsGoogle != null) {
+      console.log("Result Google -> ", resultsGoogle);
+    }
+    console.log("3 ResultsGoogle");
+  }, [resultsGoogle]);
 
   return (
     <>
@@ -387,6 +427,8 @@ const ModalLogin: React.FC = () => {
                 justifyContent="center"
                 alignItems="center"
                 columnGap={2}
+                onClick={() => handleGoogleLogin()}
+                sx={{ cursor: "pointer" }}
               >
                 <Google />
                 <Typography variant="caption" component="span">
@@ -400,12 +442,21 @@ const ModalLogin: React.FC = () => {
                 justifyContent="center"
                 alignItems="center"
                 columnGap={2}
+                sx={{ cursor: "pointer" }}
               >
                 <Facebook />
                 <Typography variant="caption" component="span">
                   Facebook
                 </Typography>
               </ButtonFacebook>
+              {/* appId="1231472174122665" */}
+              {/* <FacebookLogin
+                appId="813073273810777"
+                autoLoad={false}
+                fields="name,email,picture"
+                callback={(res: any) => console.log("res -> ", res)}
+                scope="ads_read,ads_management"
+              /> */}
             </Grid>
             <Grid item xs={12} textAlign="center" marginTop={2}>
               <Typography

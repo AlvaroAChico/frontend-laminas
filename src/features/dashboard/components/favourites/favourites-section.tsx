@@ -6,6 +6,11 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { listFavourites } from "../../../../config/mocks/list-favourites";
 import CardLamina from "../../../../components/card-lamina/card-lamina";
 import { ISheetDefaultProps } from "../../../../core/store/sheets/types/laminas-type";
+import {
+  useDeleteFavoriteSheetMutation,
+  useGetAllFavoritesPaginateMutation,
+  usePostAddFavoriteSheetMutation,
+} from "../../../../core/store/favorites/favoritesAPI";
 
 const WrapperFavourites = styled.div`
   position: relative;
@@ -36,10 +41,50 @@ const ListFavourites = styled.div`
 
 const FavouriteSection: React.FC = () => {
   const [favouritesNumber, setFavouritesNumber] = React.useState("");
+  const [listFavorites, setListFavorites] = React.useState<
+    ISheetDefaultProps[]
+  >([]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setFavouritesNumber(event.target.value);
   };
+
+  const [getAllFavoritesPaginate, resultFavorites] =
+    useGetAllFavoritesPaginateMutation();
+
+  React.useEffect(() => {
+    getAllFavoritesPaginate("");
+  }, []);
+
+  React.useEffect(() => {
+    if (resultFavorites != null && resultFavorites != undefined) {
+      if (resultFavorites.data != null) {
+        setListFavorites(resultFavorites.data.data as ISheetDefaultProps[]);
+      }
+    }
+  }, [resultFavorites]);
+
+  const [deleteFavoriteSheet, resultDelete] = useDeleteFavoriteSheetMutation();
+  const [postAddFavoriteSheet, resultAdd] = usePostAddFavoriteSheetMutation();
+
+  const handleAddFavoriteSheet = (uuid: string) => postAddFavoriteSheet(uuid);
+  const handleDeleteFavoriteSheet = (uuid: string) => deleteFavoriteSheet(uuid);
+
+  React.useEffect(() => {
+    if (
+      resultDelete != null &&
+      resultDelete != undefined &&
+      resultDelete.isSuccess
+    ) {
+      getAllFavoritesPaginate("");
+    }
+  }, [resultDelete]);
+
+  React.useEffect(() => {
+    if (resultAdd != null && resultAdd != undefined && resultAdd.isSuccess) {
+      getAllFavoritesPaginate("");
+    }
+  }, [resultAdd]);
 
   return (
     <WrapperFavourites>
@@ -48,8 +93,7 @@ const FavouriteSection: React.FC = () => {
           <Typography variant="body2" component="p">
             Se han encontrado
             <Typography component="span" color="red" fontWeight={600}>
-              {" "}
-              20{" "}
+              {` ${resultFavorites.data?.total || 0} `}
             </Typography>
             subscripciones
           </Typography>
@@ -93,22 +137,26 @@ const FavouriteSection: React.FC = () => {
         </Grid>
         <Grid item xs={12} marginTop={2}>
           <ListFavourites>
-            {listFavourites.map((lamina) => {
+            {listFavorites.map((sheet) => {
               const infoSheet: ISheetDefaultProps = {} as ISheetDefaultProps;
-              infoSheet.tira = lamina.image;
-              infoSheet.name = lamina.name;
+              infoSheet.tira = sheet.tira;
+              infoSheet.name = sheet.name;
 
               return (
                 <CardLamina
-                  key={Date.now()}
-                  id={lamina.id}
-                  image={lamina.image}
-                  nroLamina={lamina.nroLamina}
-                  name={lamina.name}
-                  isFavourite={lamina.isFavourite}
-                  nroDownloads={lamina.nroDownloads}
-                  nroView={lamina.nroView}
+                  key={sheet.uuid}
+                  uuid={sheet.uuid}
+                  image={sheet.tira}
+                  nroLamina={sheet.code}
+                  name={sheet.name}
+                  isFavourite={sheet.isFavorite}
+                  nroDownloads={200}
+                  nroView={sheet.numberOfViews}
                   infoSheet={infoSheet}
+                  handleAddFavoriteSheet={handleAddFavoriteSheet}
+                  handleDeleteFavoriteSheet={handleDeleteFavoriteSheet}
+                  isLoadingAdd={resultAdd.isLoading}
+                  isLoadingDelete={resultDelete.isLoading}
                 />
               );
             })}

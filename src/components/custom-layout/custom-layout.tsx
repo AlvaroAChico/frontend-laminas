@@ -4,19 +4,25 @@ import Navbar from "../navbar/navbar";
 import Footer from "../footer/footer";
 import { Outlet, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { IAuthData } from "../../core/store/auth/types/auth-types";
+import {
+  IAuthData,
+  IFunctionality,
+} from "../../core/store/auth/types/auth-types";
 import {
   getStatusAuthenticated,
   updateDataUserAuth,
   updateStatusModalCoupon,
   updateStatusModalLogin,
   updateStatusAuthenticated,
+  updateDataToken,
+  updateDataFunctionality,
 } from "../../core/store/app-store/appSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Whatsapp } from "@styled-icons/bootstrap/Whatsapp";
 import AvatarImg from "../../assets/img/avatar_coupon.png";
 import EditorImg from "../../assets/img/editor_image.png";
 import { Tooltip } from "@mui/material";
+import { APP_CONSTANS } from "../../constants/app";
 
 const WrapperLayout = styled.div`
   width: 100%;
@@ -88,10 +94,20 @@ const CustomLayout: React.FC = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const authCookie = Cookies.get("auth_user");
-    if (authCookie != null && authCookie != undefined) {
-      const authUser: IAuthData = JSON.parse(authCookie);
-      dispatch(updateDataUserAuth(authUser));
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    if (dataUser != null && dataUser != undefined) {
+      const user = JSON.parse(dataUser) as IAuthData;
+      dispatch(updateDataToken(user.token));
+      const functionalityUser = localStorage.getItem(
+        APP_CONSTANS.AUTH_FUNCIONALITIES
+      );
+      if (functionalityUser != null && functionalityUser != undefined) {
+        dispatch(
+          updateDataFunctionality(
+            (JSON.stringify(functionalityUser) || []) as IFunctionality[]
+          )
+        );
+      }
       dispatch(updateStatusAuthenticated(true));
     }
   }, []);
@@ -116,13 +132,17 @@ const CustomLayout: React.FC = () => {
       <Navbar />
       <Outlet />
       <Footer />
-      <WhatsAppButton onClick={handleOpenWhatsapp}>
-        <Whatsapp />
-      </WhatsAppButton>
-      <EditorButton onClick={handleOpenEditor}>
-        <img src={EditorImg} />
-      </EditorButton>
-      <Tooltip title="¿Tienes un cuópón?" arrow>
+      <Tooltip title="Contáctanos" arrow>
+        <WhatsAppButton onClick={handleOpenWhatsapp}>
+          <Whatsapp />
+        </WhatsAppButton>
+      </Tooltip>
+      <Tooltip title="Editor" arrow>
+        <EditorButton onClick={handleOpenEditor}>
+          <img src={EditorImg} />
+        </EditorButton>
+      </Tooltip>
+      <Tooltip title="¿Tienes un cupón?" arrow>
         <CouponButton onClick={handleOpenCoupon}>
           <img src={AvatarImg} />
         </CouponButton>

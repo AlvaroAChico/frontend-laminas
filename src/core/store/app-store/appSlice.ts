@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { IAuthData } from "../../store/auth/types/auth-types";
+import { IAuthData, IFunctionality } from "../../store/auth/types/auth-types";
 import { ISheetDefaultProps } from "../sheets/types/laminas-type";
 
 export interface LandingState {
@@ -11,7 +11,10 @@ export interface LandingState {
   statusModalCoupon: boolean;
   statusModalRecover: boolean;
   statusModalSheetDetail: boolean;
+  statusModalPayment: boolean;
   dataUserAuth: IAuthData;
+  tokenUserAuth: string;
+  functionalitiesAuth: IFunctionality[];
   infoCurrentSheetDetail: ISheetDefaultProps;
 }
 
@@ -23,7 +26,10 @@ const initialState: LandingState = {
   statusModalCoupon: false,
   statusModalRecover: false,
   statusModalSheetDetail: false,
+  statusModalPayment: false,
   dataUserAuth: {} as IAuthData,
+  tokenUserAuth: "",
+  functionalitiesAuth: [],
   infoCurrentSheetDetail: {} as ISheetDefaultProps,
 };
 
@@ -52,6 +58,9 @@ export const appSlice = createSlice({
     updateStatusModalSheetDetail: (state, action: PayloadAction<boolean>) => {
       state.statusModalSheetDetail = action.payload;
     },
+    updateStatusModalPayment: (state, action: PayloadAction<boolean>) => {
+      state.statusModalPayment = action.payload;
+    },
     updateCurrentSheetDetail: (
       state,
       action: PayloadAction<ISheetDefaultProps>
@@ -60,6 +69,15 @@ export const appSlice = createSlice({
     },
     updateDataUserAuth: (state, action: PayloadAction<IAuthData>) => {
       state.dataUserAuth = action.payload;
+    },
+    updateDataToken: (state, action: PayloadAction<string>) => {
+      state.tokenUserAuth = action.payload;
+    },
+    updateDataFunctionality: (
+      state,
+      action: PayloadAction<IFunctionality[]>
+    ) => {
+      state.functionalitiesAuth = action.payload;
     },
   },
 });
@@ -74,6 +92,9 @@ export const {
   updateStatusAuthenticated,
   updateDataUserAuth,
   updateCurrentSheetDetail,
+  updateStatusModalPayment,
+  updateDataFunctionality,
+  updateDataToken,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
@@ -87,10 +108,15 @@ export const getStatusModalRecover = (state: RootState) =>
   state.app.statusModalRecover;
 export const getStatusModalSheetDetail = (state: RootState) =>
   state.app.statusModalSheetDetail;
+export const getStatusModalPayment = (state: RootState) =>
+  state.app.statusModalPayment;
 export const getStatusAuthenticated = (state: RootState) =>
   state.app.isAuthenticated;
-export const getDataUserAuth = (state: RootState) => state.app.dataUserAuth;
 export const getCurrentSheetDetail = (state: RootState) =>
   state.app.infoCurrentSheetDetail;
+export const getDataUserAuth = (state: RootState) => state.app.dataUserAuth;
+export const getDataToken = (state: RootState) => state.app.tokenUserAuth;
+export const getDataFuncionalities = (state: RootState) =>
+  state.app.functionalitiesAuth;
 
 export default appSlice.reducer;

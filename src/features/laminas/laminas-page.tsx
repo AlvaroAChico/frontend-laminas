@@ -26,10 +26,12 @@ import {
   getCurrentSearchWord,
   getCurrentSize,
   getListSheets,
+  updateAddFavoriteSheet,
   updateAllSheets,
   updateCurrentPage,
   updateCurrentSearchWord,
   updateCurrentSize,
+  updateDeleteFavoriteSheet,
 } from "../../core/store/sheets/sheetsSlice";
 import {
   ISheetDefaultProps,
@@ -39,6 +41,11 @@ import CustomButton from "../../components/custom-button/custom-button";
 import { useNavigate } from "react-router-dom";
 import CardLaminaSkeleton from "../../components/card-lamina/card-lamina-skeleton";
 import { APP_CONSTANS } from "../../constants/app";
+import {
+  useDeleteFavoriteSheetMutation,
+  usePostAddFavoriteSheetMutation,
+} from "../../core/store/favorites/favoritesAPI";
+import { Toaster, toast } from "react-hot-toast";
 
 const WrapperLaminasPage = styled.div`
   padding: 20px;
@@ -141,6 +148,7 @@ const LaminasPage: React.FC = () => {
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const [optionQuery, setOptionQuery] = React.useState<number>(1);
   const [statusFilter, setStatusFilter] = React.useState(false);
+  const [currentUUID, setCurrentUUID] = React.useState("");
   const currentSearchWord = useAppSelector(getCurrentSearchWord);
   const currentSize = useAppSelector(getCurrentSize);
   const currentPage = useAppSelector(getCurrentPage);
@@ -164,6 +172,7 @@ const LaminasPage: React.FC = () => {
       word: currentSearchWord,
     });
   };
+  
   const handleUpdateSearchWord = (value: string) => {
     dispatch(updateCurrentSearchWord(value));
     localStorage.setItem(APP_CONSTANS.PENDING_SEARCH_WORD, value);
@@ -214,8 +223,39 @@ const LaminasPage: React.FC = () => {
     }
   }, [resultSheets]);
 
+  const [deleteFavoriteSheet, resultDelete] = useDeleteFavoriteSheetMutation();
+  const [postAddFavoriteSheet, resultAdd] = usePostAddFavoriteSheetMutation();
+
+  const handleAddFavoriteSheet = (uuid: string) => {
+    setCurrentUUID(uuid);
+    postAddFavoriteSheet(uuid);
+  };
+  const handleDeleteFavoriteSheet = (uuid: string) => {
+    setCurrentUUID(uuid);
+    deleteFavoriteSheet(uuid);
+  };
+
+  React.useEffect(() => {
+    if (
+      resultDelete != null &&
+      resultDelete != undefined &&
+      resultDelete.isSuccess
+    ) {
+      dispatch(updateDeleteFavoriteSheet(currentUUID));
+      toast.success("Se quitó la lámina de favoritos");
+    }
+  }, [resultDelete]);
+
+  React.useEffect(() => {
+    if (resultAdd != null && resultAdd != undefined && resultAdd.isSuccess) {
+      dispatch(updateAddFavoriteSheet(currentUUID));
+      toast.success("Se agregó la lámina a favoritos");
+    }
+  }, [resultAdd]);
+
   return (
     <>
+      <Toaster />
       <HeaderSearch
         title="Láminas"
         handleSetData={handleUpdateSearchWord}
@@ -289,10 +329,19 @@ const LaminasPage: React.FC = () => {
                   image={sheet.tira}
                   nroLamina={sheet.code}
                   name={sheet.name}
+                  uuid={sheet.uuid}
                   isFavourite={sheet.isFavorite}
                   nroDownloads={200}
                   nroView={sheet.numberOfViews}
                   infoSheet={sheet}
+                  handleAddFavoriteSheet={handleAddFavoriteSheet}
+                  handleDeleteFavoriteSheet={handleDeleteFavoriteSheet}
+                  isLoadingAdd={
+                    resultAdd.isLoading && currentUUID == sheet.uuid
+                  }
+                  isLoadingDelete={
+                    resultDelete.isLoading && currentUUID == sheet.uuid
+                  }
                 />
               </div>
             ))}

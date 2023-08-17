@@ -1,21 +1,45 @@
 import React from "react";
-import { IAuthData } from "../../core/store/auth/types/auth-types";
+import {
+  IAuthData,
+  IFunctionality,
+} from "../../core/store/auth/types/auth-types";
 import Cookies from "js-cookie";
+import { APP_CONSTANS } from "../../constants/app";
+import { useAppDispatch } from "../../app/hooks";
+import {
+  updateDataFunctionality,
+  updateDataToken,
+  updateStatusAuthenticated,
+} from "../../core/store/app-store/appSlice";
 
 const useDataUser = () => {
-  const [dataUser, setDataUser] = React.useState<IAuthData>({} as IAuthData);
+  const dispatch = useAppDispatch();
 
-  const handleGetDataUser = () => {
-    const authCookie = Cookies.get("auth_user");
-    if (authCookie != null && authCookie != undefined) {
-      const authUser: IAuthData = JSON.parse(authCookie);
-      setDataUser(authUser);
-      return authUser;
+  const handleGetToken = () => {
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    if (dataUser != null && dataUser != undefined) {
+      const user = JSON.parse(dataUser) as IAuthData;
+      dispatch(updateDataToken(user.token));
+      dispatch(updateStatusAuthenticated(true));
+      return dataUser;
     }
-    return {} as IAuthData;
+    return "";
   };
 
-  return { dataUser, handleGetDataUser };
+  const handleGetFuncionalities = () => {
+    const functionalityUser = localStorage.getItem(
+      APP_CONSTANS.AUTH_FUNCIONALITIES
+    );
+    if (functionalityUser != null && functionalityUser != undefined) {
+      const listFunc = JSON.parse(functionalityUser) as IFunctionality[];
+      dispatch(updateDataFunctionality(listFunc));
+      dispatch(updateStatusAuthenticated(true));
+      return listFunc;
+    }
+    return [] as IFunctionality[];
+  };
+
+  return { handleGetToken, handleGetFuncionalities };
 };
 
 export default useDataUser;

@@ -39,6 +39,7 @@ import { LogOut } from "@styled-icons/ionicons-outline/LogOut";
 import BookImg from "../../assets/img/book_icon.png";
 import RuleImg from "../../assets/img/rule_icon.png";
 import Cookies from "js-cookie";
+import { APP_CONSTANS } from "../../constants/app";
 
 const WrapperNavbar = styled.div<{ valueScroll: number }>`
   position: fixed;
@@ -306,7 +307,10 @@ const Navbar: React.FC = () => {
                           onClick={() => {
                             startLogout("");
                             dispatch(updateStatusAuthenticated(false));
-                            Cookies.remove("auth_user");
+                            Cookies.remove(APP_CONSTANS.AUTH_USER_DATA);
+                            localStorage.removeItem(
+                              APP_CONSTANS.AUTH_FUNCIONALITIES
+                            );
                             location.reload();
                           }}
                         >
@@ -383,7 +387,10 @@ const Navbar: React.FC = () => {
                       onClick={() => {
                         startLogout("");
                         dispatch(updateStatusAuthenticated(false));
-                        Cookies.remove("auth_user");
+                        Cookies.remove(APP_CONSTANS.AUTH_USER_DATA);
+                        localStorage.removeItem(
+                          APP_CONSTANS.AUTH_FUNCIONALITIES
+                        );
                         location.reload();
                       }}
                     >

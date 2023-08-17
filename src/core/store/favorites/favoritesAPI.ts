@@ -2,14 +2,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
 import { settingsAPP } from "../../../config/environments/settings";
-import {
-  IPopularSearch,
-  ISheetsResponse,
-  ISheets,
-  ISheetDefaultProps,
-} from "./types/laminas-type";
 import { IAuthData } from "../auth/types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
+import { ISheetsResponse } from "../sheets/types/laminas-type";
 
 const baseURLSheets = settingsAPP.api.sheets;
 
@@ -39,8 +34,8 @@ export interface ISearchByWorPerPage {
   page: number;
 }
 
-export const sheetsAPI = createApi({
-  reducerPath: "sheetsApi",
+export const favoritesAPI = createApi({
+  reducerPath: "favoritesApi",
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLSheets,
     prepareHeaders: (headers) => {
@@ -56,46 +51,30 @@ export const sheetsAPI = createApi({
     },
   }),
   endpoints: (build) => ({
-    getRecommendedSheets: build.query<ISheetDefaultProps[], any>({
-      query: () => {
-        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-
-        if (dataUser != null && dataUser != undefined) {
-          return {
-            url: `/sheets?filter[is_recommended]=1`,
-            method: "GET",
-          };
-        }
-        return {
-          url: `/free-sheets?filter[is_recommended]=1`,
-          method: "GET",
-        };
-      },
-
-      transformResponse: (response: ISheetDefaultProps[]) => response,
-    }),
-    getPopularSheets: build.query<IPopularSearch[], any>({
-      query: () => ({
-        url: "/popular-searches",
-        method: "GET",
+    postAddFavoriteSheet: build.mutation<any, string>({
+      query: (uuid) => ({
+        url: "/favorites",
+        method: "POST",
+        body: {
+          sheet_id: uuid,
+        },
       }),
-      transformResponse: (response: IPopularSearch[]) => response,
+      transformResponse: (response: any) => response,
     }),
-    getAllSheetsPaginate: build.mutation<ISheetsResponse, ISheets>({
-      query: ({ page, size, word }) => {
-        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-        const filtersOptions = `?render=paginate&page=${page}${
-          size ? `&size=${size}` : ""
-        }${word ? `&filter[name]=${word}` : ""}`;
-
-        if (dataUser != null && dataUser != undefined) {
-          return {
-            url: `/sheets${filtersOptions}`,
-            method: "GET",
-          };
-        }
+    deleteFavoriteSheet: build.mutation<any, string>({
+      query: (uuid) => ({
+        url: `/favorites/${uuid}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response: any) => response,
+    }),
+    getAllFavoritesPaginate: build.mutation<ISheetsResponse, any>({
+      query: ({ page = 1, size = 10 }) => {
+        console.log("1 FavoritePaginated");
         return {
-          url: `/free-sheets${filtersOptions}`,
+          url: `/sheets?render=paginate&page=${page}${
+            size ? `&size=${size}` : ""
+          }&filter[is_favorite]=1&include=categories,tags`,
           method: "GET",
         };
       },
@@ -105,7 +84,7 @@ export const sheetsAPI = createApi({
 });
 
 export const {
-  useGetRecommendedSheetsQuery,
-  useGetPopularSheetsQuery,
-  useGetAllSheetsPaginateMutation,
-} = sheetsAPI;
+  usePostAddFavoriteSheetMutation,
+  useDeleteFavoriteSheetMutation,
+  useGetAllFavoritesPaginateMutation,
+} = favoritesAPI;

@@ -20,7 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import SubMenuImagen from "../menu-options/sub-menu-imagen/sub-menu-imagen";
 import SubMenuFiguras from "../menu-options/sub-menu-figuras/sub-menu-figuras";
-import { usePostIAForAppMutation } from "../../../../core/store/editor/editorAPI";
+import { usePostIAForAppMutation } from "../../../../core/store/openAi/openAiAPI";
 import { KonvaTypeItem } from "../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../editor-konva";
 import ArturitoIMG from "../../../../assets/img/arturito-openai.png";

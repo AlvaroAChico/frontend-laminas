@@ -120,38 +120,6 @@ export const laminasApi = createApi({
   }),
 });
 
-export const openAiAPI = createApi({
-  reducerPath: "openAiApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: baseURLOpenIA,
-    prepareHeaders: (headers) => {
-      const token = "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";
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-        headers.set("Content-Type", "application/json");
-        headers.set("Accept", "text/html,image/apng,application/pdf");
-      }
-
-      return headers;
-    },
-  }),
-  endpoints: (build) => ({
-    postIAForApp: build.mutation<ArturitoResponse, string>({
-      query: (text) => ({
-        url: `/completions`,
-        method: "POST",
-        body: {
-          model: "text-davinci-003",
-          prompt: text,
-          max_tokens: 250,
-          temperature: 0.7,
-        },
-      }),
-      transformResponse: (response: ArturitoResponse) => response,
-    }),
-  }),
-});
-
 export const {
   useGetStatusUserDownloadsQuery,
   useGetListLaminasMutation,
@@ -162,4 +130,4 @@ export const {
   useGetVerifyPlanQuery,
 } = laminasApi;
 
-export const { usePostIAForAppMutation } = openAiAPI;
+// export const { usePostIAForAppMutation } = openAiAPI;

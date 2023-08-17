@@ -5,7 +5,9 @@
     "mocks": false,
     "urlBase": "https://test.elaminas.com",
     "recaptcha_key": "6Lc_s0wUAAAAAMLAaTyS3mydujIMl3-D55BdhQ4-",
-    "recaptcha_secret_key": "6Lc_s0wUAAAAAMCArAIJ-bgK42uKD8fR0XC7La7O"
+    "recaptcha_secret_key": "6Lc_s0wUAAAAAMCArAIJ-bgK42uKD8fR0XC7La7O",
+    "g_client_id": "86095020557-4ue693ucteqbp263mi4m41mm154dfl0n.apps.googleusercontent.com",
+    "g_secret_id": "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"
   },
   "api": {
     "laminas": "https://test.elaminas.com/api",

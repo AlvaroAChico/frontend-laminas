@@ -5,6 +5,7 @@ import { appApi } from "./store/app-store/appAPI";
 import { authAPI } from "./store/auth/authAPI";
 import { sheetsAPI } from "./store/sheets/sheetsAPI";
 import { categoriesAPI } from "./store/categories/categoriesAPI";
+import { favoritesAPI } from "./store/favorites/favoritesAPI";
 import editorReducer from "./store/editor/editorSlice";
 import sheetsReducer from "./store/sheets/sheetsSlice";
 import temporalReducer from "./store/temporal/temporalSlice";
@@ -17,6 +18,7 @@ export const queryMiddleares = [
   authAPI.middleware,
   sheetsAPI.middleware,
   categoriesAPI.middleware,
+  favoritesAPI.middleware,
 ];
 
 export const store = configureStore({
@@ -32,6 +34,7 @@ export const store = configureStore({
     [authAPI.reducerPath]: authAPI.reducer,
     [sheetsAPI.reducerPath]: sheetsAPI.reducer,
     [categoriesAPI.reducerPath]: categoriesAPI.reducer,
+    [favoritesAPI.reducerPath]: favoritesAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(queryMiddleares as any),

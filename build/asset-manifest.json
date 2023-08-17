@@ -1,23 +1,19 @@
 {
   "files": {
     "main.css": "/static/css/main.1cd93758.css",
-    "main.js": "/static/js/main.a1e4a80f.js",
+    "main.js": "/static/js/main.a784e8cc.js",
     "static/js/498.0b07f652.chunk.js": "/static/js/498.0b07f652.chunk.js",
     "static/js/703.630885d4.chunk.js": "/static/js/703.630885d4.chunk.js",
     "static/js/513.b4a48b0c.chunk.js": "/static/js/513.b4a48b0c.chunk.js",
-    "static/media/L_017_vertientes-hidrograficas.jpg": "/static/media/L_017_vertientes-hidrograficas.736728cd3aca6cf5448a.jpg",
-    "static/media/L_015_hortalizas.jpg": "/static/media/L_015_hortalizas.5c949aacd8acbb20a606.jpg",
-    "static/media/L_019_organizacion-cultural.jpg": "/static/media/L_019_organizacion-cultural.2729b0ec6edc9288a4ad.jpg",
-    "static/media/L_016_mapa-hidrografico.jpg": "/static/media/L_016_mapa-hidrografico.e5ca6119465922932106.jpg",
-    "static/media/L_020_imperio-incaico.jpg": "/static/media/L_020_imperio-incaico.b706f005aa304a83e5a4.jpg",
-    "static/media/L_018_regiones-naturales.jpg": "/static/media/L_018_regiones-naturales.46a9b305745763e5c5dc.jpg",
     "static/media/pencil_icon.png": "/static/media/pencil_icon.7af8f60febfd1433a82d.png",
     "static/media/avatar_nav.png": "/static/media/avatar_nav.d38c36c1217a9f067897.png",
     "static/media/arturito-openai.png": "/static/media/arturito-openai.5f8790b00ec09905dceb.png",
     "static/media/header_main.jpg": "/static/media/header_main.75befce1e21e5109d759.jpg",
     "static/media/editor_image.png": "/static/media/editor_image.3e2049ad59162214de9a.png",
     "static/media/banner_register.jpg": "/static/media/banner_register.6b332f92e64174a593af.jpg",
+    "static/media/visa_mastercard.png": "/static/media/visa_mastercard.28e924d583261e9367fe.png",
     "static/media/plan2.png": "/static/media/plan2.9df3e09e05b895dc208d.png",
+    "static/media/yape_plin.png": "/static/media/yape_plin.8230a822df8d4678b570.png",
     "static/media/plan1.png": "/static/media/plan1.cd3f10ccb19b633d91b9.png",
     "static/media/plan0.png": "/static/media/plan0.ba295c1c5c5b9886ddc9.png",
     "static/media/rule_icon.png": "/static/media/rule_icon.99307e9a4a42288aec88.png",
@@ -30,13 +26,13 @@
     "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/index.html",
     "main.1cd93758.css.map": "/static/css/main.1cd93758.css.map",
-    "main.a1e4a80f.js.map": "/static/js/main.a1e4a80f.js.map",
+    "main.a784e8cc.js.map": "/static/js/main.a784e8cc.js.map",
     "498.0b07f652.chunk.js.map": "/static/js/498.0b07f652.chunk.js.map",
     "703.630885d4.chunk.js.map": "/static/js/703.630885d4.chunk.js.map",
     "513.b4a48b0c.chunk.js.map": "/static/js/513.b4a48b0c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.1cd93758.css",
-    "static/js/main.a1e4a80f.js"
+    "static/js/main.a784e8cc.js"
   ]
 }
