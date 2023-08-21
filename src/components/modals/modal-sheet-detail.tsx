@@ -369,7 +369,7 @@ const ModalSheetDetail: React.FC = () => {
                     style="SECONDARY"
                     borderStyle="NONE"
                     Icon={Download}
-                    action={() => console.log}
+                    action={() => null}
                     isLoading={false}
                     customStyle={`
                       color: white;
@@ -383,7 +383,7 @@ const ModalSheetDetail: React.FC = () => {
                     style="SECONDARY"
                     borderStyle="NONE"
                     Icon={Edit}
-                    action={() => console.log}
+                    action={() => null}
                     isLoading={false}
                     customStyle={`
                       color: white;

@@ -83,8 +83,8 @@ const SearchLamina: React.FC<IOwnProps> = ({
   placeHolder = "Buscar imágenes o láminas",
   customStyle = "",
   isLoading = false,
-  handleSetData = () => console.log,
-  handleKeyUp = () => console.log,
+  handleSetData = () => null,
+  handleKeyUp = () => null,
 }) => {
   const dispatch = useAppDispatch();
   const activeWord = useAppSelector(getCurrentSearchWord);

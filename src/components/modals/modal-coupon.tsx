@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   Typography,
@@ -12,15 +13,12 @@ import {
 import {
   updateStatusModalCoupon,
   getStatusModalCoupon,
-  updateStatusAuthenticated,
 } from "../../core/store/app-store/appSlice";
 import CustomButton from "../../components/custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
-import { useStartLoginByEmailMutation } from "../../core/store/auth/authAPI";
 import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { IAuthData } from "../../core/store/auth/types/auth-types";
 import { CouponForm, CouponSchema } from "../../core/models/coupon-model";
 import { customPalette } from "../../config/theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -29,8 +27,7 @@ import BookImg from "../../assets/img/book_icon.png";
 import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
-import Cookies from "js-cookie";
-import { APP_CONSTANS } from "../../constants/app";
+import { usePostRedimirCouponMutation } from "../../core/store/coupon/couponAPI";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -115,7 +112,7 @@ const ErrorMessage = styled.span`
 `;
 
 const ModalLogin: React.FC = () => {
-  const [startLogin, resultLogin] = useStartLoginByEmailMutation();
+  const [redimirCoupon, resultCoupon] = usePostRedimirCouponMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const isStatus = useAppSelector(getStatusModalCoupon);
   const dispatch = useAppDispatch();
@@ -136,10 +133,7 @@ const ModalLogin: React.FC = () => {
   } = methods;
 
   const handleSubmit = React.useCallback((data: any) => {
-    startLogin({
-      email: data.email,
-      password: data.password,
-    });
+    redimirCoupon(data.code);
   }, []);
 
   function onChange(value: any) {
@@ -149,29 +143,17 @@ const ModalLogin: React.FC = () => {
   }
 
   React.useEffect(() => {
-    if (resultLogin.data != null) {
-      const authData: IAuthData = {
-        user: resultLogin.data["0"],
-        roles: resultLogin.data.roles,
-        token: resultLogin.data.token,
-        plan: resultLogin.data.plan,
-      } as IAuthData;
-      Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
-      localStorage.setItem(
-        APP_CONSTANS.AUTH_FUNCIONALITIES,
-        JSON.stringify(resultLogin.data.functionalities)
-      );
-      dispatch(updateStatusAuthenticated(false));
+    if (resultCoupon.data != null) {
       dispatch(updateStatusModalCoupon(false));
-      location.reload();
     }
-  }, [resultLogin.isSuccess]);
+  }, [resultCoupon.isSuccess]);
 
   React.useEffect(() => {
-    if (resultLogin.isError) {
+    if (resultCoupon.isError) {
+      console.log("Error -> ", resultCoupon.error);
       setStatusSnackbar(true);
     }
-  }, [resultLogin.isError]);
+  }, [resultCoupon.isError]);
 
   return (
     <>
@@ -280,11 +262,11 @@ const ModalLogin: React.FC = () => {
                 borderStyle="NONE"
                 Icon={RightArrowAlt}
                 action={submitWrapper(handleSubmit)}
-                isLoading={resultLogin.isLoading}
+                isLoading={resultCoupon.isLoading}
                 customStyle={`
-                border-color: white;
-                color: white
-                padding: 8px 10px;
+                  border-color: white;
+                  color: white
+                  padding: 8px 10px;
                 `}
               />
             </Grid>

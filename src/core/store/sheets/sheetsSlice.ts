@@ -7,6 +7,10 @@ export interface LaminasState {
   currentSize: string;
   currentSearchWord: string;
   listSheets: ISheetDefaultProps[];
+  // Editor
+  currentPageEditor: number;
+  currentSizeEditor: string;
+  currentSearchWordEditor: string;
   listSheetsEditor: ISheetDefaultProps[];
 }
 
@@ -15,6 +19,10 @@ const initialState: LaminasState = {
   currentSize: "10",
   currentSearchWord: "",
   listSheets: [],
+  // Editor
+  currentPageEditor: 1,
+  currentSizeEditor: "1",
+  currentSearchWordEditor: "",
   listSheetsEditor: [],
 };
 
@@ -41,21 +49,14 @@ export const sheetsSlice = createSlice({
       });
       state.listSheets = newList;
     },
-    updateAllSheetsEditor: (
-      state,
-      action: PayloadAction<ISheetDefaultProps[]>
-    ) => {
-      state.listSheetsEditor = action.payload;
+    updateCurrentPageEditor: (state) => {
+      state.currentPageEditor = state.currentPageEditor + 1;
     },
-    addMoreSheetsEditor: (
-      state,
-      action: PayloadAction<ISheetDefaultProps[]>
-    ) => {
-      const newList = state.listSheets;
-      (action.payload || []).map((sheet) => {
-        newList.push(sheet);
-      });
-      state.listSheetsEditor = newList;
+    updateCurrentSearchWordEditor: (state, action: PayloadAction<string>) => {
+      state.currentSearchWordEditor = action.payload;
+    },
+    clearSheetsEditor: (state) => {
+      state.listSheetsEditor = [];
     },
     addSheetEditor: (state, action: PayloadAction<ISheetDefaultProps>) => {
       const newList = state.listSheets;
@@ -85,9 +86,10 @@ export const {
   addMoreSheets,
   updateAddFavoriteSheet,
   updateDeleteFavoriteSheet,
-  addMoreSheetsEditor,
-  updateAllSheetsEditor,
   addSheetEditor,
+  clearSheetsEditor,
+  updateCurrentPageEditor,
+  updateCurrentSearchWordEditor,
 } = sheetsSlice.actions;
 
 export const getCurrentPage = (state: RootState) => state.sheets.currentPage;
@@ -95,6 +97,13 @@ export const getCurrentSize = (state: RootState) => state.sheets.currentSize;
 export const getCurrentSearchWord = (state: RootState) =>
   state.sheets.currentSearchWord;
 export const getListSheets = (state: RootState) => state.sheets.listSheets;
+// Editor
+export const getCurrentPageEditor = (state: RootState) =>
+  state.sheets.currentPageEditor;
+export const getCurrentSizeEditor = (state: RootState) =>
+  state.sheets.currentSizeEditor;
+export const getCurrentSearchWordEditor = (state: RootState) =>
+  state.sheets.currentSearchWordEditor;
 export const getListSheetsEditor = (state: RootState) =>
   state.sheets.listSheetsEditor;
 

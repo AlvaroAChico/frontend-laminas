@@ -1,8 +1,5 @@
-import Cookies from "js-cookie";
 import React from "react";
 import styled from "styled-components";
-import { IAuthData } from "../../../../../../core/store/auth/types/auth-types";
-import { APP_CONSTANS } from "../../../../../../constants/app";
 import { Skeleton } from "@mui/material";
 
 const LaminaItem = styled.div`

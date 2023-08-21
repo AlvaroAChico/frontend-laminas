@@ -10,6 +10,7 @@ import {
   updateVisilibityImageEdit,
 } from "../../../../core/store/konva-editor/konva-editorSlice";
 import "react-advanced-cropper/dist/style.css";
+import useLogger from "../../../../utils/hooks/use-logger";
 
 const BackdropModal = styled.div<{ showModal: boolean }>`
   position: absolute;
@@ -80,17 +81,19 @@ const ModalImageKonva: React.FC = () => {
   const showModal = useAppSelector(getVisibilityModalImageEdit);
   const dispatch = useAppDispatch();
 
+  const { Logger } = useLogger();
+
   const handleApplyCropper = () => () => {
     const canva = refCropper?.getCanvas();
     if (canva) {
-      //   console.log(`New image -> ${canva.toDataURL()}`);
+      //   Logger(`New image -> ${canva.toDataURL()}`);
       dispatch(updateNewImageActiveEdit(canva.toDataURL()));
     }
     dispatch(updateVisilibityImageEdit());
   };
 
   const onChange = (cropper: CropperRef) => {
-    // console.log(cropper.getCoordinates(), cropper.getCanvas());
+    // Logger(cropper.getCoordinates(), cropper.getCanvas());
     setRefCropper(cropper);
   };
 

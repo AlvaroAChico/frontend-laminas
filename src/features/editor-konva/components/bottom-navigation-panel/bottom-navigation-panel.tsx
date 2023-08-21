@@ -24,6 +24,7 @@ import { usePostIAForAppMutation } from "../../../../core/store/openAi/openAiAPI
 import { KonvaTypeItem } from "../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../editor-konva";
 import ArturitoIMG from "../../../../assets/img/arturito-openai.png";
+import useLogger from "../../../../utils/hooks/use-logger";
 
 const WrapperBottomNavigation = styled.div`
   width: 100%;
@@ -231,6 +232,8 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
   const dispatch = useAppDispatch();
   const sheetActive = useAppSelector(getActiveGlobalSheet);
 
+  const { Logger } = useLogger();
+
   const handleUpdateGlobalSheet = (option: number) => () =>
     dispatch(updateActiveGlobalSheet(option));
 
@@ -248,7 +251,7 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      // console.log("KeyUp Arturito", initialQuestion);
+      // Logger("KeyUp Arturito", initialQuestion);
       handleQuestionArturito(initialQuestion);
     }
   };

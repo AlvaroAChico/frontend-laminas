@@ -16,6 +16,7 @@ import { ComponentKonvaItem } from "../../../editor-konva";
 import ArturitoIMG from "../../../../../assets/img/arturito-openai.png";
 import { ArrowIosForwardOutline } from "@styled-icons/evaicons-outline/ArrowIosForwardOutline";
 import { usePostIAForAppMutation } from "../../../../../core/store/openAi/openAiAPI";
+import useLogger from "../../../../../utils/hooks/use-logger";
 
 const WrapperMenuTexto = styled.div<{ isVisible: boolean }>`
   background: ${customPalette.grayLightColor};
@@ -211,13 +212,14 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
   const [initialQuestion, setInitialQuestion] = React.useState("");
   const [stepActive, setStepActive] = React.useState(1);
   const dispatch = useAppDispatch();
+  const { Logger } = useLogger();
 
   const handleUpdateStep = (step: number) => () => setStepActive(step);
   const handleChangeText = (value: string) => setInitialQuestion(value);
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      // console.log("KeyUp Arturito", initialQuestion);
+      // Logger("KeyUp Arturito", initialQuestion);
       handleQuestionArturito(initialQuestion);
     }
   };

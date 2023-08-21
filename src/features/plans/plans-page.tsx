@@ -112,9 +112,9 @@ const PlansPage: React.FC = () => {
                 )}
                 {!QueriePhone && (
                   <PlansMobile
-                    basicAction={() => console.log}
-                    mediumAction={() => console.log}
-                    premiumAction={() => console.log}
+                    basicAction={() => null}
+                    mediumAction={() => null}
+                    premiumAction={() => null}
                   />
                 )}
               </Grid>

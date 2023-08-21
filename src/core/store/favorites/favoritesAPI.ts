@@ -70,7 +70,6 @@ export const favoritesAPI = createApi({
     }),
     getAllFavoritesPaginate: build.mutation<ISheetsResponse, any>({
       query: ({ page = 1, size = 10 }) => {
-        console.log("1 FavoritePaginated");
         return {
           url: `/sheets?render=paginate&page=${page}${
             size ? `&size=${size}` : ""

@@ -296,7 +296,6 @@ const OptionsText: React.FC = () => {
             {funcFonts &&
               funcFonts.fonts &&
               (funcFonts.fonts || []).map((font) => {
-                console.log("Fuente -> ", font);
                 return (
                   <option
                     key={Date.now()}

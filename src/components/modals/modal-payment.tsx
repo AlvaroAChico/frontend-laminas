@@ -383,7 +383,7 @@ const ModalPayment: React.FC = () => {
                       title="Pagar"
                       style="SECONDARY"
                       borderStyle="NONE"
-                      action={() => console.log}
+                      action={() => null}
                       customStyle={`width: "fit-content"`}
                     />
                   </div>

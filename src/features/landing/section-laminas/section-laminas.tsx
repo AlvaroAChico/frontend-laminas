@@ -120,8 +120,8 @@ const SectionLaminas: React.FC = () => {
                       nroDownloads={100}
                       nroView={sheet.numberOfViews}
                       infoSheet={sheet}
-                      handleAddFavoriteSheet={() => console.log}
-                      handleDeleteFavoriteSheet={() => console.log}
+                      handleAddFavoriteSheet={() => null}
+                      handleDeleteFavoriteSheet={() => null}
                       isLoadingAdd={false}
                       isLoadingDelete={false}
                     />

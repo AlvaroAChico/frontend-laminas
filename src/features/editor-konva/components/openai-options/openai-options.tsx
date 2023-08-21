@@ -13,6 +13,7 @@ import { KonvaTypeItem } from "../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../editor-konva";
 import { breakpoints } from "../../../../constants/breakpoints";
 import { usePostIAForAppMutation } from "../../../../core/store/openAi/openAiAPI";
+import useLogger from "../../../../utils/hooks/use-logger";
 
 const WrapperOptions = styled.div`
   position: absolute;
@@ -135,11 +136,13 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
   const statusPanelEditor = useAppSelector(getStatusPanelEditor);
   const dispatch = useAppDispatch();
 
+  const { Logger } = useLogger();
+
   const handleChangeText = (value: string) => setInitialQuestion(value);
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
-      // console.log("KeyUp Arturito", initialQuestion);
+      // Logger("KeyUp Arturito", initialQuestion);
       handleQuestionArturito(initialQuestion);
     }
   };

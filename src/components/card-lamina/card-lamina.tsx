@@ -22,6 +22,7 @@ import {
 import Cookies from "js-cookie";
 import { IAuthData } from "../../core/store/auth/types/auth-types";
 import { APP_CONSTANS } from "../../constants/app";
+import useLogger from "../../utils/hooks/use-logger";
 
 const WrapperNroLamina = styled.div`
   display: flex;
@@ -162,16 +163,17 @@ const CardLamina: React.FC<IOwnProps> = ({
   nroDownloads,
   nroView,
   infoSheet,
-  handleAddFavoriteSheet = () => console.log,
-  handleDeleteFavoriteSheet = () => console.log,
+  handleAddFavoriteSheet = () => null,
+  handleDeleteFavoriteSheet = () => null,
   isLoadingDelete,
   isLoadingAdd,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [statusLoading, setStatusLoading] = React.useState(true);
+  const { Logger } = useLogger();
 
-  const handleDownload = () => console.log;
+  const handleDownload = () => Logger("");
 
   const handleEdit = () => {
     navigate("/editor");

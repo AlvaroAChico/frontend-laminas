@@ -74,16 +74,16 @@ const SectionPlans: React.FC = () => {
           <Grid item xs={12} justifyContent={"center"} alignItems={"center"}>
             {QueriePhone && (
               <Plans
-                basicAction={() => console.log}
-                premiumAction={() => console.log}
-                mediumAction={() => console.log}
+                basicAction={() => null}
+                premiumAction={() => null}
+                mediumAction={() => null}
               />
             )}
             {!QueriePhone && (
               <PlansMobile
-                basicAction={() => console.log}
-                mediumAction={() => console.log}
-                premiumAction={() => console.log}
+                basicAction={() => null}
+                mediumAction={() => null}
+                premiumAction={() => null}
               />
             )}
           </Grid>

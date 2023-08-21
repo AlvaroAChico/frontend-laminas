@@ -223,7 +223,7 @@ const SubscriptionSection: React.FC = () => {
             style="SECONDARY"
             borderStyle="NONE"
             Icon={ArrowIosDownward}
-            action={() => console.log}
+            action={() => null}
             isLoading={false}
             customStyle={`
             border-color: white;

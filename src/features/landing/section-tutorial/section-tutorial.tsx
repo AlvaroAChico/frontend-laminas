@@ -203,7 +203,7 @@ const SectionTutorial: React.FC = () => {
                   Icon={Phone}
                   style="SECONDARY"
                   borderStyle="OUTLINE"
-                  action={() => console.log}
+                  action={() => null}
                   customStyle={`width: fit-content; padding: 10px 30px; margin: auto`}
                 />
               </Grid>

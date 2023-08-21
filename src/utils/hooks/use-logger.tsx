@@ -1,29 +1,47 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { useNavigate } from "react-router-dom";
-import {
-  getCurrentSearchWord,
-  updateCurrentSearchWord,
-} from "../../core/store/sheets/sheetsSlice";
-import { APP_CONSTANS } from "../../constants/app";
+import { settingsAPP } from "../../config/environments/settings";
 
+export enum ELog {
+  DEBUG = "DEBUG",
+  INFO = "INFO",
+  ERROR = "ERROR",
+  WARNING = "WARNING",
+}
 const useLogger = () => {
-  const [valueWord, setValueWord] = React.useState("");
-  const currentWord = useAppSelector(getCurrentSearchWord);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const handleSetData = (value: string) => {
-    dispatch(updateCurrentSearchWord(value));
-    setValueWord(value);
+  const Logger = (key?: string, value: any = null, type?: ELog) => {
+    if (settingsAPP.environment.toUpperCase() != "prod".toUpperCase()) {
+      if (type == ELog.DEBUG) {
+        console.log(
+          `%c K_${key} -> ${value ?? JSON.stringify(value)}`,
+          "background: #00ffaa; color: #000"
+        );
+      }
+      if (type == ELog.INFO) {
+        console.info(
+          `%c K_${key} -> ${value ?? JSON.stringify(value)}`,
+          "background: #0000ff; color: #ffffff"
+        );
+      }
+      if (type == ELog.ERROR) {
+        console.error(
+          `%c K_${key} -> ${value ?? JSON.stringify(value)}`,
+          "background: #ff0000; color: #ffffff"
+        );
+      }
+      if (type == ELog.WARNING) {
+        console.warn(
+          `%c K_${key} -> ${value ?? JSON.stringify(value)}`,
+          "background: #ffff00; color: #000000"
+        );
+      }
+      console.log(
+        `%c K_${key} --> ${value ?? JSON.stringify(value)}`,
+        "background: #ffffff; color: #0000ff"
+      );
+    }
   };
 
-  const handleKeyUp = () => {
-    localStorage.setItem(APP_CONSTANS.PENDING_SEARCH_WORD, currentWord);
-    navigate("/laminas");
-  };
-
-  return { valueWord, handleSetData, handleKeyUp };
+  return { Logger };
 };
 
 export default useLogger;

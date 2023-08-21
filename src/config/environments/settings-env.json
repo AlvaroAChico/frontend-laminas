@@ -14,7 +14,8 @@
     "landing": "https://landing.elaminas.com/api",
     "auth": "http://localhost:8000/api",
     "sheets": "http://localhost:8000/api",
-    "categories": "http://localhost:8000/api"
+    "categories": "http://localhost:8000/api",
+    "coupon": "http://localhost:8000/api"
   },
   "i18nDebug": false,
   "environment": "dev"

@@ -15,7 +15,9 @@
     "openai": "https://api.openai.com/v1",
     "auth": "https://test-api.elaminas.com/api",
     "sheets": "https://test-api.elaminas.com/api",
-    "categories": "https://test-api.elaminas.com/api"
+    "categories": "https://test-api.elaminas.com/api",
+    "user": "https://test-api.elaminas.com/api",
+    "coupon": "http://localhost:8000/api"
   },
   "i18nDebug": false,
   "cloudEnv": "production"

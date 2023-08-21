@@ -71,12 +71,11 @@ export const authAPI = createApi({
       },
       transformResponse: (response: string) => response,
     }),
-    startLoginByGoogle: build.mutation<ILoginByGoogleResponse, string>({
-      query: (access_token) => ({
-        url: `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
-        method: "GET",
+    startLoginByGoogle: build.mutation<any, any>({
+      query: () => ({
+        url: `auth/login/google`,
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${access_token}`,
           Accept: "application/json",
           Mode: "no-cors",
           AccessControlAllowOrigin: "*",
@@ -84,7 +83,18 @@ export const authAPI = createApi({
           AccessControlAllowMethods: "*",
         },
       }),
-      transformResponse: (response: ILoginByGoogleResponse) => response,
+      transformResponse: (response: any) => response,
+    }),
+    startLoginByFacebook: build.mutation<any, any>({
+      query: () => ({
+        url: `auth/login/facebook`,
+        method: "POST",
+        headers: {
+          AccessControlAllowOrigin: "*",
+          mode: "no-cors",
+        },
+      }),
+      transformResponse: (response: any) => response,
     }),
   }),
 });
@@ -94,4 +104,5 @@ export const {
   useStartRegisterByEmailMutation,
   useStartLogoutMutation,
   useStartLoginByGoogleMutation,
+  useStartLoginByFacebookMutation,
 } = authAPI;

@@ -19,6 +19,8 @@ let urlLanding_API = "http://localhost:8000/api";
 let urlAuth_API = "http://localhost:8000/api";
 let urlSheets_API = "http://localhost:8000/api";
 let urlCategories_API = "http://localhost:8000/api";
+let urlUsers_API = "http://localhost:8000/api";
+let urlCoupon_API = "http://localhost:8000/api";
 
 if (settingsEnv.environment.toUpperCase() == "dev".toUpperCase()) {
   name_APP = settingsDEV.app.name;
@@ -36,6 +38,8 @@ if (settingsEnv.environment.toUpperCase() == "dev".toUpperCase()) {
   urlAuth_API = settingsDEV.api.auth;
   urlSheets_API = settingsDEV.api.sheets;
   urlCategories_API = settingsDEV.api.categories;
+  urlUsers_API = settingsDEV.api.user;
+  urlCoupon_API = settingsDEV.api.coupon;
 }
 
 if (settingsEnv.environment.toUpperCase() == "int".toUpperCase()) {
@@ -55,6 +59,8 @@ if (settingsEnv.environment.toUpperCase() == "int".toUpperCase()) {
   urlSheets_API = settingsINT.api.sheets;
   urlSheets_API = settingsINT.api.sheets;
   urlCategories_API = settingsINT.api.categories;
+  urlUsers_API = settingsINT.api.user;
+  urlCoupon_API = settingsINT.api.coupon;
 }
 
 if (settingsEnv.environment.toUpperCase() == "prod".toUpperCase()) {
@@ -73,6 +79,8 @@ if (settingsEnv.environment.toUpperCase() == "prod".toUpperCase()) {
   urlAuth_API = settingsPROD.api.auth;
   urlSheets_API = settingsPROD.api.sheets;
   urlCategories_API = settingsPROD.api.categories;
+  urlUsers_API = settingsPROD.api.user;
+  urlCoupon_API = settingsPROD.api.coupon;
 }
 
 export const settingsAPP = {
@@ -93,6 +101,8 @@ export const settingsAPP = {
     auth: urlAuth_API,
     sheets: urlSheets_API,
     categories: urlCategories_API,
+    user: urlUsers_API,
+    coupon: urlCoupon_API,
   },
   environment: environment_APP,
 };

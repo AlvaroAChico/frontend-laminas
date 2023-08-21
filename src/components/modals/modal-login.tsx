@@ -22,6 +22,7 @@ import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
 import {
   useStartLoginByGoogleMutation,
   useStartLoginByEmailMutation,
+  useStartLoginByFacebookMutation,
 } from "../../core/store/auth/authAPI";
 import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
@@ -43,6 +44,7 @@ import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../constants/app";
 import { useGoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login";
+import useLogger, { ELog } from "../../utils/hooks/use-logger";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -153,9 +155,8 @@ const ModalLogin: React.FC = () => {
   const [startLogin, resultLogin] = useStartLoginByEmailMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const isStatus = useAppSelector(getStatusModalLogin);
-  const [profile, setProfile] = React.useState([]);
-  const [user, setUser] = React.useState<ILoginByGoogle>({} as ILoginByGoogle);
   const dispatch = useAppDispatch();
+  const { Logger } = useLogger();
 
   const methods = useForm<SigninForm>({
     resolver: yupResolver(SigninSchema),
@@ -226,32 +227,25 @@ const ModalLogin: React.FC = () => {
     }
   }, [resultLogin.isError]);
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: (codeResponse) => setUser(codeResponse as ILoginByGoogle),
-    onError: (error: any) => console.log("Login Failed:", error),
-  });
-
   const [startLoginByGoogle, resultsGoogle] = useStartLoginByGoogleMutation();
-
-  React.useEffect(() => {
-    console.log("1 User");
-    if (
-      user != null &&
-      user.access_token != null &&
-      user.access_token != undefined
-    ) {
-      console.log("2 User", user);
-      startLoginByGoogle(user.access_token);
-    }
-    console.log("3 User");
-  }, [user]);
-
+  const handleGoogleLogin = () => {
+    startLoginByGoogle("");
+  };
   React.useEffect(() => {
     if (resultsGoogle != null) {
-      console.log("Result Google -> ", resultsGoogle);
+      Logger("Result Google", JSON.stringify(resultsGoogle));
+      // Result Google
     }
-    console.log("3 ResultsGoogle");
   }, [resultsGoogle]);
+
+  const [startLoginByFacebook, resultFacebook] =
+    useStartLoginByFacebookMutation();
+
+  React.useEffect(() => {
+    if (resultFacebook) {
+      Logger("Facebook", JSON.stringify(resultFacebook));
+    }
+  }, [resultFacebook]);
 
   return (
     <>
@@ -443,6 +437,9 @@ const ModalLogin: React.FC = () => {
                 alignItems="center"
                 columnGap={2}
                 sx={{ cursor: "pointer" }}
+                onClick={() => {
+                  startLoginByFacebook("");
+                }}
               >
                 <Facebook />
                 <Typography variant="caption" component="span">
@@ -450,11 +447,13 @@ const ModalLogin: React.FC = () => {
                 </Typography>
               </ButtonFacebook>
               {/* appId="1231472174122665" */}
+              {/* FACEBOOK_CLIENT_ID=980584469728137 */}
+              {/* FACEBOOK_CLIENT_SECRET=542813d8aeef5b49e7b270c2a9a38ea3 */}
               {/* <FacebookLogin
                 appId="813073273810777"
                 autoLoad={false}
                 fields="name,email,picture"
-                callback={(res: any) => console.log("res -> ", res)}
+                callback={(res: any) => Logger("res", res)}
                 scope="ads_read,ads_management"
               /> */}
             </Grid>
