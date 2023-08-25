@@ -1,4 +1,4 @@
-import { InferType, object, string, number } from "yup";
+import { InferType, object, string } from "yup";
 
 export const UserSchema = object({
   firstName: string(),
@@ -7,4 +7,11 @@ export const UserSchema = object({
   contactNumber: string(),
 });
 
+export const ChangePasswordSchema = object({
+  oldPassword: string(),
+  password: string(),
+  recaptcha: string(),
+});
+
 export type UserForm = InferType<typeof UserSchema>;
+export type ChangePasswordForm = InferType<typeof ChangePasswordSchema>;

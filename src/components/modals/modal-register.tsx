@@ -34,6 +34,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../constants/app";
+import useDataUser from "../../utils/hooks/use-data-user";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -196,22 +197,26 @@ const ModalRegister: React.FC = () => {
     }
   };
 
+  const { handleUpdateUserAuth, handleUpdateFunctionalities } = useDataUser();
+
   React.useEffect(() => {
     if (resultRegister.data != null) {
-      const authData: IAuthData = {
-        user: resultRegister.data["0"],
-        roles: resultRegister.data.roles,
-        token: resultRegister.data.token,
-        plan: resultRegister.data.plan,
-      } as IAuthData;
-      Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
-      localStorage.setItem(
-        APP_CONSTANS.AUTH_FUNCIONALITIES,
-        JSON.stringify(resultRegister.data.functionalities)
-      );
-      dispatch(updateStatusAuthenticated(false));
-      dispatch(updateStatusModalRegister(false));
-      location.reload();
+      // const authData: IAuthData = {
+      //   user: resultRegister.data["0"],
+      //   roles: resultRegister.data.roles,
+      //   token: resultRegister.data.token,
+      //   plan: resultRegister.data.plan,
+      // } as IAuthData;
+      // Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
+      // localStorage.setItem(
+      //   APP_CONSTANS.AUTH_FUNCIONALITIES,
+      //   JSON.stringify(resultRegister.data.functionalities)
+      // );
+      // dispatch(updateStatusAuthenticated(false));
+      // dispatch(updateStatusModalRegister(false));
+      // location.reload();
+      handleUpdateUserAuth(resultRegister.data);
+      handleUpdateFunctionalities(resultRegister.data.functionalities, true);
     }
   }, [resultRegister.isSuccess]);
 

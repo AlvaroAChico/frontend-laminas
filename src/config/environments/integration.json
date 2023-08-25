@@ -1,23 +1,24 @@
 {
   "app": {
-    "name": "E-Laminas - INT",
+    "name": "E-Laminas",
     "blocked": true,
     "mocks": false,
-    "urlBase": "https://test.elaminas.com",
+    "urlBase": "https://elaminas.com",
     "recaptcha_key": "6Lc_s0wUAAAAAMLAaTyS3mydujIMl3-D55BdhQ4-",
     "recaptcha_secret_key": "6Lc_s0wUAAAAAMCArAIJ-bgK42uKD8fR0XC7La7O",
     "g_client_id": "86095020557-4ue693ucteqbp263mi4m41mm154dfl0n.apps.googleusercontent.com",
     "g_secret_id": "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"
   },
   "api": {
-    "laminas": "https://test.elaminas.com/api",
+    "laminas": "https://elaminas.com/api",
     "landing": "https://landing.elaminas.com/api",
     "openai": "https://api.openai.com/v1",
-    "auth": "http://localhost:8000/api",
-    "sheets": "http://localhost:8000/api",
-    "categories": "http://localhost:8000/api",
-    "user": "http://localhost:8000/api",
-    "coupon": "http://localhost:8000/api"
+    "auth": "https://test-api.elaminas.com/api",
+    "sheets": "https://test-api.elaminas.com/api",
+    "categories": "https://test-api.elaminas.com/api",
+    "user": "https://test-api.elaminas.com/api",
+    "coupon": "https://test-api.elaminas.com/api",
+    "plans": "https://test-api.elaminas.com/api"
   },
   "i18nDebug": false,
   "cloudEnv": "integration"

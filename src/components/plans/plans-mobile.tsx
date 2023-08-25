@@ -67,6 +67,9 @@ const PlansMobile: React.FC<IOwnProps> = ({
             formats={plan.formats}
             downloads={plan.downloads}
             support={plan.support}
+            basicAction={basicAction}
+            mediumAction={mediumAction}
+            premiumAction={premiumAction}
           />
         </WrapperItemPlan>
       ))}

@@ -18,6 +18,8 @@ import { Toaster, toast } from "react-hot-toast";
 import useLogger from "../../../../utils/hooks/use-logger";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../../../constants/app";
+import { updateStatusModalChangePassword } from "../../../../core/store/app-store/appSlice";
+import { useAppDispatch } from "../../../../app/hooks";
 
 const WrapperProfile = styled.div`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -36,6 +38,7 @@ const WrapperEdit = styled.div`
   background: ${customPalette.secondaryColor};
   border-radius: 50%;
   position: absolute;
+  cursor: pointer;
   padding: 8px;
   bottom: 0;
   right: 0;
@@ -43,6 +46,10 @@ const WrapperEdit = styled.div`
   > svg {
     width: 22px;
     color: white;
+  }
+
+  > input {
+    display: none;
   }
 `;
 const GridBasicDataContainer = styled(Grid)`
@@ -85,12 +92,14 @@ const ProfileSection: React.FC = () => {
   const [user, setUser] = React.useState<IAuthData>();
   const handleInitEditing = () => setIsEditing(true);
   const handleCancelEditing = () => setIsEditing(false);
+  const dispatch = useAppDispatch();
 
   const handleFinishEditing = () => {
     submitWrapper(handleSubmit)();
   };
 
   const { handleGetToken } = useDataUser();
+  const { Logger } = useLogger();
 
   React.useEffect(() => {
     const data = handleGetToken();
@@ -119,12 +128,21 @@ const ProfileSection: React.FC = () => {
   const [startUpdateUser, resultUser] = useUpdateBasicDataUserMutation();
 
   const handleSubmit = React.useCallback((data: any) => {
-    startUpdateUser({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      address: data.address,
-      contactNumber: data.contactNumber,
-    } as IUserUpdate);
+    if (
+      data.firstName != "" ||
+      data.lastName != "" ||
+      data.address != "" ||
+      data.contactNumber != ""
+    ) {
+      startUpdateUser({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        address: data.address,
+        contactNumber: data.contactNumber,
+      } as IUserUpdate);
+    } else {
+      toast.error("Debes llenar al menos un campo");
+    }
   }, []);
 
   React.useEffect(() => {
@@ -144,6 +162,10 @@ const ProfileSection: React.FC = () => {
       toast.error("No se pudo actualizar los datos, intenta nuevamente");
     }
   }, [resultUser]);
+
+  const handleChangeAvatar = () => {
+    document.getElementById("input-file-image")?.click();
+  };
 
   return (
     <WrapperProfile>
@@ -170,8 +192,30 @@ const ProfileSection: React.FC = () => {
               alt="Avatar"
               src={BaseAvatarImg}
             />
-            <WrapperEdit>
+            <WrapperEdit onClick={handleChangeAvatar}>
               <Edit />
+              <input
+                id="input-file-image"
+                type="file"
+                multiple={false}
+                onInput={(e: any) => {
+                  if (e!.target!.files && e!.target!.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt: any) {
+                      const ext = e!
+                        .target!.files[0].name.split(".")
+                        .pop()
+                        .toLowerCase();
+                      if (["PNG", "JPG", "JPEG"].includes(ext!.toUpperCase())) {
+                        Logger("Avatar", evt!.target!.result);
+                      } else {
+                        toast.error("Extensión no permitida");
+                      }
+                    };
+                    reader.readAsDataURL(e!.target!.files[0]);
+                  }
+                }}
+              />
             </WrapperEdit>
           </ContainerAvatar>
         </Grid>
@@ -198,7 +242,7 @@ const ProfileSection: React.FC = () => {
                   title="Cambiar contraseña"
                   style="SECONDARY"
                   borderStyle="NONE"
-                  action={() => null}
+                  action={() => dispatch(updateStatusModalChangePassword(true))}
                   Icon={Edit}
                   customStyle={`
                   width: fit-content;

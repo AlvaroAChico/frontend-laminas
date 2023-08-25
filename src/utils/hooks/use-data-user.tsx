@@ -2,6 +2,7 @@ import React from "react";
 import {
   IAuthData,
   IFunctionality,
+  ILoginResponse,
 } from "../../core/store/auth/types/auth-types";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../constants/app";
@@ -26,6 +27,34 @@ const useDataUser = () => {
     return "";
   };
 
+  const handleUpdateUserAuth = (data: ILoginResponse, reload = false) => {
+    const authData: IAuthData = {
+      user: data["0"],
+      roles: data.roles,
+      token: data.token,
+      plan: data.plan,
+    } as IAuthData;
+    Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
+    dispatch(updateStatusAuthenticated(true));
+    if (reload) {
+      location.reload();
+    }
+  };
+
+  const handleUpdateFunctionalities = (
+    data: IFunctionality[],
+    reload = false
+  ) => {
+    localStorage.setItem(
+      APP_CONSTANS.AUTH_FUNCIONALITIES,
+      JSON.stringify(data)
+    );
+    dispatch(updateStatusAuthenticated(true));
+    if (reload) {
+      location.reload();
+    }
+  };
+
   const handleGetFuncionalities = () => {
     const functionalityUser = localStorage.getItem(
       APP_CONSTANS.AUTH_FUNCIONALITIES
@@ -39,7 +68,12 @@ const useDataUser = () => {
     return [] as IFunctionality[];
   };
 
-  return { handleGetToken, handleGetFuncionalities };
+  return {
+    handleGetToken,
+    handleGetFuncionalities,
+    handleUpdateUserAuth,
+    handleUpdateFunctionalities,
+  };
 };
 
 export default useDataUser;

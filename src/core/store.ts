@@ -8,6 +8,7 @@ import { categoriesAPI } from "./store/categories/categoriesAPI";
 import { favoritesAPI } from "./store/favorites/favoritesAPI";
 import { userAPI } from "./store/user/userAPI";
 import { couponAPI } from "./store/coupon/couponAPI";
+import { plansAPI } from "./store/plans/plansAPI";
 import editorReducer from "./store/editor/editorSlice";
 import sheetsReducer from "./store/sheets/sheetsSlice";
 import temporalReducer from "./store/temporal/temporalSlice";
@@ -23,6 +24,7 @@ export const queryMiddleares = [
   favoritesAPI.middleware,
   userAPI.middleware,
   couponAPI.middleware,
+  plansAPI.middleware,
 ];
 
 export const store = configureStore({
@@ -41,6 +43,7 @@ export const store = configureStore({
     [favoritesAPI.reducerPath]: favoritesAPI.reducer,
     [userAPI.reducerPath]: userAPI.reducer,
     [couponAPI.reducerPath]: couponAPI.reducer,
+    [plansAPI.reducerPath]: plansAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(queryMiddleares as any),

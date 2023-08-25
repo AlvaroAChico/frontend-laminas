@@ -12,14 +12,15 @@ import {
 } from "@mui/material";
 import {
   updateStatusModalCoupon,
-  getStatusModalCoupon,
+  getStatusModalChangePassword,
+  updateStatusModalChangePassword,
 } from "../../core/store/app-store/appSlice";
-import CustomButton from "../../components/custom-button/custom-button";
+import CustomButton from "../custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
 import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { CouponForm, CouponSchema } from "../../core/models/coupon-model";
+
 import { customPalette } from "../../config/theme/theme";
 import { yupResolver } from "@hookform/resolvers/yup";
 import RuleImg from "../../assets/img/rule_icon.png";
@@ -27,8 +28,13 @@ import BookImg from "../../assets/img/book_icon.png";
 import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
-import { usePostRedimirCouponMutation } from "../../core/store/coupon/couponAPI";
+
 import { Toaster, toast } from "react-hot-toast";
+import {
+  ChangePasswordForm,
+  ChangePasswordSchema,
+} from "../../core/models/user-model";
+import { useStartChangePasswordMutation } from "../../core/store/auth/authAPI";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -100,7 +106,13 @@ const FormContainer = styled.div`
     padding-right: 15px;
   }
 `;
-const ContainerEmailStyle = styled.div<{ errorStyle: boolean }>`
+const ContainerOldPassStyle = styled.div<{ errorStyle: boolean }>`
+  > input {
+    border: ${(p) =>
+      p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"};
+  }
+`;
+const ContainerNewPassStyle = styled.div<{ errorStyle: boolean }>`
   > input {
     border: ${(p) =>
       p.errorStyle ? "1px solid red !important" : "1px solid #001C46;"};
@@ -112,16 +124,17 @@ const ErrorMessage = styled.span`
   margin-top: 6px;
 `;
 
-const ModalCoupon: React.FC = () => {
-  const [redimirCoupon, resultCoupon] = usePostRedimirCouponMutation();
+const ModalChangePassword: React.FC = () => {
+  const [updatePass, resultPass] = useStartChangePasswordMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
-  const isStatus = useAppSelector(getStatusModalCoupon);
+  const isStatus = useAppSelector(getStatusModalChangePassword);
   const dispatch = useAppDispatch();
 
-  const methods = useForm<CouponForm>({
-    resolver: yupResolver(CouponSchema),
+  const methods = useForm<ChangePasswordForm>({
+    resolver: yupResolver(ChangePasswordSchema),
     defaultValues: {
-      code: "",
+      oldPassword: "",
+      password: "",
       recaptcha: "",
     },
   });
@@ -134,7 +147,10 @@ const ModalCoupon: React.FC = () => {
   } = methods;
 
   const handleSubmit = React.useCallback((data: any) => {
-    redimirCoupon(data.code);
+    updatePass({
+      oldPassword: data.oldPassword,
+      password: data.password,
+    });
   }, []);
 
   function onChange(value: any) {
@@ -144,17 +160,17 @@ const ModalCoupon: React.FC = () => {
   }
 
   React.useEffect(() => {
-    if (resultCoupon.data != null) {
+    if (resultPass.data != null) {
       dispatch(updateStatusModalCoupon(false));
       toast.success("Cupón canjeado exitosamente");
     }
-  }, [resultCoupon.isSuccess]);
+  }, [resultPass.isSuccess]);
 
   React.useEffect(() => {
-    if (resultCoupon.isError) {
+    if (resultPass.isError) {
       setStatusSnackbar(true);
     }
-  }, [resultCoupon.isError]);
+  }, [resultPass.isError]);
 
   return (
     <>
@@ -213,31 +229,51 @@ const ModalCoupon: React.FC = () => {
                 fontWeight="600"
                 color={customPalette.secondaryColor}
               >
-                Canjear Cupón
+                Actualizar Contraseña
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <FormContainer>
-                <ContainerEmailStyle
-                  errorStyle={!!(errors.code as any)?.message}
+                <ContainerOldPassStyle
+                  errorStyle={!!(errors.password as any)?.message}
                 >
                   <Typography
                     variant="caption"
                     component="label"
                     textAlign="left"
                   >
-                    Código de cupón
+                    Contraseña Actual
                   </Typography>
                   <input
-                    placeholder="Código de cupón"
-                    type="email"
+                    placeholder="Actual contraseña"
+                    type="password"
                     required
-                    {...register("code")}
+                    {...register("oldPassword")}
                   />
-                  {!!(errors.code as any)?.message && (
-                    <ErrorMessage>{errors?.code?.message}</ErrorMessage>
+                  {!!(errors.oldPassword as any)?.message && (
+                    <ErrorMessage>{errors?.oldPassword?.message}</ErrorMessage>
                   )}
-                </ContainerEmailStyle>
+                </ContainerOldPassStyle>
+                <ContainerNewPassStyle
+                  errorStyle={!!(errors.password as any)?.message}
+                >
+                  <Typography
+                    variant="caption"
+                    component="label"
+                    textAlign="left"
+                  >
+                    Nueva Contraseña
+                  </Typography>
+                  <input
+                    placeholder="Nueva contraseña"
+                    type="password"
+                    required
+                    {...register("password")}
+                  />
+                  {!!(errors.password as any)?.message && (
+                    <ErrorMessage>{errors?.password?.message}</ErrorMessage>
+                  )}
+                </ContainerNewPassStyle>
               </FormContainer>
             </Grid>
             <GridCaptcha
@@ -257,18 +293,36 @@ const ModalCoupon: React.FC = () => {
                 <ErrorMessage>{errors?.recaptcha?.message}</ErrorMessage>
               )}
             </GridCaptcha>
-            <Grid item xs={12} justifyContent="center" alignItems="center">
+            <Grid
+              item
+              xs={12}
+              justifyContent="center"
+              alignItems="center"
+              flexWrap={"wrap"}
+            >
               <CustomButton
-                title="Canjear"
+                title="Cancelar"
+                style="SECONDARY"
+                borderStyle="OUTLINE"
+                action={() => dispatch(updateStatusModalChangePassword(false))}
+                isLoading={resultPass.isLoading}
+                customStyle={`
+                  padding: 8px 10px;
+                  width: fit-content;
+                `}
+              />
+              <CustomButton
+                title="Actualizar"
                 style="SECONDARY"
                 borderStyle="NONE"
                 Icon={RightArrowAlt}
                 action={submitWrapper(handleSubmit)}
-                isLoading={resultCoupon.isLoading}
+                isLoading={resultPass.isLoading}
                 customStyle={`
                   border-color: white;
                   color: white
                   padding: 8px 10px;
+                  width: fit-content;
                 `}
               />
             </Grid>
@@ -293,4 +347,4 @@ const ModalCoupon: React.FC = () => {
   );
 };
 
-export default ModalCoupon;
+export default ModalChangePassword;

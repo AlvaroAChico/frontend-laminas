@@ -45,6 +45,7 @@ import { APP_CONSTANS } from "../../constants/app";
 import { useGoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login";
 import useLogger, { ELog } from "../../utils/hooks/use-logger";
+import useDataUser from "../../utils/hooks/use-data-user";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -202,22 +203,26 @@ const ModalLogin: React.FC = () => {
     }
   };
 
+  const { handleUpdateUserAuth, handleUpdateFunctionalities } = useDataUser();
+
   React.useEffect(() => {
     if (resultLogin.data != null) {
-      const authData: IAuthData = {
-        user: resultLogin.data["0"],
-        roles: resultLogin.data.roles,
-        token: resultLogin.data.token,
-        plan: resultLogin.data.plan,
-      } as IAuthData;
-      Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
-      localStorage.setItem(
-        APP_CONSTANS.AUTH_FUNCIONALITIES,
-        JSON.stringify(resultLogin.data.functionalities)
-      );
-      dispatch(updateStatusAuthenticated(true));
-      dispatch(updateStatusModalLogin(false));
-      location.reload();
+      // const authData: IAuthData = {
+      //   user: resultLogin.data["0"],
+      //   roles: resultLogin.data.roles,
+      //   token: resultLogin.data.token,
+      //   plan: resultLogin.data.plan,
+      // } as IAuthData;
+      // Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
+      // localStorage.setItem(
+      //   APP_CONSTANS.AUTH_FUNCIONALITIES,
+      //   JSON.stringify(resultLogin.data.functionalities)
+      // );
+      // dispatch(updateStatusAuthenticated(true));
+      // dispatch(updateStatusModalLogin(false));
+      // location.reload();
+      handleUpdateUserAuth(resultLogin.data);
+      handleUpdateFunctionalities(resultLogin.data.functionalities, true);
     }
   }, [resultLogin.isSuccess]);
 

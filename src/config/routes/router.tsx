@@ -12,6 +12,7 @@ import SubscriptionSection from "../../features/dashboard/components/subscriptio
 import FavouritesSection from "../../features/dashboard/components/favourites/favourites-section";
 
 import CustomLayout from "../../components/custom-layout/custom-layout";
+import ResponsePayment from "../../features/response-payment/response-payment";
 
 export const router = createBrowserRouter([
   {
@@ -49,10 +50,14 @@ export const router = createBrowserRouter([
           {
             path: "favoritos",
             element: <FavouritesSection />,
-          }
-        ]
+          },
+        ],
       },
     ],
+  },
+  {
+    path: "payment/:transactionToken",
+    element: <ResponsePayment />,
   },
   {
     path: "/editor",

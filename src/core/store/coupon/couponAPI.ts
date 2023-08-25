@@ -5,12 +5,12 @@ import { settingsAPP } from "../../../config/environments/settings";
 import { IAuthData } from "../auth/types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
 
-const baseURLSheets = settingsAPP.api.sheets;
+const baseURLCoupon = settingsAPP.api.coupon;
 
 export const couponAPI = createApi({
-  reducerPath: "favoritesApi",
+  reducerPath: "couponApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: baseURLSheets,
+    baseUrl: baseURLCoupon,
     prepareHeaders: (headers) => {
       const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
       if (dataUser != null && dataUser != undefined) {

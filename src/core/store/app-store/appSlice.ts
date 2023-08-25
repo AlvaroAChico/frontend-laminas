@@ -12,6 +12,8 @@ export interface LandingState {
   statusModalRecover: boolean;
   statusModalSheetDetail: boolean;
   statusModalPayment: boolean;
+  statusModalChangePassword: boolean;
+  statusIframePayment: boolean;
   dataUserAuth: IAuthData;
   tokenUserAuth: string;
   functionalitiesAuth: IFunctionality[];
@@ -27,6 +29,8 @@ const initialState: LandingState = {
   statusModalRecover: false,
   statusModalSheetDetail: false,
   statusModalPayment: false,
+  statusModalChangePassword: false,
+  statusIframePayment: false,
   dataUserAuth: {} as IAuthData,
   tokenUserAuth: "",
   functionalitiesAuth: [],
@@ -61,6 +65,15 @@ export const appSlice = createSlice({
     updateStatusModalPayment: (state, action: PayloadAction<boolean>) => {
       state.statusModalPayment = action.payload;
     },
+    updateStatusIframePayment: (state, action: PayloadAction<boolean>) => {
+      state.statusIframePayment = action.payload;
+    },
+    updateStatusModalChangePassword: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.statusModalChangePassword = action.payload;
+    },
     updateCurrentSheetDetail: (
       state,
       action: PayloadAction<ISheetDefaultProps>
@@ -93,8 +106,10 @@ export const {
   updateDataUserAuth,
   updateCurrentSheetDetail,
   updateStatusModalPayment,
+  updateStatusModalChangePassword,
   updateDataFunctionality,
   updateDataToken,
+  updateStatusIframePayment,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
@@ -110,6 +125,10 @@ export const getStatusModalSheetDetail = (state: RootState) =>
   state.app.statusModalSheetDetail;
 export const getStatusModalPayment = (state: RootState) =>
   state.app.statusModalPayment;
+export const getStatusModalChangePassword = (state: RootState) =>
+  state.app.statusModalChangePassword;
+export const getStatusIframePayment = (state: RootState) =>
+  state.app.statusIframePayment;
 export const getStatusAuthenticated = (state: RootState) =>
   state.app.isAuthenticated;
 export const getCurrentSheetDetail = (state: RootState) =>

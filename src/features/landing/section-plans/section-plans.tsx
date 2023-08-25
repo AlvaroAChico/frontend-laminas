@@ -7,6 +7,8 @@ import CustomButtom from "../../../components/custom-button/custom-button";
 import { Phone } from "styled-icons/boxicons-solid";
 import Plans from "../../../components/plans/plans";
 import PlansMobile from "../../../components/plans/plans-mobile";
+import { updateStatusModalPayment } from "../../../core/store/app-store/appSlice";
+import { useAppDispatch } from "../../../app/hooks";
 
 const WrapperPlans = styled.div`
   display: flex;
@@ -19,6 +21,7 @@ const WrapperPlans = styled.div`
 
 const SectionPlans: React.FC = () => {
   const QueriePhone = useMediaQuery("(min-width:768px)");
+  const dispatch = useAppDispatch();
 
   const handleOpenWhatsapp = () => {
     window.open("https://wa.link/8o4p6t", "_blank");
@@ -74,16 +77,16 @@ const SectionPlans: React.FC = () => {
           <Grid item xs={12} justifyContent={"center"} alignItems={"center"}>
             {QueriePhone && (
               <Plans
-                basicAction={() => null}
-                premiumAction={() => null}
-                mediumAction={() => null}
+                basicAction={() => dispatch(updateStatusModalPayment(true))}
+                mediumAction={() => dispatch(updateStatusModalPayment(true))}
+                premiumAction={() => dispatch(updateStatusModalPayment(true))}
               />
             )}
             {!QueriePhone && (
               <PlansMobile
-                basicAction={() => null}
-                mediumAction={() => null}
-                premiumAction={() => null}
+                basicAction={() => dispatch(updateStatusModalPayment(true))}
+                mediumAction={() => dispatch(updateStatusModalPayment(true))}
+                premiumAction={() => dispatch(updateStatusModalPayment(true))}
               />
             )}
           </Grid>

@@ -80,6 +80,10 @@ export interface IFunctionality {
   isActive: boolean;
   createdAt: string;
 }
+export interface IChangePassword {
+  oldPassword: string;
+  password: string;
+}
 
 export enum EFuncionality {
   FUNC_DOWNLOAD_SIZE = "FUNC_DOWNLOAD_SIZE",

@@ -99,20 +99,6 @@ const CustomButtonPremium = styled(ButtonBase)`
   );
 `;
 
-const ContainerButtonsPay = styled.tr`
-  background: white !important;
-
-  > td {
-    border: none !important;
-  }
-  > td:nth-child(2) {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    max-width: 400px !important;
-  }
-`;
-
 const BodyBasePlan = styled.div`
   padding: 10px;
   tex-align: center;
@@ -148,6 +134,9 @@ interface IOwnProps {
   downloads: string;
   support: string;
   onlyText?: boolean;
+  basicAction?: () => void;
+  mediumAction?: () => void;
+  premiumAction?: () => void;
 }
 const BodyPlan: React.FC<IOwnProps> = ({
   bodyInfo,
@@ -160,6 +149,9 @@ const BodyPlan: React.FC<IOwnProps> = ({
   downloads,
   support,
   onlyText = false,
+  basicAction,
+  mediumAction,
+  premiumAction,
 }) => {
   return (
     <BodyPlanStyle>
@@ -221,7 +213,9 @@ const BodyPlan: React.FC<IOwnProps> = ({
                   Solo debes registrarte y tus beneficios serán cargados cada
                   mes
                 </Typography>
-                <CustomButtonBasic>Registrarme</CustomButtonBasic>
+                <CustomButtonBasic onClick={basicAction}>
+                  Registrarme
+                </CustomButtonBasic>
               </div>
             )}
           </BodyBasicPlan>
@@ -281,7 +275,9 @@ const BodyPlan: React.FC<IOwnProps> = ({
             </div>
             {!onlyText && (
               <div>
-                <CustomButtonMedium>Comprar</CustomButtonMedium>
+                <CustomButtonMedium onClick={mediumAction}>
+                  Comprar
+                </CustomButtonMedium>
               </div>
             )}
           </BodyMediumPlan>
@@ -341,7 +337,9 @@ const BodyPlan: React.FC<IOwnProps> = ({
             </div>
             {!onlyText && (
               <div>
-                <CustomButtonPremium>Comprar</CustomButtonPremium>
+                <CustomButtonPremium onClick={premiumAction}>
+                  Comprar
+                </CustomButtonPremium>
               </div>
             )}
           </BodyPremiumPlan>

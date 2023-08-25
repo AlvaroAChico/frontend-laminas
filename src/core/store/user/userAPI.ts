@@ -30,19 +30,26 @@ export const userAPI = createApi({
         const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
         if (dataUser != null && dataUser != undefined) {
           const user = JSON.parse(dataUser) as IAuthData;
-          console.log("URL -> ", `${baseURLUser}/users/${user!.user.id}`);
+          let data = {};
+          if (firstName != "") {
+            data = { ...data, first_name: firstName };
+          }
+          if (lastName != "") {
+            data = { ...data, last_name: lastName };
+          }
+          if (contactNumber != "") {
+            data = { ...data, contact_number: contactNumber };
+          }
+          if (address != "") {
+            data = { ...data, address: address };
+          }
           return {
             headers: {
               Authorization: `Bearer ${user.token}`,
             },
             url: `/users/${user!.user.id}`,
             method: "PATCH",
-            body: {
-              first_name: firstName != null ? firstName : "",
-              last_name: lastName != null ? lastName : "",
-              contact_number: contactNumber != null ? contactNumber : "",
-              address: address != null ? address : "",
-            },
+            body: data,
           };
         }
         return {
@@ -57,6 +64,30 @@ export const userAPI = createApi({
         };
       },
       transformResponse: (response: IUserUpdateResponse) => response,
+    }),
+    updateUserAvatar: build.mutation<any, string>({
+      query: (blobImage) => {
+        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+        if (dataUser != null && dataUser != undefined) {
+          const user = JSON.parse(dataUser) as IAuthData;
+          return {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+            url: `/users/${user!.user.id}`,
+            method: "PATCH",
+            body: {},
+          };
+        }
+        return {
+          url: `/users/`,
+          method: "PATCH",
+          body: {
+            picture: blobImage,
+          },
+        };
+      },
+      transformResponse: (response: any) => response,
     }),
   }),
 });

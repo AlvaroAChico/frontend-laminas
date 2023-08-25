@@ -12,7 +12,9 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  getStatusIframePayment,
   getStatusModalPayment,
+  updateStatusIframePayment,
   updateStatusModalPayment,
 } from "../../core/store/app-store/appSlice";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
@@ -22,6 +24,13 @@ import CustomButtom from "../custom-button/custom-button";
 import BodyPlan from "../plans/body-plan/body-plan";
 import VisaMastercard from "../../assets/img/visa_mastercard.png";
 import YapePlin from "../../assets/img/yape_plin.png";
+import {
+  useGetAccessTokenMutation,
+  useGetSessionTokenMutation,
+} from "../../core/store/plans/plansAPI";
+import { APP_CONSTANS } from "../../constants/app";
+import useLogger from "../../utils/hooks/use-logger";
+import { settingsAPP } from "../../config/environments/settings";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -107,18 +116,151 @@ const ContainerAddNiubiz = styled.div`
   }
 `;
 
+const IframeWrapper = styled.iframe<{ statusOpen: boolean }>`
+  ${(p) =>
+    p.statusOpen
+      ? `
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        border: none;
+        `
+      : `
+        display: none
+      `}
+`;
+
 const ModalPayment: React.FC = () => {
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const [statusStepPay, setStatusStepPay] = React.useState(0);
   const [valuePlanPay, setValuePlanPay] = React.useState(1);
+  const [statusIframeNiubiz, setStatusIframeNiubiz] = React.useState(false);
+  const [txkNiubiz, setTxkNiubiz] = React.useState("");
   const isStatus = useAppSelector(getStatusModalPayment);
+  const isStatusIframe = useAppSelector(getStatusIframePayment);
   const steps = ["Plan", "Detalle", "Finalizar"];
   const dispatch = useAppDispatch();
 
+  const { Logger } = useLogger();
+
   const handleChangeStep = (step: number) => setStatusStepPay(step);
+
+  const iframeNiubiz = React.useRef<HTMLIFrameElement>(null);
+  const handleOpenNiubiz = () => {
+    setStatusIframeNiubiz(true);
+    dispatch(updateStatusIframePayment(true));
+    if (iframeNiubiz) {
+      const documentIframe = iframeNiubiz.current?.contentWindow?.document;
+      documentIframe!.getElementById("id-button.niubiz")?.click();
+    }
+    // handleChangeStep(2);
+  };
+  // React.useEffect(() => {
+  //   setTimeout(() => {
+  //     if (iframeNiubiz) {
+  //       const documentIframe = iframeNiubiz.current?.contentWindow?.document;
+  //       documentIframe!.getElementById("id-button.niubiz")?.click();
+  //     }
+  //   }, 6000);
+  // }, []);
+
+  const [getAccessToken, resultAccessToken] = useGetAccessTokenMutation();
+  const [getSessionToken, resultSessionToken] = useGetSessionTokenMutation();
+
+  const handleNextStepPay = () => {
+    if (valuePlanPay != 0) {
+      getAccessToken("");
+    }
+  };
+
+  React.useEffect(() => {
+    if (resultAccessToken && resultAccessToken.isSuccess) {
+      getSessionToken({
+        accessToken: resultAccessToken.data.accessToken,
+        planId: `${valuePlanPay + 1}`,
+      });
+    }
+  }, [resultAccessToken]);
+
+  React.useEffect(() => {
+    if (resultSessionToken && resultSessionToken.isSuccess) {
+      handleChangeStep(1);
+    }
+  }, [resultSessionToken]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (isStatusIframe) {
+        const txk = localStorage.getItem(APP_CONSTANS.TXK_NIUBIZ);
+        if (!!txk && txk != "null") {
+          setTxkNiubiz(txk);
+          dispatch(updateStatusIframePayment(false));
+          localStorage.removeItem(APP_CONSTANS.TXK_NIUBIZ);
+          // Llamar a la api de Authorization
+        }
+      } else {
+        clearInterval(interval);
+      }
+    }, 5000);
+  }, [isStatusIframe]);
+
+  React.useEffect(() => {
+    if (txkNiubiz) {
+      Logger("TrxTk Niubiz", txkNiubiz);
+    }
+  }, [txkNiubiz]);
 
   return (
     <>
+      <IframeWrapper
+        ref={iframeNiubiz}
+        statusOpen={isStatusIframe}
+        srcDoc={`
+              <div>
+                <button id="id-button.niubiz" onclick="openForm();" style="display:none">Pagar</button>
+              </div>
+
+            <script
+              type="text/javascript"
+              src="https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true"
+            ></script>
+
+            <script type="text/javascript">
+              function consoleClick() {
+                console.log("Close")
+              }
+              function openForm() {
+                VisanetCheckout.configure({
+                  sessiontoken:
+                    "${resultSessionToken.data?.sessionKey}",
+                  channel: "web",
+                  merchantid: "341198210",
+                  purchasenumber: ${resultSessionToken.data?.purchaseNumber},
+                  amount: ${resultSessionToken.data?.amount},
+                  expirationminutes: "20",
+                  timeouturl: "about:blank",
+                  merchantlogo: "https://elaminas.com/img/logo_elamina.svg",
+                  formbuttoncolor: "#000000",
+                  action: "${settingsAPP.api.plans}/niubiz/response",
+                  complete: function (params) {
+                    console.log("COMPLETEEEEEEEEEEEEEEEEEEEEEEEEEEEE 01")
+                    console.log(JSON.stringify(params));
+                    console.log("COMPLETEEEEEEEEEEEEEEEEEEEEEEEEEEEE 02")
+                  },
+                  error: function (params) {
+                    console.log(JSON.stringify(params));
+                  },
+                });
+                VisanetCheckout.open();
+              }
+            </script>
+        `}
+      ></IframeWrapper>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -134,7 +276,7 @@ const ModalPayment: React.FC = () => {
       >
         <Fade in={isStatus}>
           <BoxStyle>
-            <Box sx={{ width: "100%" }}>
+            <Box sx={{ width: "80vw", minHeight: "60vh" }}>
               <Stepper activeStep={statusStepPay} alternativeLabel>
                 {steps.map((label) => (
                   <Step key={label}>
@@ -296,11 +438,11 @@ const ModalPayment: React.FC = () => {
                     title="Continuar"
                     style="SECONDARY"
                     borderStyle="NONE"
-                    action={() => {
-                      if (valuePlanPay != 0) {
-                        handleChangeStep(1);
-                      }
-                    }}
+                    action={handleNextStepPay}
+                    isLoading={
+                      resultAccessToken.isLoading ||
+                      resultSessionToken.isLoading
+                    }
                     customStyle={`
                       width: "fit-content";
                       ${
@@ -363,7 +505,7 @@ const ModalPayment: React.FC = () => {
                       title="Pagar"
                       style="SECONDARY"
                       borderStyle="NONE"
-                      action={() => handleChangeStep(2)}
+                      action={handleOpenNiubiz}
                       customStyle={`width: "fit-content"`}
                     />
                   </WrapperButtonsDetail>

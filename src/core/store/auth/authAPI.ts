@@ -9,6 +9,7 @@ import {
   IRegister,
   ILoginByGoogle,
   ILoginByGoogleResponse,
+  IChangePassword,
 } from "./types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
 
@@ -96,6 +97,17 @@ export const authAPI = createApi({
       }),
       transformResponse: (response: any) => response,
     }),
+    startChangePassword: build.mutation<any, IChangePassword>({
+      query: ({ oldPassword, password }) => ({
+        url: `auth/change-password`,
+        method: "POST",
+        body: {
+          old_password: oldPassword,
+          password: password,
+        },
+      }),
+      transformResponse: (response: any) => response,
+    }),
   }),
 });
 
@@ -105,4 +117,5 @@ export const {
   useStartLogoutMutation,
   useStartLoginByGoogleMutation,
   useStartLoginByFacebookMutation,
+  useStartChangePasswordMutation,
 } = authAPI;
