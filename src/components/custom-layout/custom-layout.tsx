@@ -16,6 +16,8 @@ import {
   updateStatusAuthenticated,
   updateDataToken,
   updateDataFunctionality,
+  getIsLoadingApp,
+  updateLoadingApp,
 } from "../../core/store/app-store/appSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Whatsapp } from "@styled-icons/bootstrap/Whatsapp";
@@ -23,6 +25,7 @@ import AvatarImg from "../../assets/img/avatar_coupon.png";
 import EditorImg from "../../assets/img/editor_image.png";
 import { Tooltip } from "@mui/material";
 import { APP_CONSTANS } from "../../constants/app";
+import CustomLoader from "../custom-loader/custom-loader";
 
 const WrapperLayout = styled.div`
   width: 100%;
@@ -69,6 +72,19 @@ const CouponButton = styled.div`
   }
 `;
 
+const ContainerLoading = styled.div`
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: #0000007d;
+  display: grid;
+  align-content: center;
+  justify-content: center;
+`;
+
 const EditorButton = styled.div`
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
@@ -92,8 +108,10 @@ const CustomLayout: React.FC = () => {
   const isAuthenticated = useAppSelector(getStatusAuthenticated);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const isLoadingApp = useAppSelector(getIsLoadingApp);
 
   React.useEffect(() => {
+    dispatch(updateLoadingApp(false));
     const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
     if (dataUser != null && dataUser != undefined) {
       const user = JSON.parse(dataUser) as IAuthData;
@@ -129,6 +147,11 @@ const CustomLayout: React.FC = () => {
 
   return (
     <WrapperLayout>
+      {isLoadingApp && (
+        <ContainerLoading>
+          <CustomLoader />
+        </ContainerLoading>
+      )}
       <Navbar />
       <Outlet />
       <Footer />

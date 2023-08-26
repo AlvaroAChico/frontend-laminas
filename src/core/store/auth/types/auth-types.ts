@@ -84,6 +84,9 @@ export interface IChangePassword {
   oldPassword: string;
   password: string;
 }
+export interface IGoogleResponseURL {
+  message: string;
+}
 
 export enum EFuncionality {
   FUNC_DOWNLOAD_SIZE = "FUNC_DOWNLOAD_SIZE",

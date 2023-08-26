@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { Outlet, createBrowserRouter } from "react-router-dom";
 import LandingPage from "../../features/landing/landing-page";
 import LaminasPage from "../../features/laminas/laminas-page";
 import PlansPage from "../../features/plans/plans-page";
@@ -56,8 +56,18 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "payment/:transactionToken",
-    element: <ResponsePayment />,
+    path: "/",
+    element: (
+      <>
+        <Outlet />
+      </>
+    ),
+    children: [
+      {
+        path: "payment/:transactionToken",
+        element: <ResponsePayment />,
+      },
+    ],
   },
   {
     path: "/editor",

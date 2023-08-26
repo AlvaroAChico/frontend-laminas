@@ -10,6 +10,7 @@ import {
   ILoginByGoogle,
   ILoginByGoogleResponse,
   IChangePassword,
+  IGoogleResponseURL,
 } from "./types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
 
@@ -72,7 +73,7 @@ export const authAPI = createApi({
       },
       transformResponse: (response: string) => response,
     }),
-    startLoginByGoogle: build.mutation<any, any>({
+    startLoginByGoogle: build.mutation<IGoogleResponseURL, any>({
       query: () => ({
         url: `auth/login/google`,
         method: "POST",
@@ -84,7 +85,22 @@ export const authAPI = createApi({
           AccessControlAllowMethods: "*",
         },
       }),
-      transformResponse: (response: any) => response,
+      transformResponse: (response: IGoogleResponseURL) => response,
+    }),
+    startGoogleCallback: build.mutation<ILoginResponse, string>({
+      query: (params) => ({
+        url: `auth/login/google/callback${params}`,
+        method: "GET",
+        headers: {
+          ContentType: "application/json",
+          Accept: "application/json",
+          Mode: "no-cors",
+          AccessControlAllowOrigin: "*",
+          AccessControlAllowHeaders: "*",
+          AccessControlAllowMethods: "*",
+        },
+      }),
+      transformResponse: (response: ILoginResponse) => response,
     }),
     startLoginByFacebook: build.mutation<any, any>({
       query: () => ({
@@ -118,4 +134,5 @@ export const {
   useStartLoginByGoogleMutation,
   useStartLoginByFacebookMutation,
   useStartChangePasswordMutation,
+  useStartGoogleCallbackMutation,
 } = authAPI;

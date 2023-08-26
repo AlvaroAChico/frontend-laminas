@@ -16,6 +16,7 @@ import {
   updateStatusModalRecover,
   updateStatusModalRegister,
   updateStatusAuthenticated,
+  updateLoadingApp,
 } from "../../core/store/app-store/appSlice";
 import CustomButton from "../../components/custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
@@ -23,6 +24,7 @@ import {
   useStartLoginByGoogleMutation,
   useStartLoginByEmailMutation,
   useStartLoginByFacebookMutation,
+  useStartGoogleCallbackMutation,
 } from "../../core/store/auth/authAPI";
 import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
@@ -46,6 +48,8 @@ import { useGoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login";
 import useLogger, { ELog } from "../../utils/hooks/use-logger";
 import useDataUser from "../../utils/hooks/use-data-user";
+import CustomLoader from "../custom-loader/custom-loader";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -158,6 +162,19 @@ const ModalLogin: React.FC = () => {
   const isStatus = useAppSelector(getStatusModalLogin);
   const dispatch = useAppDispatch();
   const { Logger } = useLogger();
+  const queryParams = window.location.search;
+  const splitParams = new URLSearchParams(queryParams);
+
+  const [startGoogleCallback, resultCallback] =
+    useStartGoogleCallbackMutation();
+
+  React.useEffect(() => {
+    if (queryParams && splitParams.size > 3) {
+      startGoogleCallback(queryParams);
+      window.history.pushState({}, document.title, "/");
+      dispatch(updateLoadingApp(true));
+    }
+  }, []);
 
   const methods = useForm<SigninForm>({
     resolver: yupResolver(SigninSchema),
@@ -207,20 +224,6 @@ const ModalLogin: React.FC = () => {
 
   React.useEffect(() => {
     if (resultLogin.data != null) {
-      // const authData: IAuthData = {
-      //   user: resultLogin.data["0"],
-      //   roles: resultLogin.data.roles,
-      //   token: resultLogin.data.token,
-      //   plan: resultLogin.data.plan,
-      // } as IAuthData;
-      // Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
-      // localStorage.setItem(
-      //   APP_CONSTANS.AUTH_FUNCIONALITIES,
-      //   JSON.stringify(resultLogin.data.functionalities)
-      // );
-      // dispatch(updateStatusAuthenticated(true));
-      // dispatch(updateStatusModalLogin(false));
-      // location.reload();
       handleUpdateUserAuth(resultLogin.data);
       handleUpdateFunctionalities(resultLogin.data.functionalities, true);
     }
@@ -232,13 +235,35 @@ const ModalLogin: React.FC = () => {
     }
   }, [resultLogin.isError]);
 
+  React.useEffect(() => {
+    if (resultCallback.data != null) {
+      handleUpdateUserAuth(resultCallback.data);
+      handleUpdateFunctionalities(resultCallback.data.functionalities, true);
+      dispatch(updateLoadingApp(false));
+    }
+  }, [resultCallback.isSuccess]);
+
+  React.useEffect(() => {
+    if (resultCallback.isError) {
+      setStatusSnackbar(true);
+    }
+  }, [resultCallback.isError]);
+
   const [startLoginByGoogle, resultsGoogle] = useStartLoginByGoogleMutation();
   const handleGoogleLogin = () => {
     startLoginByGoogle("");
   };
   React.useEffect(() => {
     if (resultsGoogle != null) {
-      Logger("Result Google", JSON.stringify(resultsGoogle));
+      // Logger("Result Google", JSON.stringify(resultsGoogle));
+      if (resultsGoogle.isSuccess && !!resultsGoogle.data) {
+        console.log("Google -> ", resultsGoogle.data.message);
+        window.open(
+          resultsGoogle.data.message,
+          "_self",
+          "width=400,height=600"
+        );
+      }
       // Result Google
     }
   }, [resultsGoogle]);
@@ -426,13 +451,23 @@ const ModalLogin: React.FC = () => {
                 justifyContent="center"
                 alignItems="center"
                 columnGap={2}
-                onClick={() => handleGoogleLogin()}
+                onClick={() => {
+                  if (!resultsGoogle.isLoading) {
+                    handleGoogleLogin();
+                  }
+                }}
                 sx={{ cursor: "pointer" }}
               >
-                <Google />
-                <Typography variant="caption" component="span">
-                  Google
-                </Typography>
+                {!resultsGoogle.isLoading ? (
+                  <>
+                    <Google />
+                    <Typography variant="caption" component="span">
+                      Google
+                    </Typography>
+                  </>
+                ) : (
+                  <CustomLoader></CustomLoader>
+                )}
               </ButtonGoogle>
               <ButtonFacebook
                 item

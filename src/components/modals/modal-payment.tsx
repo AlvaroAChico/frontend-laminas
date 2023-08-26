@@ -139,7 +139,6 @@ const ModalPayment: React.FC = () => {
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const [statusStepPay, setStatusStepPay] = React.useState(0);
   const [valuePlanPay, setValuePlanPay] = React.useState(1);
-  const [statusIframeNiubiz, setStatusIframeNiubiz] = React.useState(false);
   const [txkNiubiz, setTxkNiubiz] = React.useState("");
   const isStatus = useAppSelector(getStatusModalPayment);
   const isStatusIframe = useAppSelector(getStatusIframePayment);
@@ -152,7 +151,6 @@ const ModalPayment: React.FC = () => {
 
   const iframeNiubiz = React.useRef<HTMLIFrameElement>(null);
   const handleOpenNiubiz = () => {
-    setStatusIframeNiubiz(true);
     dispatch(updateStatusIframePayment(true));
     if (iframeNiubiz) {
       const documentIframe = iframeNiubiz.current?.contentWindow?.document;
@@ -160,14 +158,6 @@ const ModalPayment: React.FC = () => {
     }
     // handleChangeStep(2);
   };
-  // React.useEffect(() => {
-  //   setTimeout(() => {
-  //     if (iframeNiubiz) {
-  //       const documentIframe = iframeNiubiz.current?.contentWindow?.document;
-  //       documentIframe!.getElementById("id-button.niubiz")?.click();
-  //     }
-  //   }, 6000);
-  // }, []);
 
   const [getAccessToken, resultAccessToken] = useGetAccessTokenMutation();
   const [getSessionToken, resultSessionToken] = useGetSessionTokenMutation();
@@ -195,18 +185,23 @@ const ModalPayment: React.FC = () => {
 
   React.useEffect(() => {
     const interval = setInterval(() => {
+      Logger("Consultando Invervalo ...");
       if (isStatusIframe) {
+        Logger("IFrame is true", isStatusIframe);
         const txk = localStorage.getItem(APP_CONSTANS.TXK_NIUBIZ);
-        if (!!txk && txk != "null") {
+        if (!!txk && txk != null && txk != "") {
+          Logger("Transaction_Token", txk);
           setTxkNiubiz(txk);
           dispatch(updateStatusIframePayment(false));
+          dispatch(updateStatusModalPayment(false));
           localStorage.removeItem(APP_CONSTANS.TXK_NIUBIZ);
           // Llamar a la api de Authorization
         }
       } else {
+        Logger("IFrame is false", isStatusIframe);
         clearInterval(interval);
       }
-    }, 5000);
+    }, 100);
   }, [isStatusIframe]);
 
   React.useEffect(() => {

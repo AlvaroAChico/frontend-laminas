@@ -5,6 +5,7 @@ import { ISheetDefaultProps } from "../sheets/types/laminas-type";
 
 export interface LandingState {
   valueScroll: number;
+  isLoadingApp: boolean;
   isAuthenticated: boolean;
   statusModalLogin: boolean;
   statusModalRegister: boolean;
@@ -22,6 +23,7 @@ export interface LandingState {
 
 const initialState: LandingState = {
   valueScroll: 0,
+  isLoadingApp: false,
   isAuthenticated: false,
   statusModalLogin: false,
   statusModalRegister: false,
@@ -43,6 +45,9 @@ export const appSlice = createSlice({
   reducers: {
     updateValueScroll: (state, action: PayloadAction<number>) => {
       state.valueScroll = action.payload;
+    },
+    updateLoadingApp: (state, action: PayloadAction<boolean>) => {
+      state.isLoadingApp = action.payload;
     },
     updateStatusAuthenticated: (state, action: PayloadAction<boolean>) => {
       state.isAuthenticated = action.payload;
@@ -110,9 +115,11 @@ export const {
   updateDataFunctionality,
   updateDataToken,
   updateStatusIframePayment,
+  updateLoadingApp,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
+export const getIsLoadingApp = (state: RootState) => state.app.isLoadingApp;
 export const getStatusModalLogin = (state: RootState) =>
   state.app.statusModalLogin;
 export const getStatusModalRegister = (state: RootState) =>
