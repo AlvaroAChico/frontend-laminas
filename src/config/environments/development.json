@@ -18,7 +18,8 @@
     "categories": "http://localhost:8000/api",
     "user": "http://localhost:8000/api",
     "coupon": "http://localhost:8000/api",
-    "plans": "http://localhost:8000/api"
+    "plans": "http://localhost:8000/api",
+    "downloads": "http://localhost:8000/api"
   },
   "i18nDebug": false,
   "cloudEnv": "development"

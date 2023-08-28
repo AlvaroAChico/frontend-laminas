@@ -18,7 +18,8 @@
     "categories": "https://elaminas.com/api",
     "user": "https://elaminas.com/api",
     "coupon": "https://elaminas.com/api",
-    "plans": "https://elaminas.com/api"
+    "plans": "https://elaminas.com/api",
+    "downloads": "https://elaminas.com/api"
   },
   "i18nDebug": false,
   "cloudEnv": "production"

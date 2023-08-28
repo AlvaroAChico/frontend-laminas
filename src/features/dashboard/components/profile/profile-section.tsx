@@ -208,6 +208,15 @@ const ProfileSection: React.FC = () => {
                         .toLowerCase();
                       if (["PNG", "JPG", "JPEG"].includes(ext!.toUpperCase())) {
                         Logger("Avatar", evt!.target!.result);
+                        // Crear el Blob a partir del string BLOB
+                        const blob = new Blob([evt!.target!.result], {
+                          type: "image/jpeg",
+                        });
+                        // Crear el objeto File a partir del Blob
+                        const file = new File([blob], "image.jpg", {
+                          type: "image/jpeg",
+                        });
+                        console.log(file);
                       } else {
                         toast.error("Extensión no permitida");
                       }

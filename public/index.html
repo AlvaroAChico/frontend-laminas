@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-id-general">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
@@ -40,23 +40,57 @@
         outline: none;
       }
     </style>
-  </head>
-  <body style="padding: 0; margin: 0">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
     <script
       type="text/javascript"
       src="https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true"
     ></script>
+
+    <script type="text/javascript">
+      const openFormNiubiz = () => {
+        const sessionToken = localStorage.getItem("SESSION_TOKEN_NIUBIZ");
+        const purchaseNumber = localStorage.getItem("PURCHASE_NUMBER_NIUBIZ");
+        const amount = localStorage.getItem("AMOUNT_NIUBIZ");
+        const actionPage = localStorage.getItem("ACTION_PAGE_NIUBIZ");
+
+        VisanetCheckout.configure({
+          sessiontoken: sessionToken,
+          channel: "web",
+          merchantid: "456879856",
+          purchasenumber: purchaseNumber,
+          amount: amount,
+          expirationminutes: "20",
+          timeouturl: "about:blank",
+          merchantlogo: "img/comercio.png",
+          formbuttoncolor: "#000000",
+          action: `http://localhost:8000/api/niubiz/response`,
+          complete: function (params) {
+            alert(JSON.stringify(params));
+          },
+        });
+        VisanetCheckout.open();
+      };
+      const clearStylesIFrame = () => {
+        setTimeout(() => {
+          document.getElementById("html-id-general").style =
+            "padding: 0; margin: 0; overflow: auto";
+          document.getElementById("body-id-general").style =
+            "padding: 0; margin: 0;";
+        }, [500]);
+      };
+    </script>
+  </head>
+  <body id="body-id-general" style="padding: 0; margin: 0">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <button
+      id="button-clear-niubiz"
+      onclick="clearStylesIFrame()"
+      style="display: none"
+    ></button>
+    <button
+      id="button-niubiz"
+      onclick="openFormNiubiz()"
+      style="display: none"
+    ></button>
   </body>
 </html>

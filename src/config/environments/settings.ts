@@ -22,6 +22,7 @@ let urlCategories_API = "http://localhost:8000/api";
 let urlUsers_API = "http://localhost:8000/api";
 let urlCoupon_API = "http://localhost:8000/api";
 let urlPlans_API = "http://localhost:8000/api";
+let urlDownloads_API = "http://localhost:8000/api";
 
 if (settingsEnv.environment.toUpperCase() == "dev".toUpperCase()) {
   name_APP = settingsDEV.app.name;
@@ -42,6 +43,7 @@ if (settingsEnv.environment.toUpperCase() == "dev".toUpperCase()) {
   urlUsers_API = settingsDEV.api.user;
   urlCoupon_API = settingsDEV.api.coupon;
   urlPlans_API = settingsDEV.api.plans;
+  urlDownloads_API = settingsDEV.api.plans;
 }
 
 if (settingsEnv.environment.toUpperCase() == "int".toUpperCase()) {
@@ -64,6 +66,7 @@ if (settingsEnv.environment.toUpperCase() == "int".toUpperCase()) {
   urlUsers_API = settingsINT.api.user;
   urlCoupon_API = settingsINT.api.coupon;
   urlPlans_API = settingsINT.api.plans;
+  urlDownloads_API = settingsINT.api.plans;
 }
 
 if (settingsEnv.environment.toUpperCase() == "prod".toUpperCase()) {
@@ -85,6 +88,7 @@ if (settingsEnv.environment.toUpperCase() == "prod".toUpperCase()) {
   urlUsers_API = settingsPROD.api.user;
   urlCoupon_API = settingsPROD.api.coupon;
   urlPlans_API = settingsPROD.api.plans;
+  urlDownloads_API = settingsPROD.api.plans;
 }
 
 export const settingsAPP = {
@@ -108,6 +112,7 @@ export const settingsAPP = {
     user: urlUsers_API,
     coupon: urlCoupon_API,
     plans: urlPlans_API,
+    downloads: urlDownloads_API,
   },
   environment: environment_APP,
 };

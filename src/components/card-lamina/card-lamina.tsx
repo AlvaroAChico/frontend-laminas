@@ -17,12 +17,12 @@ import { useAppDispatch } from "../../app/hooks";
 import { ISheetDefaultProps } from "../../core/store/sheets/types/laminas-type";
 import {
   updateCurrentSheetDetail,
+  updateCurrentSheetEdit,
   updateStatusModalSheetDetail,
 } from "../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
 import { IAuthData } from "../../core/store/auth/types/auth-types";
 import { APP_CONSTANS } from "../../constants/app";
-import useLogger from "../../utils/hooks/use-logger";
 
 const WrapperNroLamina = styled.div`
   display: flex;
@@ -171,13 +171,7 @@ const CardLamina: React.FC<IOwnProps> = ({
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [statusLoading, setStatusLoading] = React.useState(true);
-  const { Logger } = useLogger();
 
-  const handleDownload = () => Logger("");
-
-  const handleEdit = () => {
-    navigate("/editor");
-  };
   const handleView = () => {
     dispatch(
       updateCurrentSheetDetail({
@@ -192,7 +186,7 @@ const CardLamina: React.FC<IOwnProps> = ({
         status: infoSheet.status,
         isActive: infoSheet.isActive,
         createdAt: infoSheet.createdAt,
-        tira: infoSheet.tira,
+        tira: blobImage,
         categories: infoSheet.categories,
       } as ISheetDefaultProps)
     );
@@ -202,6 +196,11 @@ const CardLamina: React.FC<IOwnProps> = ({
   const handleLoaded = () => setStatusLoading(false);
 
   const [blobImage, setBlobImage] = React.useState<any>();
+
+  const handleEdit = React.useCallback(() => {
+    dispatch(updateCurrentSheetEdit(blobImage));
+    navigate("/editor");
+  }, [blobImage]);
 
   async function fetchBlob() {
     const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
@@ -244,7 +243,7 @@ const CardLamina: React.FC<IOwnProps> = ({
         <CardMedia
           component="img"
           image={blobImage}
-          sx={{ maxHeight: "170px", objectPosition: "top" }}
+          sx={{ maxHeight: "225px", objectPosition: "top" }}
           onLoad={handleLoaded}
         />
         {statusLoading && (
@@ -312,24 +311,35 @@ const CardLamina: React.FC<IOwnProps> = ({
           </GridViewsContainer>
         </CardContent>
         <CustomCardActions sx={{ width: "100%", justifyContent: "center" }}>
-          <CustomButtonStyle>
-            <Typography variant="caption" component="span">
-              Descargar
-            </Typography>
-            <Download />
-          </CustomButtonStyle>
-          <CustomButtonStyle onClick={handleEdit}>
-            <Typography variant="caption" component="span">
-              Editar
-            </Typography>
-            <Edit />
-          </CustomButtonStyle>
-          <CustomButtonStyle onClick={handleView}>
-            <Typography variant="caption" component="span">
-              Ver
-            </Typography>
-            <Eye />
-          </CustomButtonStyle>
+          {statusLoading && (
+            <>
+              <Skeleton variant="rounded" width={"60%"} height={40} />
+              <Skeleton variant="rounded" width={"20%"} height={40} />
+              <Skeleton variant="rounded" width={"20%"} height={40} />
+            </>
+          )}
+          {!statusLoading && (
+            <>
+              <CustomButtonStyle onClick={handleView}>
+                <Typography variant="caption" component="span">
+                  Descargar
+                </Typography>
+                <Download />
+              </CustomButtonStyle>
+              <CustomButtonStyle onClick={handleEdit}>
+                <Typography variant="caption" component="span">
+                  Editar
+                </Typography>
+                <Edit />
+              </CustomButtonStyle>
+              <CustomButtonStyle onClick={handleView}>
+                <Typography variant="caption" component="span">
+                  Ver
+                </Typography>
+                <Eye />
+              </CustomButtonStyle>
+            </>
+          )}
         </CustomCardActions>
       </Card>
     </>

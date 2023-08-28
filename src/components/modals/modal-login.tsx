@@ -15,24 +15,18 @@ import {
   updateStatusModalLogin,
   updateStatusModalRecover,
   updateStatusModalRegister,
-  updateStatusAuthenticated,
   updateLoadingApp,
 } from "../../core/store/app-store/appSlice";
 import CustomButton from "../../components/custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
 import {
-  useStartLoginByGoogleMutation,
+  useStartLoginSocialMutation,
   useStartLoginByEmailMutation,
-  useStartLoginByFacebookMutation,
-  useStartGoogleCallbackMutation,
+  useStartSocialCallbackMutation,
 } from "../../core/store/auth/authAPI";
 import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import {
-  IAuthData,
-  ILoginByGoogle,
-} from "../../core/store/auth/types/auth-types";
 import { SigninForm, SigninSchema } from "../../core/models/login-model";
 import { Facebook, Google } from "styled-icons/bootstrap";
 import { customPalette } from "../../config/theme/theme";
@@ -42,14 +36,10 @@ import BookImg from "../../assets/img/book_icon.png";
 import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
-import Cookies from "js-cookie";
-import { APP_CONSTANS } from "../../constants/app";
-import { useGoogleLogin } from "@react-oauth/google";
-import FacebookLogin from "react-facebook-login";
-import useLogger, { ELog } from "../../utils/hooks/use-logger";
+import useLogger from "../../utils/hooks/use-logger";
 import useDataUser from "../../utils/hooks/use-data-user";
 import CustomLoader from "../custom-loader/custom-loader";
-import { useLocation, useNavigate } from "react-router-dom";
+import { APP_CONSTANS } from "../../constants/app";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -109,9 +99,11 @@ const ButtonSocialRegister = styled(Grid)`
 `;
 const ButtonGoogle = styled(ButtonSocialRegister)`
   background: ${customPalette.secondaryColor};
+  cursor: pointer;
 `;
 const ButtonFacebook = styled(ButtonSocialRegister)`
   background: #0066ff;
+  cursor: pointer;
 `;
 
 const FormContainer = styled.div`
@@ -159,20 +151,24 @@ const ErrorMessage = styled.span`
 const ModalLogin: React.FC = () => {
   const [startLogin, resultLogin] = useStartLoginByEmailMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
+  const [socialRequest, setSocialRequest] = React.useState<string>("");
   const isStatus = useAppSelector(getStatusModalLogin);
   const dispatch = useAppDispatch();
-  const { Logger } = useLogger();
   const queryParams = window.location.search;
   const splitParams = new URLSearchParams(queryParams);
 
   const [startGoogleCallback, resultCallback] =
-    useStartGoogleCallbackMutation();
+    useStartSocialCallbackMutation();
 
   React.useEffect(() => {
-    if (queryParams && splitParams.size > 3) {
-      startGoogleCallback(queryParams);
-      window.history.pushState({}, document.title, "/");
-      dispatch(updateLoadingApp(true));
+    if (queryParams && splitParams.size > 0) {
+      const socialRequest = localStorage.getItem(APP_CONSTANS.SOCIAL_REQUEST);
+      if (socialRequest) {
+        startGoogleCallback({ params: queryParams, social: socialRequest });
+        window.history.pushState({}, document.title, "/");
+        localStorage.removeItem(APP_CONSTANS.SOCIAL_REQUEST);
+        dispatch(updateLoadingApp(true));
+      }
     }
   }, []);
 
@@ -229,8 +225,15 @@ const ModalLogin: React.FC = () => {
     }
   }, [resultLogin.isSuccess]);
 
+  const handleCloseAllAdvideError = () => {
+    window.history.pushState({}, document.title, "/");
+    localStorage.removeItem(APP_CONSTANS.SOCIAL_REQUEST);
+    dispatch(updateLoadingApp(false));
+  };
+
   React.useEffect(() => {
     if (resultLogin.isError) {
+      handleCloseAllAdvideError();
       setStatusSnackbar(true);
     }
   }, [resultLogin.isError]);
@@ -245,13 +248,15 @@ const ModalLogin: React.FC = () => {
 
   React.useEffect(() => {
     if (resultCallback.isError) {
+      handleCloseAllAdvideError();
       setStatusSnackbar(true);
     }
   }, [resultCallback.isError]);
 
-  const [startLoginByGoogle, resultsGoogle] = useStartLoginByGoogleMutation();
-  const handleGoogleLogin = () => {
-    startLoginByGoogle("");
+  const [startLoginByGoogle, resultsGoogle] = useStartLoginSocialMutation();
+  const handleSocialLogin = (social: string) => {
+    startLoginByGoogle(social);
+    localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, social);
   };
   React.useEffect(() => {
     if (resultsGoogle != null) {
@@ -264,18 +269,8 @@ const ModalLogin: React.FC = () => {
           "width=400,height=600"
         );
       }
-      // Result Google
     }
   }, [resultsGoogle]);
-
-  const [startLoginByFacebook, resultFacebook] =
-    useStartLoginByFacebookMutation();
-
-  React.useEffect(() => {
-    if (resultFacebook) {
-      Logger("Facebook", JSON.stringify(resultFacebook));
-    }
-  }, [resultFacebook]);
 
   return (
     <>
@@ -453,20 +448,21 @@ const ModalLogin: React.FC = () => {
                 columnGap={2}
                 onClick={() => {
                   if (!resultsGoogle.isLoading) {
-                    handleGoogleLogin();
+                    localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, "google");
+                    setSocialRequest("google");
+                    handleSocialLogin("google");
                   }
                 }}
-                sx={{ cursor: "pointer" }}
               >
-                {!resultsGoogle.isLoading ? (
+                {resultsGoogle.isLoading && socialRequest == "google" ? (
+                  <CustomLoader></CustomLoader>
+                ) : (
                   <>
                     <Google />
                     <Typography variant="caption" component="span">
                       Google
                     </Typography>
                   </>
-                ) : (
-                  <CustomLoader></CustomLoader>
                 )}
               </ButtonGoogle>
               <ButtonFacebook
@@ -478,24 +474,27 @@ const ModalLogin: React.FC = () => {
                 columnGap={2}
                 sx={{ cursor: "pointer" }}
                 onClick={() => {
-                  startLoginByFacebook("");
+                  if (!resultsGoogle.isLoading) {
+                    localStorage.setItem(
+                      APP_CONSTANS.SOCIAL_REQUEST,
+                      "facebook"
+                    );
+                    setSocialRequest("facebook");
+                    handleSocialLogin("facebook");
+                  }
                 }}
               >
-                <Facebook />
-                <Typography variant="caption" component="span">
-                  Facebook
-                </Typography>
+                {resultsGoogle.isLoading && socialRequest == "facebook" ? (
+                  <CustomLoader></CustomLoader>
+                ) : (
+                  <>
+                    <Facebook />
+                    <Typography variant="caption" component="span">
+                      Facebook
+                    </Typography>
+                  </>
+                )}
               </ButtonFacebook>
-              {/* appId="1231472174122665" */}
-              {/* FACEBOOK_CLIENT_ID=980584469728137 */}
-              {/* FACEBOOK_CLIENT_SECRET=542813d8aeef5b49e7b270c2a9a38ea3 */}
-              {/* <FacebookLogin
-                appId="813073273810777"
-                autoLoad={false}
-                fields="name,email,picture"
-                callback={(res: any) => Logger("res", res)}
-                scope="ads_read,ads_management"
-              /> */}
             </Grid>
             <Grid item xs={12} textAlign="center" marginTop={2}>
               <Typography

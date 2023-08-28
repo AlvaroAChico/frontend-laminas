@@ -18,7 +18,8 @@
     "categories": "https://test-api.elaminas.com/api",
     "user": "https://test-api.elaminas.com/api",
     "coupon": "https://test-api.elaminas.com/api",
-    "plans": "https://test-api.elaminas.com/api"
+    "plans": "https://test-api.elaminas.com/api",
+    "downloads": "https://test-api.elaminas.com/api"
   },
   "i18nDebug": false,
   "cloudEnv": "integration"

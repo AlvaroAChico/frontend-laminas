@@ -19,6 +19,7 @@ export interface LandingState {
   tokenUserAuth: string;
   functionalitiesAuth: IFunctionality[];
   infoCurrentSheetDetail: ISheetDefaultProps;
+  currentSheetEdit: string;
 }
 
 const initialState: LandingState = {
@@ -37,6 +38,7 @@ const initialState: LandingState = {
   tokenUserAuth: "",
   functionalitiesAuth: [],
   infoCurrentSheetDetail: {} as ISheetDefaultProps,
+  currentSheetEdit: "",
 };
 
 export const appSlice = createSlice({
@@ -97,6 +99,9 @@ export const appSlice = createSlice({
     ) => {
       state.functionalitiesAuth = action.payload;
     },
+    updateCurrentSheetEdit: (state, action: PayloadAction<string>) => {
+      state.currentSheetEdit = action.payload;
+    },
   },
 });
 
@@ -116,6 +121,7 @@ export const {
   updateDataToken,
   updateStatusIframePayment,
   updateLoadingApp,
+  updateCurrentSheetEdit,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
@@ -144,5 +150,7 @@ export const getDataUserAuth = (state: RootState) => state.app.dataUserAuth;
 export const getDataToken = (state: RootState) => state.app.tokenUserAuth;
 export const getDataFuncionalities = (state: RootState) =>
   state.app.functionalitiesAuth;
+export const getCurrentSheetEdit = (state: RootState) =>
+  state.app.currentSheetEdit;
 
 export default appSlice.reducer;

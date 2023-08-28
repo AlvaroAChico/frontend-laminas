@@ -87,6 +87,10 @@ export interface IChangePassword {
 export interface IGoogleResponseURL {
   message: string;
 }
+export interface ISocialRequest {
+  params: string;
+  social: string;
+}
 
 export enum EFuncionality {
   FUNC_DOWNLOAD_SIZE = "FUNC_DOWNLOAD_SIZE",

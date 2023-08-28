@@ -3,6 +3,7 @@ import { Modal, Fade, Box, Backdrop, Grid, Typography } from "@mui/material";
 import {
   getCurrentSheetDetail,
   getStatusModalSheetDetail,
+  updateCurrentSheetEdit,
   updateStatusModalSheetDetail,
 } from "../../core/store/app-store/appSlice";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
@@ -16,6 +17,9 @@ import BookImg from "../../assets/img/book_icon.png";
 import styled from "styled-components";
 import CustomButton from "../custom-button/custom-button";
 import { ICategory, ITag } from "../../core/store/sheets/types/laminas-type";
+import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
+import { NavLink, useNavigate } from "react-router-dom";
+import { APP_CONSTANS } from "../../constants/app";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -32,6 +36,21 @@ const BoxStyle = styled(Box)`
   overflow: hidden;
   overflow-y: auto;
   max-height: 90%;
+`;
+
+const CloseStyle = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ca3b34;
+  color: white;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+
+  > svg {
+    width: 20px;
+  }
 `;
 
 const WrapperBookImg = styled.img`
@@ -130,6 +149,15 @@ const ModalSheetDetail: React.FC = () => {
   });
   const dispatch = useAppDispatch();
 
+  const handleEdit = () => {
+    dispatch(updateCurrentSheetEdit(currentSheetDetail.tira));
+    localStorage.setItem(
+      APP_CONSTANS.CURRENT_IMAGE_EDIT,
+      currentSheetDetail.tira
+    );
+    location.href = "/editor";
+  };
+
   return (
     <>
       <Modal
@@ -147,6 +175,11 @@ const ModalSheetDetail: React.FC = () => {
       >
         <Fade in={isStatus}>
           <BoxStyle>
+            <CloseStyle
+              onClick={() => dispatch(updateStatusModalSheetDetail(false))}
+            >
+              <CloseOutline />
+            </CloseStyle>
             <Grid container>
               <Grid item xs={12} sm={9} md={8} padding="14px">
                 <ContainerImage>
@@ -383,7 +416,7 @@ const ModalSheetDetail: React.FC = () => {
                     style="SECONDARY"
                     borderStyle="NONE"
                     Icon={Edit}
-                    action={() => null}
+                    action={handleEdit}
                     isLoading={false}
                     customStyle={`
                       color: white;

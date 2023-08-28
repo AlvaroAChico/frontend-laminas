@@ -7,10 +7,9 @@ import {
   ILoginResponse,
   IAuthData,
   IRegister,
-  ILoginByGoogle,
-  ILoginByGoogleResponse,
   IChangePassword,
   IGoogleResponseURL,
+  ISocialRequest,
 } from "./types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
 
@@ -22,7 +21,7 @@ export const authAPI = createApi({
     baseUrl: baseURLAuth,
     prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json");
-      headers.set("Accept", "text/html,image/apng,application/pdf");
+      headers.set("Accept", "application/json");
       headers.set("Access-Control-Allow-Origin", "*");
       return headers;
     },
@@ -73,9 +72,9 @@ export const authAPI = createApi({
       },
       transformResponse: (response: string) => response,
     }),
-    startLoginByGoogle: build.mutation<IGoogleResponseURL, any>({
-      query: () => ({
-        url: `auth/login/google`,
+    startLoginSocial: build.mutation<IGoogleResponseURL, string>({
+      query: (social) => ({
+        url: `auth/login/${social}`,
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -87,9 +86,9 @@ export const authAPI = createApi({
       }),
       transformResponse: (response: IGoogleResponseURL) => response,
     }),
-    startGoogleCallback: build.mutation<ILoginResponse, string>({
-      query: (params) => ({
-        url: `auth/login/google/callback${params}`,
+    startSocialCallback: build.mutation<ILoginResponse, ISocialRequest>({
+      query: ({ params, social }) => ({
+        url: `auth/login/${social}/callback${params}`,
         method: "GET",
         headers: {
           ContentType: "application/json",
@@ -101,17 +100,6 @@ export const authAPI = createApi({
         },
       }),
       transformResponse: (response: ILoginResponse) => response,
-    }),
-    startLoginByFacebook: build.mutation<any, any>({
-      query: () => ({
-        url: `auth/login/facebook`,
-        method: "POST",
-        headers: {
-          AccessControlAllowOrigin: "*",
-          mode: "no-cors",
-        },
-      }),
-      transformResponse: (response: any) => response,
     }),
     startChangePassword: build.mutation<any, IChangePassword>({
       query: ({ oldPassword, password }) => ({
@@ -131,8 +119,7 @@ export const {
   useStartLoginByEmailMutation,
   useStartRegisterByEmailMutation,
   useStartLogoutMutation,
-  useStartLoginByGoogleMutation,
-  useStartLoginByFacebookMutation,
   useStartChangePasswordMutation,
-  useStartGoogleCallbackMutation,
+  useStartLoginSocialMutation,
+  useStartSocialCallbackMutation,
 } = authAPI;

@@ -299,6 +299,8 @@ const ModalChangePassword: React.FC = () => {
               justifyContent="center"
               alignItems="center"
               flexWrap={"wrap"}
+              display={"flex"}
+              gap={3}
             >
               <CustomButton
                 title="Cancelar"
@@ -308,7 +310,7 @@ const ModalChangePassword: React.FC = () => {
                 isLoading={resultPass.isLoading}
                 customStyle={`
                   padding: 8px 10px;
-                  width: fit-content;
+                  width: 45%;
                 `}
               />
               <CustomButton
@@ -322,7 +324,7 @@ const ModalChangePassword: React.FC = () => {
                   border-color: white;
                   color: white
                   padding: 8px 10px;
-                  width: fit-content;
+                  width: 45%;
                 `}
               />
             </Grid>

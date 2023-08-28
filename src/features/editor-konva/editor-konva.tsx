@@ -43,6 +43,11 @@ import WebFont from "webfontloader";
 import useAuth from "../../utils/hooks/use-auth";
 import useDataUser from "../../utils/hooks/use-data-user";
 import { EFuncionality } from "../../core/store/auth/types/auth-types";
+import {
+  getCurrentSheetEdit,
+  updateCurrentSheetEdit,
+} from "../../core/store/app-store/appSlice";
+import { APP_CONSTANS } from "../../constants/app";
 
 const WrapperPage = styled.div`
   position: relative;
@@ -190,38 +195,36 @@ const EditorKonva: React.FC = () => {
   const oldPropertiesText = useAppSelector(getOldPropertiesTextEditing);
   const statusApplication = useAppSelector(getStatusApplication);
   const statusCursorCanva = useAppSelector(getStatusCursorCanva);
+  const currentSheetEdit = useAppSelector(getCurrentSheetEdit);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    const laminaCode = Cookies.get("e_co");
-    if (laminaCode) {
-      searchLaminaByUUID(laminaCode);
-    }
-  }, []);
-
-  const [searchLaminaByUUID, resultSearch] = usePostLaminasByUUIDMutation();
-
-  React.useEffect(() => {
     const activeID = Date.now();
+    const storageImage = localStorage.getItem(APP_CONSTANS.CURRENT_IMAGE_EDIT);
+
     if (
-      resultSearch?.data?.data[0]?.tbllmnaimgo != null &&
-      resultSearch?.data?.data[0]?.tbllmnaimgo != "" &&
-      resultSearch?.data?.data[0]?.tbllmnaimgo != undefined
+      (!!currentSheetEdit && currentSheetEdit != "") ||
+      (!!storageImage && storageImage != "")
     ) {
+      const imgAdapter = document.createElement("img");
+      imgAdapter.src = currentSheetEdit || storageImage || "";
+      const newHeight = (300 * imgAdapter.height) / imgAdapter.width;
       dispatch(
         addItemKonva({
           id: `image${activeID}`,
           type: KonvaTypeItem.IMAGE,
           x: layerRef.current.children[0].attrs.x,
           y: layerRef.current.children[0].attrs.y,
-          height: 200,
+          height: newHeight,
           width: 300,
-          image: resultSearch?.data?.data[0]?.tbllmnaimgo,
+          image: currentSheetEdit || storageImage,
         } as ComponentKonvaItem)
       );
       dispatch(updateActiveIDKonva(`image${activeID}`));
+      dispatch(updateCurrentSheetEdit(""));
+      localStorage.removeItem(APP_CONSTANS.CURRENT_IMAGE_EDIT);
     }
-  }, [resultSearch]);
+  }, []);
 
   const layerRef = React.useRef<any>();
   const canvaRef = React.useRef<HTMLCanvasElement>();

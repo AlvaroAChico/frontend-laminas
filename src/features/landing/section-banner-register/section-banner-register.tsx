@@ -1,13 +1,22 @@
 import React from "react";
 import BannerImg from "../../../assets/img/banner_register.jpg";
 import styled from "styled-components";
-import { Grid, Typography } from "@mui/material";
+import { Alert, Grid, Snackbar, Typography } from "@mui/material";
 import { customPalette } from "../../../config/theme/theme";
 import { Facebook, Google } from "styled-icons/bootstrap";
 import { Email } from "@styled-icons/material-outlined/Email";
-import { breakpoints } from "../../../constants/breakpoints";
 import { useAppDispatch } from "../../../app/hooks";
-import { updateStatusModalRegister } from "../../../core/store/app-store/appSlice";
+import {
+  updateLoadingApp,
+  updateStatusModalRegister,
+} from "../../../core/store/app-store/appSlice";
+import useDataUser from "../../../utils/hooks/use-data-user";
+import {
+  useStartLoginSocialMutation,
+  useStartSocialCallbackMutation,
+} from "../../../core/store/auth/authAPI";
+import { APP_CONSTANS } from "../../../constants/app";
+import CustomLoader from "../../../components/custom-loader/custom-loader";
 
 const HeaderBackground = styled(Grid)`
   background-image: url(${BannerImg});
@@ -72,9 +81,72 @@ const ButtonEmail = styled(ButtonSocialRegister)`
 `;
 
 const SectionBannerRegister: React.FC = () => {
+  const [socialRequest, setSocialRequest] = React.useState<string>("");
+  const [statusSnackbar, setStatusSnackbar] = React.useState(false);
+  const queryParams = window.location.search;
+  const splitParams = new URLSearchParams(queryParams);
   const dispatch = useAppDispatch();
 
   const handleOpenRegister = () => dispatch(updateStatusModalRegister(true));
+
+  const { handleUpdateUserAuth, handleUpdateFunctionalities } = useDataUser();
+
+  const [startGoogleCallback, resultCallback] =
+    useStartSocialCallbackMutation();
+
+  React.useEffect(() => {
+    if (queryParams && splitParams.size > 0) {
+      const socialRequest = localStorage.getItem(APP_CONSTANS.SOCIAL_REQUEST);
+      if (socialRequest) {
+        startGoogleCallback({ params: queryParams, social: socialRequest });
+        window.history.pushState({}, document.title, "/");
+        localStorage.removeItem(APP_CONSTANS.SOCIAL_REQUEST);
+        dispatch(updateLoadingApp(true));
+      }
+    }
+  }, []);
+
+  const handleCloseAllAdvideError = () => {
+    window.history.pushState({}, document.title, "/");
+    localStorage.removeItem(APP_CONSTANS.SOCIAL_REQUEST);
+    dispatch(updateLoadingApp(false));
+  };
+
+  React.useEffect(() => {
+    if (resultCallback.data != null) {
+      handleUpdateUserAuth(resultCallback.data);
+      handleUpdateFunctionalities(resultCallback.data.functionalities, true);
+      dispatch(updateLoadingApp(false));
+    }
+  }, [resultCallback.isSuccess]);
+
+  React.useEffect(() => {
+    if (resultCallback.isError) {
+      handleCloseAllAdvideError();
+      setStatusSnackbar(true);
+    }
+  }, [resultCallback.isError]);
+
+  const [startLoginByGoogle, resultsGoogle] = useStartLoginSocialMutation();
+  const handleSocialLogin = (social: string) => {
+    startLoginByGoogle(social);
+    localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, social);
+  };
+
+  React.useEffect(() => {
+    if (resultsGoogle != null) {
+      // Logger("Result Google", JSON.stringify(resultsGoogle));
+      if (resultsGoogle.isSuccess && !!resultsGoogle.data) {
+        console.log("Google -> ", resultsGoogle.data.message);
+        window.open(
+          resultsGoogle.data.message,
+          "_self",
+          "width=400,height=600"
+        );
+      }
+    }
+  }, [resultsGoogle]);
+
   return (
     <HeaderBackground>
       <OverlayHeader />
@@ -113,11 +185,25 @@ const SectionBannerRegister: React.FC = () => {
               justifyContent="center"
               alignItems="center"
               columnGap={2}
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                if (!resultsGoogle.isLoading) {
+                  localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, "google");
+                  setSocialRequest("google");
+                  handleSocialLogin("google");
+                }
+              }}
             >
-              <Google />
-              <Typography variant="caption" component="span">
-                Registrarse con Google
-              </Typography>
+              {resultsGoogle.isLoading && socialRequest == "google" ? (
+                <CustomLoader></CustomLoader>
+              ) : (
+                <>
+                  <Google />
+                  <Typography variant="caption" component="span">
+                    Google
+                  </Typography>
+                </>
+              )}
             </ButtonGoogle>
             <ButtonFacebook
               item
@@ -126,11 +212,25 @@ const SectionBannerRegister: React.FC = () => {
               justifyContent="center"
               alignItems="center"
               columnGap={2}
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                if (!resultsGoogle.isLoading) {
+                  localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, "facebook");
+                  setSocialRequest("facebook");
+                  handleSocialLogin("facebook");
+                }
+              }}
             >
-              <Facebook />
-              <Typography variant="caption" component="span">
-                Registrarse con Facebook
-              </Typography>
+              {resultsGoogle.isLoading && socialRequest == "facebook" ? (
+                <CustomLoader></CustomLoader>
+              ) : (
+                <>
+                  <Facebook />
+                  <Typography variant="caption" component="span">
+                    Facebook
+                  </Typography>
+                </>
+              )}
             </ButtonFacebook>
             <ButtonEmail
               item
@@ -140,6 +240,7 @@ const SectionBannerRegister: React.FC = () => {
               alignItems="center"
               columnGap={2}
               onClick={handleOpenRegister}
+              sx={{ cursor: "pointer" }}
             >
               <Email />
               <Typography variant="caption" component="span">
@@ -156,6 +257,20 @@ const SectionBannerRegister: React.FC = () => {
           </WrapperSocialRegister>
         </Grid>
       </HeaderBody>
+      <Snackbar
+        open={statusSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setStatusSnackbar(false)}
+      >
+        <Alert
+          severity="error"
+          sx={{ width: "100%" }}
+          onClose={() => setStatusSnackbar(false)}
+          elevation={6}
+        >
+          Al parecer hubo un error con tus credenciales
+        </Alert>
+      </Snackbar>
     </HeaderBackground>
   );
 };

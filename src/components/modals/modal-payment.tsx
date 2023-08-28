@@ -26,11 +26,13 @@ import VisaMastercard from "../../assets/img/visa_mastercard.png";
 import YapePlin from "../../assets/img/yape_plin.png";
 import {
   useGetAccessTokenMutation,
+  useGetAuthorizationPaymentMutation,
   useGetSessionTokenMutation,
 } from "../../core/store/plans/plansAPI";
 import { APP_CONSTANS } from "../../constants/app";
 import useLogger from "../../utils/hooks/use-logger";
 import { settingsAPP } from "../../config/environments/settings";
+import { useSearchParams } from "react-router-dom";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -141,7 +143,7 @@ const ModalPayment: React.FC = () => {
   const [valuePlanPay, setValuePlanPay] = React.useState(1);
   const [txkNiubiz, setTxkNiubiz] = React.useState("");
   const isStatus = useAppSelector(getStatusModalPayment);
-  const isStatusIframe = useAppSelector(getStatusIframePayment);
+  const queryParams = window.location.search;
   const steps = ["Plan", "Detalle", "Finalizar"];
   const dispatch = useAppDispatch();
 
@@ -149,18 +151,42 @@ const ModalPayment: React.FC = () => {
 
   const handleChangeStep = (step: number) => setStatusStepPay(step);
 
-  const iframeNiubiz = React.useRef<HTMLIFrameElement>(null);
   const handleOpenNiubiz = () => {
-    dispatch(updateStatusIframePayment(true));
-    if (iframeNiubiz) {
-      const documentIframe = iframeNiubiz.current?.contentWindow?.document;
-      documentIframe!.getElementById("id-button.niubiz")?.click();
-    }
+    // dispatch(updateStatusIframePayment(true));
+    // if (iframeNiubiz) {
+    //   const documentIframe = iframeNiubiz.current?.contentWindow?.document;
+    //   documentIframe!.getElementById("id-button.niubiz")?.click();
+    // }
     // handleChangeStep(2);
+    console.log("HandleOpenNiubiz");
+    localStorage.setItem(
+      APP_CONSTANS.SESSION_TOKEN_NIUBIZ,
+      resultSessionToken.data!.sessionKey || ""
+    );
+    localStorage.setItem(
+      APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ,
+      resultSessionToken.data!.purchaseNumber || ""
+    );
+    localStorage.setItem(
+      APP_CONSTANS.AMOUNT_NIUBIZ,
+      `${resultSessionToken.data!.amount}` || ""
+    );
+    localStorage.setItem(
+      APP_CONSTANS.ACTION_PAGE_NIUBIZ,
+      `${settingsAPP.api.plans}/niubiz/response`
+    );
+
+    const buttonNiubiz = document.getElementById("button-niubiz");
+    console.log("button-niubiz -> ", buttonNiubiz);
+    if (buttonNiubiz) {
+      buttonNiubiz.click();
+    }
   };
 
   const [getAccessToken, resultAccessToken] = useGetAccessTokenMutation();
   const [getSessionToken, resultSessionToken] = useGetSessionTokenMutation();
+  const [getAuthorizationPayment, resultAuthorization] =
+    useGetAuthorizationPaymentMutation();
 
   const handleNextStepPay = () => {
     if (valuePlanPay != 0) {
@@ -170,6 +196,10 @@ const ModalPayment: React.FC = () => {
 
   React.useEffect(() => {
     if (resultAccessToken && resultAccessToken.isSuccess) {
+      localStorage.setItem(
+        APP_CONSTANS.ACCESS_TOKEN_NIUBIZ,
+        resultAccessToken.data.accessToken
+      );
       getSessionToken({
         accessToken: resultAccessToken.data.accessToken,
         planId: `${valuePlanPay + 1}`,
@@ -179,30 +209,43 @@ const ModalPayment: React.FC = () => {
 
   React.useEffect(() => {
     if (resultSessionToken && resultSessionToken.isSuccess) {
+      localStorage.setItem(
+        APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ,
+        resultSessionToken.data!.purchaseNumber
+      );
       handleChangeStep(1);
     }
   }, [resultSessionToken]);
 
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      Logger("Consultando Invervalo ...");
-      if (isStatusIframe) {
-        Logger("IFrame is true", isStatusIframe);
-        const txk = localStorage.getItem(APP_CONSTANS.TXK_NIUBIZ);
-        if (!!txk && txk != null && txk != "") {
-          Logger("Transaction_Token", txk);
-          setTxkNiubiz(txk);
-          dispatch(updateStatusIframePayment(false));
-          dispatch(updateStatusModalPayment(false));
-          localStorage.removeItem(APP_CONSTANS.TXK_NIUBIZ);
-          // Llamar a la api de Authorization
-        }
-      } else {
-        Logger("IFrame is false", isStatusIframe);
-        clearInterval(interval);
-      }
-    }, 100);
-  }, [isStatusIframe]);
+    if (resultAuthorization && resultAuthorization.isSuccess) {
+      console.log("resultAuthorization -> ", resultAuthorization);
+    }
+  }, [resultAuthorization]);
+
+  React.useEffect(() => {
+    const txk = queryParams.split("&")[0].split("=")[1];
+    if (!!txk && txk != null && txk != "") {
+      window.history.pushState({}, document.title, "/planes");
+      setTxkNiubiz(txk);
+      dispatch(updateStatusModalPayment(true));
+      setStatusStepPay(2);
+      console.log({
+        accessToken:
+          localStorage.getItem(APP_CONSTANS.ACCESS_TOKEN_NIUBIZ) || "",
+        purchaseNumber:
+          localStorage.getItem(APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ) || "",
+        transactionToken: txk,
+      });
+      getAuthorizationPayment({
+        accessToken:
+          localStorage.getItem(APP_CONSTANS.ACCESS_TOKEN_NIUBIZ) || "",
+        purchaseNumber:
+          localStorage.getItem(APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ) || "",
+        transactionToken: txk,
+      });
+    }
+  }, []);
 
   React.useEffect(() => {
     if (txkNiubiz) {
@@ -212,55 +255,19 @@ const ModalPayment: React.FC = () => {
 
   return (
     <>
-      <IframeWrapper
-        ref={iframeNiubiz}
-        statusOpen={isStatusIframe}
-        srcDoc={`
-              <div>
-                <button id="id-button.niubiz" onclick="openForm();" style="display:none">Pagar</button>
-              </div>
-
-            <script
-              type="text/javascript"
-              src="https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true"
-            ></script>
-
-            <script type="text/javascript">
-              function consoleClick() {
-                console.log("Close")
-              }
-              function openForm() {
-                VisanetCheckout.configure({
-                  sessiontoken:
-                    "${resultSessionToken.data?.sessionKey}",
-                  channel: "web",
-                  merchantid: "341198210",
-                  purchasenumber: ${resultSessionToken.data?.purchaseNumber},
-                  amount: ${resultSessionToken.data?.amount},
-                  expirationminutes: "20",
-                  timeouturl: "about:blank",
-                  merchantlogo: "https://elaminas.com/img/logo_elamina.svg",
-                  formbuttoncolor: "#000000",
-                  action: "${settingsAPP.api.plans}/niubiz/response",
-                  complete: function (params) {
-                    console.log("COMPLETEEEEEEEEEEEEEEEEEEEEEEEEEEEE 01")
-                    console.log(JSON.stringify(params));
-                    console.log("COMPLETEEEEEEEEEEEEEEEEEEEEEEEEEEEE 02")
-                  },
-                  error: function (params) {
-                    console.log(JSON.stringify(params));
-                  },
-                });
-                VisanetCheckout.open();
-              }
-            </script>
-        `}
-      ></IframeWrapper>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={isStatus}
-        onClose={() => dispatch(updateStatusModalPayment(false))}
+        onClose={() => {
+          const buttonClearStyles = document.getElementById(
+            "button-clear-niubiz"
+          );
+          if (buttonClearStyles) {
+            buttonClearStyles.click();
+            dispatch(updateStatusModalPayment(false));
+          }
+        }}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{
@@ -452,6 +459,7 @@ const ModalPayment: React.FC = () => {
                   />
                 </ContainerSelectedPlan>
               )}
+
               {statusStepPay == 1 && (
                 <ContainerDetailOrder>
                   <BodyDetailPlan>
@@ -508,22 +516,7 @@ const ModalPayment: React.FC = () => {
               )}
               {statusStepPay == 2 && (
                 <ContainerFinishPay>
-                  <div>
-                    <CustomButtom
-                      title="Atrás"
-                      style="SECONDARY"
-                      borderStyle="NONE"
-                      action={() => handleChangeStep(1)}
-                      customStyle={`width: "fit-content"`}
-                    />
-                    <CustomButtom
-                      title="Pagar"
-                      style="SECONDARY"
-                      borderStyle="NONE"
-                      action={() => null}
-                      customStyle={`width: "fit-content"`}
-                    />
-                  </div>
+                  <div>Finish</div>
                 </ContainerFinishPay>
               )}
             </Box>

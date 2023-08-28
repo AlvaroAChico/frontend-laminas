@@ -1,11 +1,10 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { useStartGoogleCallbackMutation } from "../../core/store/auth/authAPI";
+import { useStartLoginSocialMutation } from "../../core/store/auth/authAPI";
 
 const GoogleCallback: React.FC = () => {
   const location = useLocation();
-  const [startGoogleCallback, resultCallback] =
-    useStartGoogleCallbackMutation();
+  const [startGoogleCallback, resultCallback] = useStartLoginSocialMutation();
 
   React.useEffect(() => {
     startGoogleCallback(location.search);

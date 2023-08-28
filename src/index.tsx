@@ -14,11 +14,11 @@ const root = createRoot(container);
 
 root.render(
   <GoogleOAuthProvider clientId={settingsAPP.app.g_client_id}>
-    {/* <React.StrictMode> */}
-    <Provider store={store}>
-      <RouterProvider router={router} />
-      <App />
-    </Provider>
-    {/* </React.StrictMode> */}
+    <React.StrictMode>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+        <App />
+      </Provider>
+    </React.StrictMode>
   </GoogleOAuthProvider>
 );

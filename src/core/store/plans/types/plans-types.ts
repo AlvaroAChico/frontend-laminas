@@ -13,3 +13,9 @@ export interface ISessionTokenResponse {
   amount: number;
   purchaseNumber: string;
 }
+
+export interface IAuthorizationRequest {
+  accessToken: string;
+  purchaseNumber: string;
+  transactionToken: string;
+}

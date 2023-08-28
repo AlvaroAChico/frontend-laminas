@@ -14,14 +14,17 @@ import {
   getStatusModalRegister,
   updateStatusModalRegister,
   updateStatusModalLogin,
-  updateStatusAuthenticated,
+  updateLoadingApp,
 } from "../../core/store/app-store/appSlice";
 import CustomButton from "../../components/custom-button/custom-button";
 import { RightArrowAlt } from "@styled-icons/boxicons-regular/RightArrowAlt";
 import { SignupForm, SignupSchema } from "../../core/models/register-model";
-import { IRegister, IAuthData } from "../../core/store/auth/types/auth-types";
-import { useStartRegisterByEmailMutation } from "../../core/store/auth/authAPI";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import {
+  useStartLoginSocialMutation,
+  useStartRegisterByEmailMutation,
+  useStartSocialCallbackMutation,
+} from "../../core/store/auth/authAPI";
+import { useForm } from "react-hook-form";
 import { settingsAPP } from "../../config/environments/settings";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { Facebook, Google } from "styled-icons/bootstrap";
@@ -35,6 +38,8 @@ import styled from "styled-components";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../constants/app";
 import useDataUser from "../../utils/hooks/use-data-user";
+import CustomLoader from "../custom-loader/custom-loader";
+import { SerializedError } from "@reduxjs/toolkit";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -86,6 +91,7 @@ const ButtonSocialRegister = styled(Grid)`
   color: white;
   border-radius: 20px;
   padding: 10px 20px;
+  cursor: pointer;
 
   > svg {
     width: 100%;
@@ -149,11 +155,36 @@ const ErrorMessage = styled.span`
   margin-top: 6px;
 `;
 
+interface IRegisterError {
+  message: string;
+  statusCode: number;
+  // Otras propiedades específicas del error
+}
+
 const ModalRegister: React.FC = () => {
   const [startRegister, resultRegister] = useStartRegisterByEmailMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
+  const [socialRequest, setSocialRequest] = React.useState<string>("");
+  const [registerError, setRegisterError] = React.useState<string>("");
   const isStatus = useAppSelector(getStatusModalRegister);
   const dispatch = useAppDispatch();
+  const queryParams = window.location.search;
+  const splitParams = new URLSearchParams(queryParams);
+
+  const [startGoogleCallback, resultCallback] =
+    useStartSocialCallbackMutation();
+
+  React.useEffect(() => {
+    if (queryParams && splitParams.size > 0) {
+      const socialRequest = localStorage.getItem(APP_CONSTANS.SOCIAL_REQUEST);
+      if (socialRequest) {
+        startGoogleCallback({ params: queryParams, social: socialRequest });
+        window.history.pushState({}, document.title, "/");
+        localStorage.removeItem(APP_CONSTANS.SOCIAL_REQUEST);
+        dispatch(updateLoadingApp(true));
+      }
+    }
+  }, []);
 
   const methods = useForm<SignupForm>({
     resolver: yupResolver(SignupSchema),
@@ -177,7 +208,9 @@ const ModalRegister: React.FC = () => {
       email: data.email,
       password: data.password,
       passConfirmation: data.passConfirmation,
-    });
+    })
+      .unwrap()
+      .catch((error) => setRegisterError(error.data.message));
   }, []);
 
   const handleChangeLogin = () => {
@@ -201,20 +234,6 @@ const ModalRegister: React.FC = () => {
 
   React.useEffect(() => {
     if (resultRegister.data != null) {
-      // const authData: IAuthData = {
-      //   user: resultRegister.data["0"],
-      //   roles: resultRegister.data.roles,
-      //   token: resultRegister.data.token,
-      //   plan: resultRegister.data.plan,
-      // } as IAuthData;
-      // Cookies.set(APP_CONSTANS.AUTH_USER_DATA, JSON.stringify(authData));
-      // localStorage.setItem(
-      //   APP_CONSTANS.AUTH_FUNCIONALITIES,
-      //   JSON.stringify(resultRegister.data.functionalities)
-      // );
-      // dispatch(updateStatusAuthenticated(false));
-      // dispatch(updateStatusModalRegister(false));
-      // location.reload();
       handleUpdateUserAuth(resultRegister.data);
       handleUpdateFunctionalities(resultRegister.data.functionalities, true);
     }
@@ -222,9 +241,51 @@ const ModalRegister: React.FC = () => {
 
   React.useEffect(() => {
     if (resultRegister.isError) {
+      console.log("Error -> ", resultRegister.error);
+      handleCloseAllAdvideError();
       setStatusSnackbar(true);
     }
   }, [resultRegister.isError]);
+
+  const handleCloseAllAdvideError = () => {
+    window.history.pushState({}, document.title, "/");
+    localStorage.removeItem(APP_CONSTANS.SOCIAL_REQUEST);
+    dispatch(updateLoadingApp(false));
+  };
+
+  React.useEffect(() => {
+    if (resultCallback.data != null) {
+      handleUpdateUserAuth(resultCallback.data);
+      handleUpdateFunctionalities(resultCallback.data.functionalities, true);
+      dispatch(updateLoadingApp(false));
+    }
+  }, [resultCallback.isSuccess]);
+
+  React.useEffect(() => {
+    if (resultCallback.isError) {
+      handleCloseAllAdvideError();
+      setStatusSnackbar(true);
+    }
+  }, [resultCallback.isError]);
+
+  const [startLoginByGoogle, resultsGoogle] = useStartLoginSocialMutation();
+  const handleSocialLogin = (social: string) => {
+    startLoginByGoogle(social);
+    localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, social);
+  };
+  React.useEffect(() => {
+    if (resultsGoogle != null) {
+      // Logger("Result Google", JSON.stringify(resultsGoogle));
+      if (resultsGoogle.isSuccess && !!resultsGoogle.data) {
+        console.log("Google -> ", resultsGoogle.data.message);
+        window.open(
+          resultsGoogle.data.message,
+          "_self",
+          "width=400,height=600"
+        );
+      }
+    }
+  }, [resultsGoogle]);
 
   return (
     <>
@@ -402,11 +463,24 @@ const ModalRegister: React.FC = () => {
                 justifyContent="center"
                 alignItems="center"
                 columnGap={2}
+                onClick={() => {
+                  if (!resultsGoogle.isLoading) {
+                    localStorage.setItem(APP_CONSTANS.SOCIAL_REQUEST, "google");
+                    setSocialRequest("google");
+                    handleSocialLogin("google");
+                  }
+                }}
               >
-                <Google />
-                <Typography variant="caption" component="span">
-                  Google
-                </Typography>
+                {resultsGoogle.isLoading && socialRequest == "google" ? (
+                  <CustomLoader></CustomLoader>
+                ) : (
+                  <>
+                    <Google />
+                    <Typography variant="caption" component="span">
+                      Google
+                    </Typography>
+                  </>
+                )}
               </ButtonGoogle>
               <ButtonFacebook
                 item
@@ -415,11 +489,27 @@ const ModalRegister: React.FC = () => {
                 justifyContent="center"
                 alignItems="center"
                 columnGap={2}
+                onClick={() => {
+                  if (!resultsGoogle.isLoading) {
+                    localStorage.setItem(
+                      APP_CONSTANS.SOCIAL_REQUEST,
+                      "facebook"
+                    );
+                    setSocialRequest("facebook");
+                    handleSocialLogin("facebook");
+                  }
+                }}
               >
-                <Facebook />
-                <Typography variant="caption" component="span">
-                  Facebook
-                </Typography>
+                {resultsGoogle.isLoading && socialRequest == "facebook" ? (
+                  <CustomLoader></CustomLoader>
+                ) : (
+                  <>
+                    <Facebook />
+                    <Typography variant="caption" component="span">
+                      Facebook
+                    </Typography>
+                  </>
+                )}
               </ButtonFacebook>
             </Grid>
             <Grid item xs={12} textAlign="center" marginTop={2}>
@@ -457,7 +547,9 @@ const ModalRegister: React.FC = () => {
           onClose={() => setStatusSnackbar(false)}
           elevation={6}
         >
-          Al parecer hubo un error con tus credenciales
+          {registerError != ""
+            ? registerError
+            : "Al parecer hubo un error con tus credenciales"}
         </Alert>
       </Snackbar>
     </>

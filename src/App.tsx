@@ -5,7 +5,7 @@ import {
   updateCanvasWidth,
 } from "./core/store/konva-editor/konva-editorSlice";
 import { breakpoints } from "./constants/breakpoints";
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { updateValueScroll } from "./core/store/app-store/appSlice";
 import ModalLogin from "./components/modals/modal-login";
 import ModalRegister from "./components/modals/modal-register";

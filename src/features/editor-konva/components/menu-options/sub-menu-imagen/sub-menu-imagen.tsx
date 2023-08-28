@@ -103,13 +103,16 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
 
   const handleAddImage = (srcImage: string) => {
     const activeID = Date.now();
+    const imgAdapter = document.createElement("img");
+    imgAdapter.src = srcImage;
+    const newHeight = (300 * imgAdapter.height) / imgAdapter.width;
     dispatch(
       addItemKonva({
         id: `image${activeID}`,
         type: KonvaTypeItem.IMAGE,
         x: layerRef.current.children[0].attrs.x,
         y: layerRef.current.children[0].attrs.y,
-        height: 200,
+        height: newHeight,
         width: 300,
         image: srcImage,
       } as ComponentKonvaItem)
