@@ -20,18 +20,17 @@ import useDataUser from "../../../../../utils/hooks/use-data-user";
 import toast, { Toaster } from "react-hot-toast";
 import { APP_CONSTANS } from "../../../../../constants/app";
 
-import {
-  ISheetDefaultProps,
-  ISheetsResponse,
-} from "../../../../../core/store/sheets/types/laminas-type";
+import { ISheetDefaultEditor } from "../../../../../core/store/sheets/types/laminas-type";
 import SheetItem from "./sheet-item/sheet-item";
 import {
-  addSheetEditor,
+  addMoreSheetsEditor,
   clearSheetsEditor,
   getCurrentPageEditor,
   getCurrentSearchWordEditor,
   getCurrentSizeEditor,
   getListSheetsEditor,
+  resetCurrentPageEditor,
+  updateAllSheetsEditor,
   updateCurrentPageEditor,
   updateCurrentSearchWordEditor,
 } from "../../../../../core/store/sheets/sheetsSlice";
@@ -51,8 +50,8 @@ import {
   WrapperListLaminas,
   WrapperMenuImagen,
 } from "./sub-menu-image-style";
-import { useGetAllSheetsPaginateMutation } from "../../../../../core/store/sheets/sheetsAPI";
-import useLogger, { ELog } from "../../../../../utils/hooks/use-logger";
+import axios from "axios";
+import { settingsAPP } from "../../../../../config/environments/settings";
 
 interface IOwnProps {
   isVisible: boolean;
@@ -101,114 +100,122 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
     return null;
   }, []);
 
+  const { handleGetToken } = useDataUser();
+
+  const getBlobImage = async (sheet: string) => {
+    const user = handleGetToken();
+    if (user.token) {
+      const response = await fetch(sheet, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const imageBlob = await response.blob();
+        const imageObjectURL = URL.createObjectURL(imageBlob);
+        handleAddImage(imageObjectURL);
+      }
+    } else {
+      dispatch(updateStatusModalRegister(true));
+    }
+  };
+
   const handleAddImage = (srcImage: string) => {
     const activeID = Date.now();
     const imgAdapter = document.createElement("img");
     imgAdapter.src = srcImage;
-    const newHeight = (300 * imgAdapter.height) / imgAdapter.width;
-    dispatch(
-      addItemKonva({
-        id: `image${activeID}`,
-        type: KonvaTypeItem.IMAGE,
-        x: layerRef.current.children[0].attrs.x,
-        y: layerRef.current.children[0].attrs.y,
-        height: newHeight,
-        width: 300,
-        image: srcImage,
-      } as ComponentKonvaItem)
-    );
-    dispatch(updateActiveIDKonva(`image${activeID}`));
+    imgAdapter.id = "adapter-new-img";
+    imgAdapter.style.width = "100%";
+    imgAdapter.style.height = "100%";
+
+    document.getElementById("root")!.appendChild(imgAdapter);
+    const imgBody: HTMLImageElement = document.getElementById(
+      "adapter-new-img"
+    ) as HTMLImageElement;
+
+    setTimeout(() => {
+      const newHeight = (300 * imgBody!.height) / imgBody!.width;
+      document.getElementById("root")!.removeChild(imgAdapter);
+
+      dispatch(
+        addItemKonva({
+          id: `image${activeID}`,
+          type: KonvaTypeItem.IMAGE,
+          x: layerRef.current.children[0].attrs.x,
+          y: layerRef.current.children[0].attrs.y,
+          width: 300,
+          height: newHeight,
+          image: srcImage,
+        } as ComponentKonvaItem)
+      );
+      dispatch(updateActiveIDKonva(`image${activeID}`));
+    }, 100);
   };
 
   // LOGIC GET SHEETS
-  const [dataPostResult, setDataPostResult] = React.useState<ISheetsResponse>();
-  const [queryOption, setQueryOption] = React.useState<number>(1);
-  const currentPage = useAppSelector(getCurrentPageEditor);
+  const [urlNextPage, setUrlNextPage] = React.useState<string>("");
+  // const [queryOption, setQueryOption] = React.useState<number>(1);
+  const [isLoadingSheets, setIsLoadingSheets] = React.useState<boolean>(false);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
   const currentWord = useAppSelector(getCurrentSearchWordEditor);
   const currentSize = useAppSelector(getCurrentSizeEditor);
-  const listSheets = useAppSelector(getListSheetsEditor);
+  // const listSheets = useAppSelector(getListSheetsEditor);
+  const [listSheets, setListSheets] = React.useState<ISheetDefaultEditor[]>([]);
 
-  const [getAllSheetsEditor, resultSheets] = useGetAllSheetsPaginateMutation();
-  const { Logger } = useLogger();
-
-  const getAllSheets = React.useCallback(() => {
-    getAllSheetsEditor({
-      page: currentPage,
-      size: currentSize,
-      word: currentWord,
-    });
-  }, [currentPage, currentWord, currentSize]);
+  const getAllSheets = React.useCallback(
+    (page: number, queryOption: number) => {
+      setIsLoadingSheets(true);
+      const filtersOptions = `?render=paginate&page=${page}${
+        currentSize ? `&size=${currentSize}` : ""
+      }${currentWord ? `&filter[name]=${currentWord}` : ""}`;
+      axios({
+        url: `${settingsAPP.api.sheets}/free-sheets/editor${filtersOptions}`,
+        method: "GET",
+        headers: {
+          ContentType: "application/json",
+          Accept: "application/json",
+        },
+      })
+        .then((response: any) => {
+          if (queryOption == 1) {
+            // Update All
+            setListSheets(response.data.data);
+            setUrlNextPage(response.data.nextPageUrl);
+          }
+          if (queryOption == 2) {
+            // Add More
+            setListSheets([...listSheets, ...response.data.data]);
+            setUrlNextPage(response.data.nextPageUrl);
+          }
+          setIsLoadingSheets(false);
+        })
+        .catch((error: any) => {
+          setIsLoadingSheets(false);
+          console.error("Error -> ", error);
+        });
+    },
+    [currentPage, currentWord, currentSize, listSheets]
+  );
 
   const handleMoreResults = () => {
-    dispatch(updateCurrentPageEditor());
-    setQueryOption(2);
-    getAllSheets();
+    getAllSheets(currentPage + 1, 2);
+    setCurrentPage(currentPage + 1);
   };
 
   React.useEffect(() => {
-    if (listSheets) {
-      setQueryOption(1);
-      dispatch(updateCurrentPageEditor());
-      getAllSheets();
+    if (listSheets != null) {
+      dispatch(clearSheetsEditor());
+      getAllSheets(1, 1);
     }
   }, []);
-
-  React.useEffect(() => {
-    Logger("List Sheets", JSON.stringify(listSheets));
-  }, [listSheets]);
-
-  React.useEffect(() => {
-    if (resultSheets != null && resultSheets!.data != null) {
-      Logger("Opcion", queryOption);
-      if (queryOption == 1) {
-        Logger("Opcion 1");
-        // Update All
-        (resultSheets!.data!.data || []).forEach((sheet) => {
-          getBlobImage(sheet);
-        });
-        setDataPostResult(resultSheets!.data!);
-      }
-      if (queryOption == 2) {
-        Logger("Opcion 2");
-        // Add More
-        (resultSheets!.data!.data || []).forEach((sheet) => {
-          getBlobImage(sheet);
-        });
-        setDataPostResult(resultSheets!.data!);
-      }
-    }
-  }, [resultSheets]);
-
-  const getBlobImage = async (sheet: ISheetDefaultProps) => {
-    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-    let token = "";
-    if (dataUser != null && dataUser != undefined) {
-      const user = JSON.parse(dataUser) as IAuthData;
-      token = user.token;
-    }
-
-    const response = await fetch(sheet.tira, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.status === 200) {
-      const imageBlob = await response.blob();
-      const imageObjectURL = URL.createObjectURL(imageBlob);
-      const newSheet = { ...sheet };
-      newSheet.tira = imageObjectURL;
-      dispatch(addSheetEditor(newSheet));
-    }
-  };
 
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
       dispatch(clearSheetsEditor());
-      dispatch(updateCurrentPageEditor());
-      setQueryOption(1);
-      getAllSheets();
+      setCurrentPage(1);
+      getAllSheets(1, 1);
     }
   };
 
@@ -245,21 +252,22 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
           />
           <WrapperListLaminas>
             <WrapperItemsResults>
-              {listSheets.map((sheet) => {
+              {listSheets.map((sheet: ISheetDefaultEditor) => {
                 return (
                   <SheetItem
-                    key={`${Date.now()}_${sheet.name}`}
+                    key={`${Date.now()}_${sheet.uuid}`}
                     name={sheet.name}
-                    image={sheet.tira}
-                    handleAddImage={handleAddImage}
+                    image={sheet.tiraTemporary}
+                    handleAddImage={() => getBlobImage(sheet.tira)}
                   />
                 );
               })}
             </WrapperItemsResults>
-            {resultSheets.isLoading ? (
+            {isLoadingSheets ? (
               <LoaderWrapper />
             ) : (
-              dataPostResult?.nextPageUrl != null && (
+              urlNextPage != null &&
+              urlNextPage != "" && (
                 <ButtonMoreResults onClick={handleMoreResults}>
                   Más resultados
                 </ButtonMoreResults>

@@ -11,20 +11,24 @@ import {
   updateDataFunctionality,
   updateDataToken,
   updateStatusAuthenticated,
+  updateStatusModalCoupon,
+  updateStatusModalLogin,
+  updateStatusModalRecover,
+  updateStatusModalRegister,
 } from "../../core/store/app-store/appSlice";
 
 const useDataUser = () => {
   const dispatch = useAppDispatch();
 
-  const handleGetToken = () => {
+  const handleGetToken = (): IAuthData => {
     const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
     if (dataUser != null && dataUser != undefined) {
       const user = JSON.parse(dataUser) as IAuthData;
       dispatch(updateDataToken(user.token));
       dispatch(updateStatusAuthenticated(true));
-      return dataUser;
+      return user;
     }
-    return "";
+    return {} as IAuthData;
   };
 
   const handleUpdateUserAuth = (data: ILoginResponse, reload = false) => {
@@ -43,6 +47,7 @@ const useDataUser = () => {
 
   const handleUpdateFunctionalities = (
     data: IFunctionality[],
+    clearModals = false,
     reload = false
   ) => {
     localStorage.setItem(
@@ -50,6 +55,12 @@ const useDataUser = () => {
       JSON.stringify(data)
     );
     dispatch(updateStatusAuthenticated(true));
+    if (clearModals) {
+      dispatch(updateStatusModalRegister(false));
+      dispatch(updateStatusModalLogin(false));
+      dispatch(updateStatusModalCoupon(false));
+      dispatch(updateStatusModalRecover(false));
+    }
     if (reload) {
       location.reload();
     }

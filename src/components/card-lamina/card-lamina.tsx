@@ -18,11 +18,15 @@ import { ISheetDefaultProps } from "../../core/store/sheets/types/laminas-type";
 import {
   updateCurrentSheetDetail,
   updateCurrentSheetEdit,
+  updateCurrentSheetEditUUID,
+  updateStatusModalRegister,
   updateStatusModalSheetDetail,
 } from "../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
 import { IAuthData } from "../../core/store/auth/types/auth-types";
 import { APP_CONSTANS } from "../../constants/app";
+import useDataUser from "../../utils/hooks/use-data-user";
+import { resetDataKonva } from "../../core/store/konva-editor/konva-editorSlice";
 
 const WrapperNroLamina = styled.div`
   display: flex;
@@ -197,9 +201,18 @@ const CardLamina: React.FC<IOwnProps> = ({
 
   const [blobImage, setBlobImage] = React.useState<any>();
 
+  const { handleGetToken } = useDataUser();
+
   const handleEdit = React.useCallback(() => {
-    dispatch(updateCurrentSheetEdit(blobImage));
-    navigate("/editor");
+    const user = handleGetToken();
+    if (user.token) {
+      dispatch(resetDataKonva());
+      dispatch(updateCurrentSheetEdit(blobImage));
+      dispatch(updateCurrentSheetEditUUID(uuid));
+      navigate("/editor");
+    } else {
+      dispatch(updateStatusModalRegister(true));
+    }
   }, [blobImage]);
 
   async function fetchBlob() {

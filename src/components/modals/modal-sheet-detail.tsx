@@ -4,7 +4,12 @@ import {
   getCurrentSheetDetail,
   getStatusModalSheetDetail,
   updateCurrentSheetEdit,
+  updateCurrentSheetEditUUID,
+  updateLoadingApp,
+  updateStatusModalRegister,
   updateStatusModalSheetDetail,
+  updateStatusModalValueBlobPDF,
+  updateValueBlobSheetPDF,
 } from "../../core/store/app-store/appSlice";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { Download } from "@styled-icons/evaicons-solid/Download";
@@ -18,8 +23,13 @@ import styled from "styled-components";
 import CustomButton from "../custom-button/custom-button";
 import { ICategory, ITag } from "../../core/store/sheets/types/laminas-type";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
-import { NavLink, useNavigate } from "react-router-dom";
 import { APP_CONSTANS } from "../../constants/app";
+import useDataUser from "../../utils/hooks/use-data-user";
+import axios from "axios";
+import { settingsAPP } from "../../config/environments/settings";
+import { BubbleMenu, EditorProvider } from "@tiptap/react";
+import ListItem from "@tiptap/extension-list-item";
+import StarterKit from "@tiptap/starter-kit";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -99,6 +109,11 @@ const ContainerTitleSheet = styled.div`
     margin: 0 10px;
   }
 `;
+const ContainerSummary = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`;
 
 const ContainerButtons = styled.div`
   display: flex;
@@ -149,14 +164,86 @@ const ModalSheetDetail: React.FC = () => {
   });
   const dispatch = useAppDispatch();
 
+  const { handleGetToken } = useDataUser();
+
   const handleEdit = () => {
-    dispatch(updateCurrentSheetEdit(currentSheetDetail.tira));
-    localStorage.setItem(
-      APP_CONSTANS.CURRENT_IMAGE_EDIT,
-      currentSheetDetail.tira
-    );
-    location.href = "/editor";
+    const user = handleGetToken();
+    if (user.token) {
+      dispatch(updateCurrentSheetEdit(currentSheetDetail.tira));
+      dispatch(updateCurrentSheetEditUUID(currentSheetDetail.uuid));
+      localStorage.setItem(
+        APP_CONSTANS.CURRENT_IMAGE_EDIT,
+        currentSheetDetail.tira
+      );
+      location.href = "/editor";
+    } else {
+      dispatch(updateStatusModalSheetDetail(false));
+      dispatch(updateStatusModalRegister(true));
+    }
   };
+
+  const handleDownloadPDF = async (sheetId: string) => {
+    // getDownloadPDF({
+    //   sizePDF: dataDownload.format,
+    //   sheetId: sheetId,
+    //   withRetira: dataDownload.includeRetira,
+    //   settings: dataDownload.includeRetira ? "Imagen + Texto" : "Imagen",
+    // });
+    const user = handleGetToken();
+
+    if (user.user) {
+      dispatch(updateLoadingApp(true));
+      axios({
+        url: `${settingsAPP.api.downloads}/downloads`,
+        method: "POST",
+        responseType: "blob", // Indica que la respuesta será un archivo binario
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          ContentType: "application/pdf",
+          Accept: "application/pdf",
+        },
+        data: {
+          size: dataDownload.format,
+          sheetId: sheetId,
+          conRetira: dataDownload.includeRetira,
+          con_retira: dataDownload.includeRetira,
+          seetings: "Imagen + Texto",
+          enviroment: "web",
+        },
+      })
+        .then((response: any) => {
+          // Crea un objeto URL para el archivo PDF
+          const url = window.URL.createObjectURL(
+            new Blob([response.data], { type: "application/pdf" })
+          );
+
+          dispatch(updateValueBlobSheetPDF(url));
+          dispatch(updateStatusModalSheetDetail(false));
+          dispatch(updateStatusModalValueBlobPDF(true));
+        })
+        .catch((error: any) => {
+          // Maneja cualquier error que pueda ocurrir durante la solicitud
+          console.error("Error al obtener el archivo PDF:", error);
+          dispatch(updateLoadingApp(false));
+        });
+    } else {
+      dispatch(updateStatusModalSheetDetail(false));
+      dispatch(updateStatusModalRegister(true));
+    }
+  };
+
+  const extensions = [
+    StarterKit.configure({
+      bulletList: {
+        keepMarks: true,
+        keepAttributes: false,
+      },
+      orderedList: {
+        keepMarks: true,
+        keepAttributes: false,
+      },
+    }),
+  ];
 
   return (
     <>
@@ -201,6 +288,14 @@ const ModalSheetDetail: React.FC = () => {
                     {currentSheetDetail.numberOfViews || 0}
                   </div>
                 </ContainerTitleSheet>
+                <ContainerSummary>
+                  <EditorProvider
+                    extensions={extensions}
+                    content={currentSheetDetail.summary}
+                  >
+                    <BubbleMenu>This is the bubble menu</BubbleMenu>
+                  </EditorProvider>
+                </ContainerSummary>
               </Grid>
               <Grid item xs={12} sm={3} md={4} padding="14px">
                 <div>
@@ -402,7 +497,7 @@ const ModalSheetDetail: React.FC = () => {
                     style="SECONDARY"
                     borderStyle="NONE"
                     Icon={Download}
-                    action={() => null}
+                    action={() => handleDownloadPDF(currentSheetDetail.uuid)}
                     isLoading={false}
                     customStyle={`
                       color: white;
@@ -436,7 +531,14 @@ const ModalSheetDetail: React.FC = () => {
                 >
                   Descripción
                 </Typography>
-                <div>{currentSheetDetail.description}</div>
+                <div>
+                  <EditorProvider
+                    extensions={extensions}
+                    content={currentSheetDetail.description}
+                  >
+                    <BubbleMenu>This is the bubble menu</BubbleMenu>
+                  </EditorProvider>
+                </div>
               </Grid>
               <Grid item xs={12} sm={3} md={4} padding="14px">
                 <div>
@@ -449,9 +551,11 @@ const ModalSheetDetail: React.FC = () => {
                     Categorias
                   </Typography>
                   <div>
-                    {(currentSheetDetail.categories || []).map((category) => (
-                      <span key={category.id}>{category.name}</span>
-                    ))}
+                    {(currentSheetDetail.categories || []).map(
+                      (category: any) => (
+                        <span key={category.id}>{category.name}</span>
+                      )
+                    )}
                     {(currentSheetDetail.categories != null ||
                       ((currentSheetDetail.categories as ICategory[]) || [])
                         .length == 0) && (

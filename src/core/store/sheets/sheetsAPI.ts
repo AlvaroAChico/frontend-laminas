@@ -101,6 +101,19 @@ export const sheetsAPI = createApi({
       },
       transformResponse: (response: ISheetsResponse) => response,
     }),
+    getAllEditorSheets: build.mutation<ISheetsResponse, ISheets>({
+      query: ({ page, size, word }) => {
+        const filtersOptions = `?render=paginate&page=${page}${
+          size ? `&size=${size}` : ""
+        }${word ? `&filter[name]=${word}` : ""}`;
+
+        return {
+          url: `/free-sheets/editor${filtersOptions}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response: ISheetsResponse) => response,
+    }),
   }),
 });
 

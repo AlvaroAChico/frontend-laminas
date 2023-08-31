@@ -15,6 +15,7 @@ import "slick-carousel/slick/slick-theme.css";
 import SectionMax from "../../../components/section-max/section-max";
 import { settings } from "./config-slider";
 import { ISheetDefaultProps } from "../../../core/store/sheets/types/laminas-type";
+import SectionLaminasSkeleton from "./skeleton/section-laminas-skeleton";
 
 const WrapperSlider = styled.div`
   height: 100%;
@@ -76,71 +77,72 @@ const WrapperPencilImg = styled.img`
 const SectionLaminas: React.FC = () => {
   const sliderRef = React.useRef<any>(null);
 
-  const { data } = useGetRecommendedSheetsQuery("");
+  const { data, isLoading } = useGetRecommendedSheetsQuery("");
 
   return (
     <>
-      {(data || []).length > 0 && (
-        <WrapperSlider>
-          <WrapperPencilImg src={PencilImg} />
-          <SectionMax>
-            <CustomTitle
-              title="Láminas recomendadas del mes"
-              primaryAction={
-                <CustomButtom
-                  style="SECONDARY"
-                  borderStyle="OUTLINE"
-                  title="Ver todas las láminas"
-                  Icon={ArrowIosForwardOutline}
-                  to={"/laminas"}
-                />
-              }
-            />
-          </SectionMax>
-          <WrapperSliderMain>
-            {(data || []).length > 3 && (
-              <WrapperNavigationPrev
-                onClick={() => {
-                  sliderRef!.current!.slickPrev();
-                }}
-              >
-                <ArrowIosBackOutline />
-              </WrapperNavigationPrev>
-            )}
-            <Slider ref={sliderRef} {...settings}>
-              {(data || []).map((sheet: ISheetDefaultProps) => {
-                return (
-                  <ItemSlick key={sheet.code}>
-                    <CardLamina
-                      image={sheet.tira}
-                      nroLamina={sheet.code}
-                      name={sheet.name}
-                      isFavourite={sheet.isFavorite}
-                      uuid={sheet.uuid}
-                      nroDownloads={100}
-                      nroView={sheet.numberOfViews}
-                      infoSheet={sheet}
-                      handleAddFavoriteSheet={() => null}
-                      handleDeleteFavoriteSheet={() => null}
-                      isLoadingAdd={false}
-                      isLoadingDelete={false}
-                    />
-                  </ItemSlick>
-                );
-              })}
-            </Slider>
-            {(data || []).length > 3 && (
-              <WrapperNavigationNext
-                onClick={() => {
-                  sliderRef!.current!.slickNext();
-                }}
-              >
-                <ArrowIosForwardOutline />
-              </WrapperNavigationNext>
-            )}
-          </WrapperSliderMain>
-        </WrapperSlider>
-      )}
+      {/* {(data || []).length > 0 && ( */}
+      <WrapperSlider>
+        <WrapperPencilImg src={PencilImg} />
+        <SectionMax>
+          <CustomTitle
+            title="Láminas recomendadas del mes"
+            primaryAction={
+              <CustomButtom
+                style="SECONDARY"
+                borderStyle="OUTLINE"
+                title="Ver todas las láminas"
+                Icon={ArrowIosForwardOutline}
+                to={"/laminas"}
+              />
+            }
+          />
+        </SectionMax>
+        <WrapperSliderMain>
+          {(data || []).length > 3 && (
+            <WrapperNavigationPrev
+              onClick={() => {
+                sliderRef!.current!.slickPrev();
+              }}
+            >
+              <ArrowIosBackOutline />
+            </WrapperNavigationPrev>
+          )}
+          <Slider ref={sliderRef} {...settings}>
+            {(data || []).map((sheet: ISheetDefaultProps) => {
+              return (
+                <ItemSlick key={sheet.code}>
+                  <CardLamina
+                    image={sheet.tira}
+                    nroLamina={sheet.code}
+                    name={sheet.name}
+                    isFavourite={sheet.isFavorite}
+                    uuid={sheet.uuid}
+                    nroDownloads={100}
+                    nroView={sheet.numberOfViews}
+                    infoSheet={sheet}
+                    handleAddFavoriteSheet={() => null}
+                    handleDeleteFavoriteSheet={() => null}
+                    isLoadingAdd={false}
+                    isLoadingDelete={false}
+                  />
+                </ItemSlick>
+              );
+            })}
+          </Slider>
+          {(data || []).length > 3 && (
+            <WrapperNavigationNext
+              onClick={() => {
+                sliderRef!.current!.slickNext();
+              }}
+            >
+              <ArrowIosForwardOutline />
+            </WrapperNavigationNext>
+          )}
+        </WrapperSliderMain>
+        {isLoading && <SectionLaminasSkeleton />}
+      </WrapperSlider>
+      {/* )} */}
     </>
   );
 };

@@ -10,15 +10,6 @@ const GoogleCallback: React.FC = () => {
     startGoogleCallback(location.search);
   }, []);
 
-  React.useEffect(() => {
-    console.log("Google Callback -> ", {
-      object: resultCallback,
-      data: resultCallback.data,
-      success: resultCallback.isSuccess,
-      error: resultCallback.isError,
-    });
-  }, [resultCallback]);
-
   return <div>GoogleCallback</div>;
 };
 

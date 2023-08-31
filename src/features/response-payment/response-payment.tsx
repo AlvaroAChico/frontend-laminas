@@ -9,7 +9,6 @@ const ResponsePayment: React.FC = () => {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    console.log("URL -> ", `/planes?txk=${transactionToken}`);
     localStorage.setItem(APP_CONSTANS.TXK_NIUBIZ, `${transactionToken}`);
     dispatch(updateStatusIframePayment(false));
   }, []);

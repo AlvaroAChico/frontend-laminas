@@ -22,6 +22,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { useGetAllSheetsPaginateMutation } from "../../core/store/sheets/sheetsAPI";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
+  clearAllDataSheets,
   getCurrentPage,
   getCurrentSearchWord,
   getCurrentSize,
@@ -172,7 +173,7 @@ const LaminasPage: React.FC = () => {
       word: currentSearchWord,
     });
   };
-  
+
   const handleUpdateSearchWord = (value: string) => {
     dispatch(updateCurrentSearchWord(value));
     localStorage.setItem(APP_CONSTANS.PENDING_SEARCH_WORD, value);
@@ -190,6 +191,7 @@ const LaminasPage: React.FC = () => {
 
   const handleGetSheets = React.useCallback(() => {
     setOptionQuery(1);
+    dispatch(clearAllDataSheets());
     const newWord = localStorage.getItem(APP_CONSTANS.PENDING_SEARCH_WORD);
     getAllSheetsPaginate({
       page: currentPage,

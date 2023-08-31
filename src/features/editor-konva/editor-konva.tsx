@@ -45,6 +45,7 @@ import useDataUser from "../../utils/hooks/use-data-user";
 import { EFuncionality } from "../../core/store/auth/types/auth-types";
 import {
   getCurrentSheetEdit,
+  getCurrentSheetEditUUID,
   updateCurrentSheetEdit,
 } from "../../core/store/app-store/appSlice";
 import { APP_CONSTANS } from "../../constants/app";
@@ -165,6 +166,7 @@ const WrapperKeyPress = styled.div`
 `;
 export interface ComponentKonvaItem {
   id: string;
+  uuid: string;
   type: KonvaTypeItem;
   x: number;
   y: number;
@@ -196,6 +198,7 @@ const EditorKonva: React.FC = () => {
   const statusApplication = useAppSelector(getStatusApplication);
   const statusCursorCanva = useAppSelector(getStatusCursorCanva);
   const currentSheetEdit = useAppSelector(getCurrentSheetEdit);
+  const currentSheetEditUUID = useAppSelector(getCurrentSheetEditUUID);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
@@ -213,6 +216,7 @@ const EditorKonva: React.FC = () => {
         addItemKonva({
           id: `image${activeID}`,
           type: KonvaTypeItem.IMAGE,
+          uuid: currentSheetEditUUID,
           x: layerRef.current.children[0].attrs.x,
           y: layerRef.current.children[0].attrs.y,
           height: newHeight,
@@ -311,6 +315,7 @@ const EditorKonva: React.FC = () => {
               return (
                 <GlobalItemKonva
                   id={item.id}
+                  uuid={item.uuid || ""}
                   key={item.id}
                   type={item.type}
                   initialX={item.x}

@@ -26,6 +26,10 @@ import EditorImg from "../../assets/img/editor_image.png";
 import { Tooltip } from "@mui/material";
 import { APP_CONSTANS } from "../../constants/app";
 import CustomLoader from "../custom-loader/custom-loader";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../core/store/temporal/temporalSlice";
 
 const WrapperLayout = styled.div`
   width: 100%;
@@ -78,7 +82,7 @@ const ContainerLoading = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 999999;
   background: #0000007d;
   display: grid;
   align-content: center;
@@ -134,6 +138,7 @@ const CustomLayout: React.FC = () => {
     if (isAuthenticated) {
       dispatch(updateStatusModalCoupon(true));
     } else {
+      dispatch(updateTemporalAction(ETemporalActions.OPEN_COUPON));
       dispatch(updateStatusModalLogin(true));
     }
   };

@@ -12,10 +12,12 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  getStatusIframePayment,
   getStatusModalPayment,
-  updateStatusIframePayment,
+  getStatusStepPayment,
+  getValuePlanPay,
   updateStatusModalPayment,
+  updateStatusStepPayment,
+  updateValuePlanPay,
 } from "../../core/store/app-store/appSlice";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { CheckCircle } from "@styled-icons/bootstrap/CheckCircle";
@@ -32,7 +34,9 @@ import {
 import { APP_CONSTANS } from "../../constants/app";
 import useLogger from "../../utils/hooks/use-logger";
 import { settingsAPP } from "../../config/environments/settings";
-import { useSearchParams } from "react-router-dom";
+import { IAuthorizationError } from "../../core/store/plans/types/plans-types";
+import NiubizPaymentIMG from "../../assets/img/niubiz_payment.png";
+import PaymentSkeleton from "./skeletons/payment-skeleton";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -85,16 +89,32 @@ const ItemFormatDownload = styled.div<{ selected: boolean }>`
 `;
 
 const BodyDetailPlan = styled.div`
+  padding: 20px;
+  border-radius: 20px;
+  margin: 15px 0px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+
+  > table {
+    width: 100%;
+  }
   > table thead tr {
-    background: #d3fff3;
+    background: #fc4a41;
     border-radius: 20px;
+    color: white;
   }
   > table thead tr td {
-    border-bottom: 1px solid #b6b6b6;
+    text-align: center;
+    border-bottom: 1px solid #fc4a41;
+    padding: 10px;
+    border-radius: 20px;
   }
   > table tbody tr td {
     text-align: center;
     border-bottom: 1px solid #b6b6b6;
+    padding: 18px;
+  }
+  > table tbody tr td:nth-child(1) {
+    text-align: left;
   }
 `;
 const WrapperButtonsDetail = styled.div`
@@ -108,57 +128,32 @@ const ContainerAddNiubiz = styled.div`
   margin: 15px 0px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
 
-  > div {
-    text-align: center;
-    margin: 15px 0 5px;
-  }
-  > div img {
-    max-width: 60px;
-    margin: 0 8px;
+  > img {
+    width: 100%;
   }
 `;
-
-const IframeWrapper = styled.iframe<{ statusOpen: boolean }>`
-  ${(p) =>
-    p.statusOpen
-      ? `
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        border: none;
-        `
-      : `
-        display: none
-      `}
+const ContainerTDTotal = styled.td`
+  font-weight: 600;
+  text-transform: uppercase;
 `;
 
 const ModalPayment: React.FC = () => {
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
-  const [statusStepPay, setStatusStepPay] = React.useState(0);
-  const [valuePlanPay, setValuePlanPay] = React.useState(1);
   const [txkNiubiz, setTxkNiubiz] = React.useState("");
+  const [paymentError, setPaymentError] = React.useState<IAuthorizationError>();
   const isStatus = useAppSelector(getStatusModalPayment);
   const queryParams = window.location.search;
   const steps = ["Plan", "Detalle", "Finalizar"];
   const dispatch = useAppDispatch();
+  const statusStepPay = useAppSelector(getStatusStepPayment);
+  const valuePlanPay = useAppSelector(getValuePlanPay);
 
   const { Logger } = useLogger();
 
-  const handleChangeStep = (step: number) => setStatusStepPay(step);
+  const handleChangeStep = (step: number) =>
+    dispatch(updateStatusStepPayment(step));
 
   const handleOpenNiubiz = () => {
-    // dispatch(updateStatusIframePayment(true));
-    // if (iframeNiubiz) {
-    //   const documentIframe = iframeNiubiz.current?.contentWindow?.document;
-    //   documentIframe!.getElementById("id-button.niubiz")?.click();
-    // }
-    // handleChangeStep(2);
-    console.log("HandleOpenNiubiz");
     localStorage.setItem(
       APP_CONSTANS.SESSION_TOKEN_NIUBIZ,
       resultSessionToken.data!.sessionKey || ""
@@ -177,7 +172,6 @@ const ModalPayment: React.FC = () => {
     );
 
     const buttonNiubiz = document.getElementById("button-niubiz");
-    console.log("button-niubiz -> ", buttonNiubiz);
     if (buttonNiubiz) {
       buttonNiubiz.click();
     }
@@ -218,32 +212,22 @@ const ModalPayment: React.FC = () => {
   }, [resultSessionToken]);
 
   React.useEffect(() => {
-    if (resultAuthorization && resultAuthorization.isSuccess) {
-      console.log("resultAuthorization -> ", resultAuthorization);
-    }
-  }, [resultAuthorization]);
-
-  React.useEffect(() => {
+    const txkConstans = queryParams.split("&")[0].split("=")[0];
     const txk = queryParams.split("&")[0].split("=")[1];
-    if (!!txk && txk != null && txk != "") {
+    if (!!txk && txk != null && txk != "" && txkConstans == "txk") {
       window.history.pushState({}, document.title, "/planes");
       setTxkNiubiz(txk);
       dispatch(updateStatusModalPayment(true));
-      setStatusStepPay(2);
-      console.log({
-        accessToken:
-          localStorage.getItem(APP_CONSTANS.ACCESS_TOKEN_NIUBIZ) || "",
-        purchaseNumber:
-          localStorage.getItem(APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ) || "",
-        transactionToken: txk,
-      });
+      dispatch(updateStatusStepPayment(2));
       getAuthorizationPayment({
         accessToken:
           localStorage.getItem(APP_CONSTANS.ACCESS_TOKEN_NIUBIZ) || "",
         purchaseNumber:
           localStorage.getItem(APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ) || "",
         transactionToken: txk,
-      });
+      })
+        .unwrap()
+        .catch((error) => setPaymentError(error.data as IAuthorizationError));
     }
   }, []);
 
@@ -292,7 +276,7 @@ const ModalPayment: React.FC = () => {
                     <div>
                       <ItemFormatDownload
                         selected={valuePlanPay == 0}
-                        onClick={() => setValuePlanPay(0)}
+                        onClick={() => dispatch(updateValuePlanPay(0))}
                       >
                         <div>
                           <Typography
@@ -321,7 +305,7 @@ const ModalPayment: React.FC = () => {
                     <div>
                       <ItemFormatDownload
                         selected={valuePlanPay == 1}
-                        onClick={() => setValuePlanPay(1)}
+                        onClick={() => dispatch(updateValuePlanPay(1))}
                       >
                         <div>
                           <Typography
@@ -350,7 +334,7 @@ const ModalPayment: React.FC = () => {
                     <div>
                       <ItemFormatDownload
                         selected={valuePlanPay == 2}
-                        onClick={() => setValuePlanPay(2)}
+                        onClick={() => dispatch(updateValuePlanPay(2))}
                       >
                         <div>
                           <Typography
@@ -480,21 +464,14 @@ const ModalPayment: React.FC = () => {
                           <td>s/ {valuePlanPay == 1 ? "19.90" : "29.90"}</td>
                         </tr>
                         <tr>
-                          <td />
-                          <td />
+                          <ContainerTDTotal colSpan={2}>Total</ContainerTDTotal>
                           <td>s/ {valuePlanPay == 1 ? "19.90" : "29.90"}</td>
                         </tr>
                       </tbody>
                     </table>
                   </BodyDetailPlan>
                   <ContainerAddNiubiz>
-                    <Typography variant="body1" component="span">
-                      Aceptamos todas las tarjetas
-                    </Typography>
-                    <div>
-                      <img src={VisaMastercard} alt="Logotipos de pago" />
-                      <img src={YapePlin} alt="Logotipos de pago" />
-                    </div>
+                    <img src={NiubizPaymentIMG} />
                   </ContainerAddNiubiz>
                   <WrapperButtonsDetail>
                     <CustomButtom
@@ -516,7 +493,91 @@ const ModalPayment: React.FC = () => {
               )}
               {statusStepPay == 2 && (
                 <ContainerFinishPay>
-                  <div>Finish</div>
+                  <div>
+                    {resultAuthorization.isLoading && <PaymentSkeleton />}
+                    {paymentError == null && !resultAuthorization.isLoading ? (
+                      <>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Código de transacción:
+                            {resultAuthorization.data?.fulfillment}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            ID de Transacción:
+                            {resultAuthorization.data?.transactionUUID}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            ID Token:
+                            {resultAuthorization.data?.tokenId}
+                          </Typography>
+                        </div>
+                        {resultAuthorization.data?.yapeId != null &&
+                          resultAuthorization.data?.yapeId != "" && (
+                            <div>
+                              <Typography variant="body2" component="p">
+                                ID Transacción Yape:
+                                {resultAuthorization.data?.yapeId}
+                              </Typography>
+                            </div>
+                          )}
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Número de Orden:
+                            {resultAuthorization.data?.purchaseNumber}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Tarjeta:
+                            {resultAuthorization.data?.card}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Marca:
+                            {resultAuthorization.data?.brand}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Monto:
+                            {resultAuthorization.data?.amount}
+                          </Typography>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            ID Transacción:
+                            {paymentError?.transactionUUID || ""}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Monto:
+                            {paymentError?.amount || ""}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Tarjeta:
+                            {paymentError?.card || ""}
+                          </Typography>
+                        </div>
+                        <div>
+                          <Typography variant="body2" component="p">
+                            Marca:
+                            {paymentError?.brand || ""}
+                          </Typography>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </ContainerFinishPay>
               )}
             </Box>

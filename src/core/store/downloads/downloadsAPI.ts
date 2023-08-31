@@ -53,6 +53,17 @@ export interface IDownloadData {
   retira: string;
 }
 
+export interface IDownloadPDF {
+  sizePDF: string;
+  sheetId: string;
+  settings: string;
+  withRetira: boolean;
+}
+export interface IAuthorizationDownload {
+  size: string;
+  sheets: string[];
+}
+
 export const downloadsAPI = createApi({
   reducerPath: "downloadsApi",
   baseQuery: fetchBaseQuery({
@@ -72,12 +83,42 @@ export const downloadsAPI = createApi({
   endpoints: (build) => ({
     getListAllDownloads: build.mutation<IDownloadResponse, any>({
       query: () => ({
-        url: "/downloads?render=paginate&page=1&size=10",
+        url: "/downloads?render=paginate&page=1&size=10&include=sheet",
         method: "GET",
       }),
       transformResponse: (response: IDownloadResponse) => response,
     }),
+    getFileDownloadPDF: build.mutation<any, IDownloadPDF>({
+      query: ({ sizePDF, sheetId, settings, withRetira }) => ({
+        url: "/downloads",
+        method: "POST",
+        body: {
+          size: sizePDF,
+          environment: "web",
+          sheet_id: sheetId,
+          seetings: settings,
+          con_retira: withRetira,
+        },
+      }),
+      transformResponse: (response: any) => response,
+    }),
+    getAuthorizationDownload: build.mutation<any, IAuthorizationDownload>({
+      query: ({ size, sheets }) => ({
+        url: "/downloads/authorize-editor",
+        method: "POST",
+        body: {
+          size: size,
+          sheets: sheets,
+          environment: "web",
+        },
+      }),
+      transformResponse: (response: any) => response,
+    }),
   }),
 });
 
-export const { useGetListAllDownloadsMutation } = downloadsAPI;
+export const {
+  useGetListAllDownloadsMutation,
+  useGetFileDownloadPDFMutation,
+  useGetAuthorizationDownloadMutation,
+} = downloadsAPI;

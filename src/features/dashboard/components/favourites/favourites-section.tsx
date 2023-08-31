@@ -95,7 +95,8 @@ const FavouriteSection: React.FC = () => {
             <Typography component="span" color="red" fontWeight={600}>
               {` ${resultFavorites.data?.total || 0} `}
             </Typography>
-            subscripciones
+            lámina{(resultFavorites.data?.total || 0) != 1 && "s"} favorita
+            {(resultFavorites.data?.total || 0) != 1 && "s"}
           </Typography>
         </Grid>
         <Grid item xs={12} md={7} marginTop={2} alignSelf={"center"}>

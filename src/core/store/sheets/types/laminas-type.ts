@@ -45,6 +45,13 @@ export interface ISheetDefaultProps {
   categories: ICategory[];
   tags: ITag[];
 }
+export interface ISheetDefaultEditor {
+  isFavorite: boolean;
+  name: string;
+  tira: string;
+  tiraTemporary: string;
+  uuid: string;
+}
 
 export interface ICategory {
   id: number;

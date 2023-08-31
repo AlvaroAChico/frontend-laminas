@@ -25,6 +25,11 @@ import { KonvaTypeItem } from "../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../editor-konva";
 import ArturitoIMG from "../../../../assets/img/arturito-openai.png";
 import useLogger from "../../../../utils/hooks/use-logger";
+import {
+  EFuncionality,
+  IFunctionality,
+} from "../../../../core/store/auth/types/auth-types";
+import useDataUser from "../../../../utils/hooks/use-data-user";
 
 const WrapperBottomNavigation = styled.div`
   width: 100%;
@@ -231,8 +236,20 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
   const [initialQuestion, setInitialQuestion] = React.useState("");
   const dispatch = useAppDispatch();
   const sheetActive = useAppSelector(getActiveGlobalSheet);
+  const [funcSize, setFuncSize] = React.useState<IFunctionality>(
+    {} as IFunctionality
+  );
 
-  const { Logger } = useLogger();
+  const { handleGetFuncionalities } = useDataUser();
+
+  React.useEffect(() => {
+    const listFunc = handleGetFuncionalities();
+    setFuncSize(
+      (listFunc || []).filter(
+        (func) => func.function == EFuncionality.FUNC_DOWNLOAD_SIZE
+      )[0]
+    );
+  }, []);
 
   const handleUpdateGlobalSheet = (option: number) => () =>
     dispatch(updateActiveGlobalSheet(option));
@@ -325,25 +342,34 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
             <p>Selecciona el tamaño de la descarga del documento</p>
             <IconInfo />
           </HeaderText>
-          {menuSizeSheet.map((sheet) => (
-            <ItemSheet
-              key={sheet.idActive}
-              isActive={sheet.idActive == sheetActive}
-              onClick={handleUpdateGlobalSheet(sheet.idActive)}
-            >
-              <ImageSheet>
-                <div>{sheet.name}</div>
-              </ImageSheet>
-              <InfoSheet>
-                <h5>Medidas:</h5>
-                <p>Ancho: {sheet.width}mm</p>
-                <p>Alto: {sheet.height}mm</p>
-              </InfoSheet>
-              <WrapperIcon>
-                <NavigateNext />
-              </WrapperIcon>
-            </ItemSheet>
-          ))}
+          {funcSize &&
+            funcSize.formats &&
+            menuSizeSheet.map((sheet) => {
+              if (funcSize.formats) {
+                if ((funcSize.formats || []).includes(sheet.name)) {
+                  return (
+                    <ItemSheet
+                      key={sheet.idActive}
+                      isActive={sheet.idActive == sheetActive}
+                      onClick={handleUpdateGlobalSheet(sheet.idActive)}
+                    >
+                      <ImageSheet>
+                        <div>{sheet.name}</div>
+                      </ImageSheet>
+                      <InfoSheet>
+                        <h5>Medidas:</h5>
+                        <p>Ancho: {sheet.width}mm</p>
+                        <p>Alto: {sheet.height}mm</p>
+                      </InfoSheet>
+                      <WrapperIcon>
+                        <NavigateNext />
+                      </WrapperIcon>
+                    </ItemSheet>
+                  );
+                }
+              }
+              return null;
+            })}
         </WrapperBodySettings>
       </BottomSheet>
       <BottomSheet

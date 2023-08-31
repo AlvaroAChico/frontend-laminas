@@ -14,12 +14,17 @@ export interface LandingState {
   statusModalSheetDetail: boolean;
   statusModalPayment: boolean;
   statusModalChangePassword: boolean;
+  statusModalValueBlobPDF: boolean;
   statusIframePayment: boolean;
   dataUserAuth: IAuthData;
   tokenUserAuth: string;
   functionalitiesAuth: IFunctionality[];
   infoCurrentSheetDetail: ISheetDefaultProps;
   currentSheetEdit: string;
+  currentSheetEditUUID: string;
+  statusStepPayment: number;
+  valuePlanPay: number;
+  valueBlobSheetPDF: any;
 }
 
 const initialState: LandingState = {
@@ -33,12 +38,17 @@ const initialState: LandingState = {
   statusModalSheetDetail: false,
   statusModalPayment: false,
   statusModalChangePassword: false,
+  statusModalValueBlobPDF: false,
   statusIframePayment: false,
   dataUserAuth: {} as IAuthData,
   tokenUserAuth: "",
   functionalitiesAuth: [],
   infoCurrentSheetDetail: {} as ISheetDefaultProps,
   currentSheetEdit: "",
+  statusStepPayment: 0,
+  valuePlanPay: 0,
+  valueBlobSheetPDF: null,
+  currentSheetEditUUID: "",
 };
 
 export const appSlice = createSlice({
@@ -81,6 +91,9 @@ export const appSlice = createSlice({
     ) => {
       state.statusModalChangePassword = action.payload;
     },
+    updateStatusModalValueBlobPDF: (state, action: PayloadAction<boolean>) => {
+      state.statusModalValueBlobPDF = action.payload;
+    },
     updateCurrentSheetDetail: (
       state,
       action: PayloadAction<ISheetDefaultProps>
@@ -102,6 +115,18 @@ export const appSlice = createSlice({
     updateCurrentSheetEdit: (state, action: PayloadAction<string>) => {
       state.currentSheetEdit = action.payload;
     },
+    updateCurrentSheetEditUUID: (state, action: PayloadAction<string>) => {
+      state.currentSheetEditUUID = action.payload;
+    },
+    updateStatusStepPayment: (state, action: PayloadAction<number>) => {
+      state.statusStepPayment = action.payload;
+    },
+    updateValuePlanPay: (state, action: PayloadAction<number>) => {
+      state.valuePlanPay = action.payload;
+    },
+    updateValueBlobSheetPDF: (state, action: PayloadAction<any>) => {
+      state.valueBlobSheetPDF = action.payload;
+    },
   },
 });
 
@@ -122,6 +147,11 @@ export const {
   updateStatusIframePayment,
   updateLoadingApp,
   updateCurrentSheetEdit,
+  updateStatusStepPayment,
+  updateValuePlanPay,
+  updateValueBlobSheetPDF,
+  updateStatusModalValueBlobPDF,
+  updateCurrentSheetEditUUID,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
@@ -140,6 +170,8 @@ export const getStatusModalPayment = (state: RootState) =>
   state.app.statusModalPayment;
 export const getStatusModalChangePassword = (state: RootState) =>
   state.app.statusModalChangePassword;
+export const getStatusValueBlobSheetPDF = (state: RootState) =>
+  state.app.statusModalValueBlobPDF;
 export const getStatusIframePayment = (state: RootState) =>
   state.app.statusIframePayment;
 export const getStatusAuthenticated = (state: RootState) =>
@@ -152,5 +184,12 @@ export const getDataFuncionalities = (state: RootState) =>
   state.app.functionalitiesAuth;
 export const getCurrentSheetEdit = (state: RootState) =>
   state.app.currentSheetEdit;
+export const getCurrentSheetEditUUID = (state: RootState) =>
+  state.app.currentSheetEditUUID;
+export const getStatusStepPayment = (state: RootState) =>
+  state.app.statusStepPayment;
+export const getValuePlanPay = (state: RootState) => state.app.valuePlanPay;
+export const getValueBlobSheetPDF = (state: RootState) =>
+  state.app.valueBlobSheetPDF;
 
 export default appSlice.reducer;

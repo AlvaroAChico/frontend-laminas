@@ -188,7 +188,7 @@ const ModalRecover: React.FC = () => {
       );
       dispatch(updateStatusAuthenticated(false));
       dispatch(updateStatusModalRecover(false));
-      location.reload();
+      // location.reload();
     }
   }, [resultLogin.isSuccess]);
 

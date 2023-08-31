@@ -14,6 +14,7 @@ import ModalRecover from "./components/modals/modal-recover";
 import ModalSheetDetail from "./components/modals/modal-sheet-detail";
 import ModalPayment from "./components/modals/modal-payment";
 import ModalChangePassword from "./components/modals/modal-change-password";
+import ModalViewSheetPDF from "./components/modals/modal-view-sheet-pdf";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -44,6 +45,7 @@ const App: React.FC = () => {
       <ModalSheetDetail />
       <ModalPayment />
       <ModalChangePassword />
+      <ModalViewSheetPDF />
     </React.Fragment>
   );
 };

@@ -12,6 +12,7 @@ import { listCategories } from "../../../config/mocks/list-categories";
 import CardCategory from "./components/card-category/card-category";
 import SectionMax from "../../../components/section-max/section-max";
 import { useGetCategoriesQuery } from "../../../core/store/categories/categoriesAPI";
+import SectionCategoriesSkeleton from "./skeleton/section-categories-skeleton";
 
 const WrapperCategories = styled.div`
   height: 100%;
@@ -63,7 +64,7 @@ const ItemSlick = styled.div`
 const SectionCategories: React.FC = () => {
   const sliderRef = React.useRef<any>(null);
 
-  const { data } = useGetCategoriesQuery("");
+  const { data, isLoading } = useGetCategoriesQuery("");
 
   const settings = {
     dots: true,
@@ -141,6 +142,7 @@ const SectionCategories: React.FC = () => {
             </ItemSlick>
           ))}
         </Slider>
+        {isLoading && <SectionCategoriesSkeleton />}
         <WrapperNavigationNext
           onClick={() => {
             sliderRef!.current!.slickNext();

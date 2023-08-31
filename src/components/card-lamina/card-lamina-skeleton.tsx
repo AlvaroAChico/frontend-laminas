@@ -87,6 +87,7 @@ const CardLaminaSkeleton: React.FC = () => {
         sx={{
           width: "100%",
           maxWidth: 345,
+          minWidth: 300,
           margin: "auto",
           borderRadius: "20px",
           boxSizing: "border-box",

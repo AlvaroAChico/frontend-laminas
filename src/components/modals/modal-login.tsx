@@ -40,6 +40,10 @@ import useLogger from "../../utils/hooks/use-logger";
 import useDataUser from "../../utils/hooks/use-data-user";
 import CustomLoader from "../custom-loader/custom-loader";
 import { APP_CONSTANS } from "../../constants/app";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../core/store/temporal/temporalSlice";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -221,7 +225,7 @@ const ModalLogin: React.FC = () => {
   React.useEffect(() => {
     if (resultLogin.data != null) {
       handleUpdateUserAuth(resultLogin.data);
-      handleUpdateFunctionalities(resultLogin.data.functionalities, true);
+      handleUpdateFunctionalities(resultLogin.data.functionalities, true, true);
     }
   }, [resultLogin.isSuccess]);
 
@@ -241,7 +245,11 @@ const ModalLogin: React.FC = () => {
   React.useEffect(() => {
     if (resultCallback.data != null) {
       handleUpdateUserAuth(resultCallback.data);
-      handleUpdateFunctionalities(resultCallback.data.functionalities, true);
+      handleUpdateFunctionalities(
+        resultCallback.data.functionalities,
+        true,
+        true
+      );
       dispatch(updateLoadingApp(false));
     }
   }, [resultCallback.isSuccess]);
@@ -262,7 +270,6 @@ const ModalLogin: React.FC = () => {
     if (resultsGoogle != null) {
       // Logger("Result Google", JSON.stringify(resultsGoogle));
       if (resultsGoogle.isSuccess && !!resultsGoogle.data) {
-        console.log("Google -> ", resultsGoogle.data.message);
         window.open(
           resultsGoogle.data.message,
           "_self",
@@ -278,7 +285,10 @@ const ModalLogin: React.FC = () => {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={isStatus}
-        onClose={() => dispatch(updateStatusModalLogin(false))}
+        onClose={() => {
+          dispatch(updateStatusModalLogin(false));
+          dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+        }}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{

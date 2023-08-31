@@ -102,9 +102,8 @@ const ProfileSection: React.FC = () => {
   const { Logger } = useLogger();
 
   React.useEffect(() => {
-    const data = handleGetToken();
-    if (data) {
-      const user = JSON.parse(data) as IAuthData;
+    const user = handleGetToken();
+    if (user.token) {
       setUser(user);
     }
   }, []);
@@ -216,7 +215,6 @@ const ProfileSection: React.FC = () => {
                         const file = new File([blob], "image.jpg", {
                           type: "image/jpeg",
                         });
-                        console.log(file);
                       } else {
                         toast.error("Extensión no permitida");
                       }

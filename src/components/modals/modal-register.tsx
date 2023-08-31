@@ -40,6 +40,10 @@ import { APP_CONSTANS } from "../../constants/app";
 import useDataUser from "../../utils/hooks/use-data-user";
 import CustomLoader from "../custom-loader/custom-loader";
 import { SerializedError } from "@reduxjs/toolkit";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../core/store/temporal/temporalSlice";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -235,13 +239,16 @@ const ModalRegister: React.FC = () => {
   React.useEffect(() => {
     if (resultRegister.data != null) {
       handleUpdateUserAuth(resultRegister.data);
-      handleUpdateFunctionalities(resultRegister.data.functionalities, true);
+      handleUpdateFunctionalities(
+        resultRegister.data.functionalities,
+        true,
+        true
+      );
     }
   }, [resultRegister.isSuccess]);
 
   React.useEffect(() => {
     if (resultRegister.isError) {
-      console.log("Error -> ", resultRegister.error);
       handleCloseAllAdvideError();
       setStatusSnackbar(true);
     }
@@ -256,7 +263,11 @@ const ModalRegister: React.FC = () => {
   React.useEffect(() => {
     if (resultCallback.data != null) {
       handleUpdateUserAuth(resultCallback.data);
-      handleUpdateFunctionalities(resultCallback.data.functionalities, true);
+      handleUpdateFunctionalities(
+        resultCallback.data.functionalities,
+        true,
+        true
+      );
       dispatch(updateLoadingApp(false));
     }
   }, [resultCallback.isSuccess]);
@@ -277,7 +288,6 @@ const ModalRegister: React.FC = () => {
     if (resultsGoogle != null) {
       // Logger("Result Google", JSON.stringify(resultsGoogle));
       if (resultsGoogle.isSuccess && !!resultsGoogle.data) {
-        console.log("Google -> ", resultsGoogle.data.message);
         window.open(
           resultsGoogle.data.message,
           "_self",
@@ -293,7 +303,10 @@ const ModalRegister: React.FC = () => {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={isStatus}
-        onClose={() => dispatch(updateStatusModalRegister(false))}
+        onClose={() => {
+          dispatch(updateStatusModalRegister(false));
+          dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+        }}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{

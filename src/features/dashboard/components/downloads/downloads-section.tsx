@@ -167,14 +167,14 @@ const DownloadsSection: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(listDownloads || []).map((item) => (
+                  {(listDownloads || []).map((item: IDownloadsDefaultProps) => (
                     <TableRow
                       key={Date.now()}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell>
                         <Typography variant="body2" component="p">
-                          {item.sheet.name}
+                          {item.sheet.name || ""}
                         </Typography>
                       </TableCell>
                       <TableCell>

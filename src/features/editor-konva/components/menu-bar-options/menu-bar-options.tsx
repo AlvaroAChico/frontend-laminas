@@ -48,6 +48,8 @@ import {
 } from "../../../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../../../constants/app";
+import { useGetAuthorizationDownloadMutation } from "../../../../core/store/downloads/downloadsAPI";
+import { ComponentKonvaItem } from "../../editor-konva";
 
 const baseCenter = styled.div`
   display: flex;
@@ -245,7 +247,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
   const activeSheet = useAppSelector(getActiveGlobalSheet);
   const listComponentsKonva = useAppSelector(getListComponentsKonva);
   const statusCursor = useAppSelector(getStatusCursorCanva);
-  const isAuthenticated = useAppSelector(getStatusAuthenticated);
+  const listItemsKonva = useAppSelector(getListComponentsKonva);
   const dispatch = useAppDispatch();
 
   const handleResetGlobalZoom = () => {
@@ -276,14 +278,47 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
 
   const handleDeleteCurrentObject = () => dispatch(deleteObjectKonva());
 
+  const [getAuthorizationDownload, resultAuthorization] =
+    useGetAuthorizationDownloadMutation();
   const verifyDownloadFromUser = () => {
     const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
     if (dataUser != null && dataUser != undefined) {
-      downloadActivePanel();
+      const countSheets = listItemsKonva.filter(
+        (item: ComponentKonvaItem) => item.uuid != null && item.uuid != ""
+      );
+      const sheets: string[] = [];
+      countSheets.map((sheet) => {
+        sheets.push(sheet.uuid);
+      });
+      let sizeSheet = "";
+      if (activeSheet == 1) {
+        sizeSheet = "A4";
+      }
+      if (activeSheet == 2) {
+        sizeSheet = "A3";
+      }
+      if (activeSheet == 3) {
+        sizeSheet = "OFICIO";
+      }
+
+      getAuthorizationDownload({
+        size: sizeSheet,
+        sheets: sheets,
+      });
     } else {
       dispatch(updateStatusModalRegister(true));
     }
   };
+
+  React.useEffect(() => {
+    if (
+      resultAuthorization &&
+      resultAuthorization != null &&
+      resultAuthorization.isSuccess
+    ) {
+      downloadActivePanel();
+    }
+  }, [resultAuthorization]);
 
   const downloadActivePanel = () => {
     dispatch(unselectObjectKonva());

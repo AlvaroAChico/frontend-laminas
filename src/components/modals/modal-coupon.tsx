@@ -29,6 +29,10 @@ import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
 import { usePostRedimirCouponMutation } from "../../core/store/coupon/couponAPI";
 import { Toaster, toast } from "react-hot-toast";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../core/store/temporal/temporalSlice";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -163,7 +167,10 @@ const ModalCoupon: React.FC = () => {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={isStatus}
-        onClose={() => dispatch(updateStatusModalCoupon(false))}
+        onClose={() => {
+          dispatch(updateStatusModalCoupon(false));
+          dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+        }}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{

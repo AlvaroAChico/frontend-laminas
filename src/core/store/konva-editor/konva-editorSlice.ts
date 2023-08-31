@@ -105,6 +105,9 @@ export const konvaEditorSlice = createSlice({
     updateActiveIDKonva: (state, action: PayloadAction<string>) => {
       state.activeKonvaComponentID = action.payload;
     },
+    resetDataKonva: (state) => {
+      state.listComponentsKonva = [];
+    },
     updateComponentKonva: (
       state,
       action: PayloadAction<ComponentKonvaItem>
@@ -324,6 +327,7 @@ export const konvaEditorSlice = createSlice({
 
 export const {
   addItemKonva,
+  resetDataKonva,
   updateActiveIDKonva,
   updateComponentKonva,
   updateActiveGlobalSheet,

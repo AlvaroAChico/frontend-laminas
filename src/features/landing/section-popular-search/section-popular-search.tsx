@@ -6,6 +6,7 @@ import { Typography } from "@mui/material";
 import SectionMax from "../../../components/section-max/section-max";
 import BookImg from "../../../assets//img/book_icon.png";
 import { useGetPopularSheetsQuery } from "../../../core/store/sheets/sheetsAPI";
+import SectionPopularSearchSkeleton from "./skeleton/section-popular-search-skeleton";
 
 const WrapperPopularSearch = styled.div`
   display: flex;
@@ -32,7 +33,7 @@ const WrapperBookImg = styled.img`
 `;
 
 const SectionPopularSearch: React.FC = () => {
-  const { data } = useGetPopularSheetsQuery("");
+  const { data, isLoading } = useGetPopularSheetsQuery("");
 
   return (
     <WrapperPopularSearch>
@@ -49,6 +50,7 @@ const SectionPopularSearch: React.FC = () => {
               </Typography>
             </ItemPopular>
           ))}
+          {isLoading && <SectionPopularSearchSkeleton />}
         </WrapperPopularSearch>
       </SectionMax>
     </WrapperPopularSearch>

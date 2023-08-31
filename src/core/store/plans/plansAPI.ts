@@ -7,6 +7,7 @@ import { APP_CONSTANS } from "../../../constants/app";
 import {
   IAccessTokenResponse,
   IAuthorizationRequest,
+  IAuthorizationResponse,
   ISessionTokenRequest,
   ISessionTokenResponse,
 } from "./types/plans-types";
@@ -99,10 +100,10 @@ export const plansAPI = createApi({
       transformResponse: (response: ISessionTokenResponse) => response,
     }),
     getAuthorizationPayment: build.mutation<
-      ISessionTokenResponse,
+      IAuthorizationResponse,
       IAuthorizationRequest
     >({
-      query: ({ accessToken, purchaseNumber,transactionToken }) => ({
+      query: ({ accessToken, purchaseNumber, transactionToken }) => ({
         url: "/niubiz/request-authorization",
         method: "POST",
         body: {
@@ -111,7 +112,7 @@ export const plansAPI = createApi({
           transaction_token: transactionToken,
         },
       }),
-      transformResponse: (response: ISessionTokenResponse) => response,
+      transformResponse: (response: IAuthorizationResponse) => response,
     }),
     getListAllPlans: build.mutation<IPlanResponse, any>({
       query: () => {

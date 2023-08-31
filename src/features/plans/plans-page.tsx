@@ -10,8 +10,19 @@ import { Typography, Grid } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import useSearchSheet from "../../utils/hooks/use-search-sheet";
-import { updateStatusModalPayment } from "../../core/store/app-store/appSlice";
+import {
+  updateStatusModalPayment,
+  updateStatusModalRegister,
+  updateStatusStepPayment,
+  updateValuePlanPay,
+} from "../../core/store/app-store/appSlice";
 import { useAppDispatch } from "../../app/hooks";
+import { APP_CONSTANS } from "../../constants/app";
+import useDataUser from "../../utils/hooks/use-data-user";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../core/store/temporal/temporalSlice";
 
 const WrapperPlansPage = styled.div`
   padding: 20px;
@@ -33,6 +44,33 @@ const PlansPage: React.FC = () => {
 
   const handleOpenWhatsapp = () => {
     window.open("https://wa.link/8o4p6t", "_blank");
+  };
+
+  const clearDataPayment = () => {
+    localStorage.removeItem(APP_CONSTANS.ACTION_PAGE_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.ACCESS_TOKEN_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.SESSION_TOKEN_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.AMOUNT_NIUBIZ);
+  };
+
+  const { handleGetToken } = useDataUser();
+
+  const handleOpenModalPay = (step: number) => {
+    const user = handleGetToken();
+    if (user.token) {
+      if (step == 1) {
+        clearDataPayment();
+      }
+      dispatch(updateStatusStepPayment(0));
+      dispatch(updateValuePlanPay(step));
+      dispatch(updateStatusModalPayment(true));
+    } else {
+      if (step != 0) {
+        dispatch(updateTemporalAction(ETemporalActions.OPEN_PAYMENT));
+      }
+      dispatch(updateStatusModalRegister(true));
+    }
   };
 
   return (
@@ -101,24 +139,16 @@ const PlansPage: React.FC = () => {
               >
                 {QueriePhone && (
                   <Plans
-                    basicAction={() => dispatch(updateStatusModalPayment(true))}
-                    mediumAction={() =>
-                      dispatch(updateStatusModalPayment(true))
-                    }
-                    premiumAction={() =>
-                      dispatch(updateStatusModalPayment(true))
-                    }
+                    basicAction={() => handleOpenModalPay(0)}
+                    mediumAction={() => handleOpenModalPay(1)}
+                    premiumAction={() => handleOpenModalPay(2)}
                   />
                 )}
                 {!QueriePhone && (
                   <PlansMobile
-                    basicAction={() => dispatch(updateStatusModalPayment(true))}
-                    mediumAction={() =>
-                      dispatch(updateStatusModalPayment(true))
-                    }
-                    premiumAction={() =>
-                      dispatch(updateStatusModalPayment(true))
-                    }
+                    basicAction={() => handleOpenModalPay(0)}
+                    mediumAction={() => handleOpenModalPay(1)}
+                    premiumAction={() => handleOpenModalPay(2)}
                   />
                 )}
               </Grid>

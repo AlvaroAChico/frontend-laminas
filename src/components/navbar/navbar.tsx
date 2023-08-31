@@ -22,6 +22,8 @@ import {
   updateStatusModalLogin,
   updateStatusModalRegister,
   updateStatusAuthenticated,
+  updateStatusModalCoupon,
+  updateStatusModalPayment,
 } from "../../core/store/app-store/appSlice";
 import { NavLink } from "react-router-dom";
 import AvatarImg from "../../assets/img/avatar_nav.png";
@@ -40,6 +42,11 @@ import BookImg from "../../assets/img/book_icon.png";
 import RuleImg from "../../assets/img/rule_icon.png";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../constants/app";
+import useDataUser from "../../utils/hooks/use-data-user";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../core/store/temporal/temporalSlice";
 
 const WrapperNavbar = styled.div<{ valueScroll: number }>`
   position: fixed;
@@ -109,6 +116,49 @@ const Navbar: React.FC = () => {
 
   const handleViewLogin = () => dispatch(updateStatusModalLogin(true));
   const handleViewRegister = () => dispatch(updateStatusModalRegister(true));
+
+  const { handleGetToken } = useDataUser();
+
+  React.useEffect(() => {
+    const user = handleGetToken();
+    if (user.token) {
+      const tempAction =
+        Cookies.get(ETemporalActions.TEMPORAL_ACTION_KEY) ||
+        localStorage.getItem(ETemporalActions.TEMPORAL_ACTION_KEY);
+      switch (tempAction) {
+        case ETemporalActions.OPEN_COUPON:
+          {
+            dispatch(updateStatusModalCoupon(true));
+            dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+          }
+          break;
+        case ETemporalActions.OPEN_LOGIN:
+          {
+            dispatch(updateStatusModalLogin(true));
+            dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+          }
+          break;
+        case ETemporalActions.OPEN_PAYMENT:
+          {
+            dispatch(updateStatusModalPayment(true));
+            dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+          }
+          break;
+        case ETemporalActions.OPEN_REGISTER:
+          {
+            dispatch(updateStatusModalRegister(true));
+            dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+          }
+          break;
+        case ETemporalActions.NO_ACTION:
+          {
+            // NO_ACTION
+            dispatch(updateTemporalAction(ETemporalActions.NO_ACTION));
+          }
+          break;
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -301,9 +351,7 @@ const Navbar: React.FC = () => {
                         >
                           <LogOut />
                         </ListItemIcon>
-                        <Typography
-                          variant="caption"
-                          component="span"
+                        <div
                           onClick={() => {
                             startLogout("");
                             dispatch(updateStatusAuthenticated(false));
@@ -315,7 +363,7 @@ const Navbar: React.FC = () => {
                           }}
                         >
                           Cerrar Sesión
-                        </Typography>
+                        </div>
                       </MenuItem>
                     </Menu>
                   </Grid>
@@ -381,9 +429,7 @@ const Navbar: React.FC = () => {
                   <Avatar alt="Avatar" src={AvatarImg} onClick={handleClick} />
                   <div>
                     <NavLink to="/dashboard/perfil">Mi Perfil</NavLink>
-                    <Typography
-                      variant="caption"
-                      component="span"
+                    <div
                       onClick={() => {
                         startLogout("");
                         dispatch(updateStatusAuthenticated(false));
@@ -395,7 +441,7 @@ const Navbar: React.FC = () => {
                       }}
                     >
                       Cerrar Sesión
-                    </Typography>
+                    </div>
                   </div>
                 </Grid>
               )}

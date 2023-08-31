@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { ISheetDefaultProps } from "./types/laminas-type";
+import { ISheetDefaultEditor, ISheetDefaultProps } from "./types/laminas-type";
 
 export interface LaminasState {
   currentPage: number;
@@ -11,7 +11,7 @@ export interface LaminasState {
   currentPageEditor: number;
   currentSizeEditor: string;
   currentSearchWordEditor: string;
-  listSheetsEditor: ISheetDefaultProps[];
+  listSheetsEditor: ISheetDefaultEditor[];
 }
 
 const initialState: LaminasState = {
@@ -21,7 +21,7 @@ const initialState: LaminasState = {
   listSheets: [],
   // Editor
   currentPageEditor: 1,
-  currentSizeEditor: "1",
+  currentSizeEditor: "10",
   currentSearchWordEditor: "",
   listSheetsEditor: [],
 };
@@ -42,6 +42,9 @@ export const sheetsSlice = createSlice({
     updateAllSheets: (state, action: PayloadAction<ISheetDefaultProps[]>) => {
       state.listSheets = action.payload;
     },
+    clearAllDataSheets: (state) => {
+      state.listSheets = [];
+    },
     addMoreSheets: (state, action: PayloadAction<ISheetDefaultProps[]>) => {
       const newList = state.listSheets;
       (action.payload || []).map((sheet) => {
@@ -52,16 +55,14 @@ export const sheetsSlice = createSlice({
     updateCurrentPageEditor: (state) => {
       state.currentPageEditor = state.currentPageEditor + 1;
     },
+    resetCurrentPageEditor: (state) => {
+      state.currentPageEditor = 1;
+    },
     updateCurrentSearchWordEditor: (state, action: PayloadAction<string>) => {
       state.currentSearchWordEditor = action.payload;
     },
     clearSheetsEditor: (state) => {
       state.listSheetsEditor = [];
-    },
-    addSheetEditor: (state, action: PayloadAction<ISheetDefaultProps>) => {
-      const newList = state.listSheets;
-      newList.push(action.payload);
-      state.listSheetsEditor = newList;
     },
     updateAddFavoriteSheet: (state, action: PayloadAction<string>) => {
       const sheet = state.listSheets.filter(
@@ -75,6 +76,28 @@ export const sheetsSlice = createSlice({
       )[0];
       sheet.isFavorite = false;
     },
+    // New Editor
+    updateAllSheetsEditor: (
+      state,
+      action: PayloadAction<ISheetDefaultEditor[]>
+    ) => {
+      state.listSheetsEditor = action.payload;
+    },
+    addMoreSheetsEditor: (
+      state,
+      action: PayloadAction<ISheetDefaultEditor[]>
+    ) => {
+      const newList = state.listSheetsEditor;
+      (action.payload || []).map((sheet) => {
+        const filterSheet = state.listSheetsEditor.filter(
+          (item) => item.tiraTemporary == sheet.uuid
+        );
+        if (filterSheet.length == 0) {
+          newList.push(sheet);
+        }
+      });
+      state.listSheetsEditor = newList;
+    },
   },
 });
 
@@ -86,10 +109,13 @@ export const {
   addMoreSheets,
   updateAddFavoriteSheet,
   updateDeleteFavoriteSheet,
-  addSheetEditor,
   clearSheetsEditor,
   updateCurrentPageEditor,
   updateCurrentSearchWordEditor,
+  updateAllSheetsEditor,
+  addMoreSheetsEditor,
+  resetCurrentPageEditor,
+  clearAllDataSheets,
 } = sheetsSlice.actions;
 
 export const getCurrentPage = (state: RootState) => state.sheets.currentPage;

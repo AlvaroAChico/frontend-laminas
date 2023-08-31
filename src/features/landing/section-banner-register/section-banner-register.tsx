@@ -115,7 +115,11 @@ const SectionBannerRegister: React.FC = () => {
   React.useEffect(() => {
     if (resultCallback.data != null) {
       handleUpdateUserAuth(resultCallback.data);
-      handleUpdateFunctionalities(resultCallback.data.functionalities, true);
+      handleUpdateFunctionalities(
+        resultCallback.data.functionalities,
+        true,
+        true
+      );
       dispatch(updateLoadingApp(false));
     }
   }, [resultCallback.isSuccess]);
@@ -137,7 +141,6 @@ const SectionBannerRegister: React.FC = () => {
     if (resultsGoogle != null) {
       // Logger("Result Google", JSON.stringify(resultsGoogle));
       if (resultsGoogle.isSuccess && !!resultsGoogle.data) {
-        console.log("Google -> ", resultsGoogle.data.message);
         window.open(
           resultsGoogle.data.message,
           "_self",

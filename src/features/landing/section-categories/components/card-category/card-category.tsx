@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 
 const CardCategoryBackground = styled.div<{ cardImage: string }>`
   box-shadow: 0px 6px 10px 2px rgba(0, 0, 0, 0.25);
@@ -43,21 +43,38 @@ interface IOwnProps {
 }
 
 const CardCategory: React.FC<IOwnProps> = ({ name, image }) => {
+  const [loadImage, setLoadImage] = React.useState(false);
+  const img = document.createElement("img");
+  img.onload = () => setLoadImage(true);
+  img.src = image;
+
   return (
-    <CardCategoryBackground cardImage={image}>
-      <OverlayCategory />
-      <CategoryBody justifyContent="center" alignItems="center">
-        <Typography
-          textAlign={"center"}
-          fontWeight={600}
-          component={"h5"}
-          variant={"h5"}
-          color="white"
-        >
-          {name}
-        </Typography>
-      </CategoryBody>
-    </CardCategoryBackground>
+    <>
+      {loadImage && (
+        <CardCategoryBackground cardImage={image}>
+          <OverlayCategory />
+          <CategoryBody justifyContent="center" alignItems="center">
+            <Typography
+              textAlign={"center"}
+              fontWeight={600}
+              component={"h5"}
+              variant={"h5"}
+              color="white"
+            >
+              {name}
+            </Typography>
+          </CategoryBody>
+        </CardCategoryBackground>
+      )}
+      {!loadImage && (
+        <Skeleton
+          variant="rounded"
+          width={"320px"}
+          height={"250px"}
+          sx={{ borderRadius: "25px" }}
+        />
+      )}
+    </>
   );
 };
 

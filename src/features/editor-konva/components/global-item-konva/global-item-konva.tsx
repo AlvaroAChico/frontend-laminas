@@ -26,6 +26,7 @@ export enum KonvaTypeItem {
 
 export interface GlobalItemKonvaProps {
   id: string;
+  uuid?: string; // Solo para Imagenes Laminas
   url?: string;
   image?: string;
   type: KonvaTypeItem;
@@ -53,6 +54,7 @@ export interface GlobalItemKonvaProps {
 
 const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
   type,
+  uuid,
   isSelected,
   initialX,
   initialY,
@@ -183,6 +185,7 @@ const GlobalItemKonva: React.FC<GlobalItemKonvaProps> = ({
               height: initialHeight,
               fill: initialFill,
               image: initialImage,
+              uuid: uuid || null,
             } as ImageInitialProps
           }
           onSelect={onSelect}
