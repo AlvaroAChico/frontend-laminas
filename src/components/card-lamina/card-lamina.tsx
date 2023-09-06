@@ -190,8 +190,9 @@ const CardLamina: React.FC<IOwnProps> = ({
         status: infoSheet.status,
         isActive: infoSheet.isActive,
         createdAt: infoSheet.createdAt,
-        tira: blobImage,
         categories: infoSheet.categories,
+        tags: infoSheet.tags,
+        tira: blobImage,
       } as ISheetDefaultProps)
     );
     dispatch(updateStatusModalSheetDetail(true));
@@ -251,18 +252,23 @@ const CardLamina: React.FC<IOwnProps> = ({
           borderRadius: "20px",
           boxSizing: "border-box",
           boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+          transition: "0.4s",
+          ":hover": {
+            transform: "scale(1.015)",
+          },
         }}
       >
         <CardMedia
           component="img"
           image={blobImage}
-          sx={{ maxHeight: "225px", objectPosition: "top" }}
+          sx={{ maxHeight: "225px", objectPosition: "top", cursor: "pointer" }}
           onLoad={handleLoaded}
+          onClick={handleView}
         />
         {statusLoading && (
           <Skeleton variant="rounded" width={"100%"} height={150} />
         )}
-        <CardContent>
+        <CardContent onClick={handleView} sx={{ cursor: "pointer" }}>
           <WrapperNroLamina>
             <div>
               <Typography variant="caption" component="p">

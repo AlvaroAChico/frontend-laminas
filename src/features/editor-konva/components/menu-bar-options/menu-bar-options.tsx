@@ -50,6 +50,7 @@ import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../../../constants/app";
 import { useGetAuthorizationDownloadMutation } from "../../../../core/store/downloads/downloadsAPI";
 import { ComponentKonvaItem } from "../../editor-konva";
+import { Toast, Toaster, toast } from "react-hot-toast";
 
 const baseCenter = styled.div`
   display: flex;
@@ -318,6 +319,12 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
     ) {
       downloadActivePanel();
     }
+
+    if (resultAuthorization.isError) {
+      toast.error(
+        "No se ha podido descargar el marco de trabajo, por favor comunicate con el administrador"
+      );
+    }
   }, [resultAuthorization]);
 
   const downloadActivePanel = () => {
@@ -379,103 +386,106 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
   const handleFullDownPosition = () => dispatch(updateFullDownActiveKonva());
 
   return (
-    <MenuBarWrapper>
-      <ItemMenuOption>
-        <WrapperBarLogo>
-          <img src={LogoElaminas} />
-        </WrapperBarLogo>
-        {activeComponent.includes("text") && <OptionsText />}
-        {activeComponent.includes("image") && (
-          <WrapperOptionsImage>
-            <Tooltip title="Cortar" arrow>
-              <ItemMenu onClick={handleCutImage}>
-                <Cut />
-              </ItemMenu>
-            </Tooltip>
-            <Tooltip title="Borrar" arrow>
-              <CustomTrash onClick={handleDeleteCurrentObject} />
-            </Tooltip>
-          </WrapperOptionsImage>
-        )}
-        {(activeComponent.includes("circle") ||
-          activeComponent.includes("triangle") ||
-          activeComponent.includes("rect")) && (
-          <WrapperOptionsFigure>
-            <Tooltip title="Color" arrow>
-              <ItemMenu>
-                <ColorPalette onClick={handleColorPaletteClick} />
-                <ColorPaletteMenu status={statusSubMenuColor} />
-              </ItemMenu>
-            </Tooltip>
-            <Tooltip title="Borde" arrow>
-              <ItemMenu>
-                <StrokeWidth onClick={handleStrokePaletteClick} />
-                <StrokePaletteMenu status={statusSubMenuStroke} />
-              </ItemMenu>
-            </Tooltip>
-            <Tooltip title="Borrar" arrow>
-              <CustomTrash onClick={handleDeleteCurrentObject} />
-            </Tooltip>
-          </WrapperOptionsFigure>
-        )}
-      </ItemMenuOption>
-      <ItemMenuOption>
-        <ItemGeneralMenu>
-          <WrapperOptionsCanva isActiveCursor={statusCursor}>
-            <div onClick={() => dispatch(changeStatusCursorCanva(1))}>
-              <Tooltip title="Seleccionar" arrow>
-                <Cursor />
+    <>
+      <Toaster />
+      <MenuBarWrapper>
+        <ItemMenuOption>
+          <WrapperBarLogo>
+            <img src={LogoElaminas} />
+          </WrapperBarLogo>
+          {activeComponent.includes("text") && <OptionsText />}
+          {activeComponent.includes("image") && (
+            <WrapperOptionsImage>
+              <Tooltip title="Cortar" arrow>
+                <ItemMenu onClick={handleCutImage}>
+                  <Cut />
+                </ItemMenu>
               </Tooltip>
-            </div>
-            <div onClick={() => dispatch(changeStatusCursorCanva(2))}>
-              <Tooltip title="Arrastrar" arrow>
-                <Hand />
+              <Tooltip title="Borrar" arrow>
+                <CustomTrash onClick={handleDeleteCurrentObject} />
               </Tooltip>
-            </div>
-          </WrapperOptionsCanva>
-        </ItemGeneralMenu>
-        <ItemGeneralMenu>
-          {listComponentsKonva.length > 0 && activeComponent != "" && (
-            <WrapperPosition onClick={handleShowPosition}>
-              <Layers />
-              <span>Position</span>
-            </WrapperPosition>
+            </WrapperOptionsImage>
           )}
-          {statusMenuPosition && (
-            <DropdownPosition
-              id="drop-menu-position"
-              onBlur={() => setStatusMenuPosition(false)}
-              tabIndex={0}
-            >
-              <ItemPosition onClick={handleFullUpPosition}>
-                <ArrowheadUpOutline />
-                Traer Adelante
-              </ItemPosition>
-              <ItemPosition onClick={handleUpPosition}>
-                <ArrowIosUpward />
-                Adelante
-              </ItemPosition>
-              <ItemPosition onClick={handleDownPosition}>
-                <ArrowIosDownward />
-                Atras
-              </ItemPosition>
-              <ItemPosition onClick={handleFullDownPosition}>
-                <ArrowheadDownOutline />
-                Enviar Atras
-              </ItemPosition>
-            </DropdownPosition>
+          {(activeComponent.includes("circle") ||
+            activeComponent.includes("triangle") ||
+            activeComponent.includes("rect")) && (
+            <WrapperOptionsFigure>
+              <Tooltip title="Color" arrow>
+                <ItemMenu>
+                  <ColorPalette onClick={handleColorPaletteClick} />
+                  <ColorPaletteMenu status={statusSubMenuColor} />
+                </ItemMenu>
+              </Tooltip>
+              <Tooltip title="Borde" arrow>
+                <ItemMenu>
+                  <StrokeWidth onClick={handleStrokePaletteClick} />
+                  <StrokePaletteMenu status={statusSubMenuStroke} />
+                </ItemMenu>
+              </Tooltip>
+              <Tooltip title="Borrar" arrow>
+                <CustomTrash onClick={handleDeleteCurrentObject} />
+              </Tooltip>
+            </WrapperOptionsFigure>
           )}
-        </ItemGeneralMenu>
-        <ItemGeneralMenu>
-          <WrapperDownload>
-            <button onClick={verifyDownloadFromUser}>
-              <span>Descargar</span>
-              <ArrowDownload />
-            </button>
-          </WrapperDownload>
-        </ItemGeneralMenu>
-      </ItemMenuOption>
-    </MenuBarWrapper>
+        </ItemMenuOption>
+        <ItemMenuOption>
+          <ItemGeneralMenu>
+            <WrapperOptionsCanva isActiveCursor={statusCursor}>
+              <div onClick={() => dispatch(changeStatusCursorCanva(1))}>
+                <Tooltip title="Seleccionar" arrow>
+                  <Cursor />
+                </Tooltip>
+              </div>
+              <div onClick={() => dispatch(changeStatusCursorCanva(2))}>
+                <Tooltip title="Arrastrar" arrow>
+                  <Hand />
+                </Tooltip>
+              </div>
+            </WrapperOptionsCanva>
+          </ItemGeneralMenu>
+          <ItemGeneralMenu>
+            {listComponentsKonva.length > 0 && activeComponent != "" && (
+              <WrapperPosition onClick={handleShowPosition}>
+                <Layers />
+                <span>Position</span>
+              </WrapperPosition>
+            )}
+            {statusMenuPosition && (
+              <DropdownPosition
+                id="drop-menu-position"
+                onBlur={() => setStatusMenuPosition(false)}
+                tabIndex={0}
+              >
+                <ItemPosition onClick={handleFullUpPosition}>
+                  <ArrowheadUpOutline />
+                  Traer Adelante
+                </ItemPosition>
+                <ItemPosition onClick={handleUpPosition}>
+                  <ArrowIosUpward />
+                  Adelante
+                </ItemPosition>
+                <ItemPosition onClick={handleDownPosition}>
+                  <ArrowIosDownward />
+                  Atras
+                </ItemPosition>
+                <ItemPosition onClick={handleFullDownPosition}>
+                  <ArrowheadDownOutline />
+                  Enviar Atras
+                </ItemPosition>
+              </DropdownPosition>
+            )}
+          </ItemGeneralMenu>
+          <ItemGeneralMenu>
+            <WrapperDownload>
+              <button onClick={verifyDownloadFromUser}>
+                <span>Descargar</span>
+                <ArrowDownload />
+              </button>
+            </WrapperDownload>
+          </ItemGeneralMenu>
+        </ItemMenuOption>
+      </MenuBarWrapper>
+    </>
   );
 };
 

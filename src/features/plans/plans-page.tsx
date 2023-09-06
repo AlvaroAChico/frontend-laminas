@@ -42,8 +42,8 @@ const PlansPage: React.FC = () => {
   const { handleSetData, handleKeyUp } = useSearchSheet();
   const dispatch = useAppDispatch();
 
-  const handleOpenWhatsapp = () => {
-    window.open("https://wa.link/8o4p6t", "_blank");
+  const handleCallSupport = () => {
+    window.location.href = "tel:+51977431451";
   };
 
   const clearDataPayment = () => {
@@ -127,7 +127,7 @@ const PlansPage: React.FC = () => {
                   style="PRIMARY"
                   borderStyle="NONE"
                   Icon={Phone}
-                  action={handleOpenWhatsapp}
+                  action={handleCallSupport}
                   customStyle={`width: fit-content; padding: 10px 30px; margin: 0;`}
                 />
               </Grid>

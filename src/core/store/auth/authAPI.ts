@@ -112,6 +112,16 @@ export const authAPI = createApi({
       }),
       transformResponse: (response: any) => response,
     }),
+    startValidationMe: build.mutation<any, string>({
+      query: (token) => ({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        url: "/auth/me",
+        method: "GET",
+      }),
+      transformResponse: (response: any) => response,
+    }),
   }),
 });
 
@@ -122,4 +132,5 @@ export const {
   useStartChangePasswordMutation,
   useStartLoginSocialMutation,
   useStartSocialCallbackMutation,
+  useStartValidationMeMutation,
 } = authAPI;

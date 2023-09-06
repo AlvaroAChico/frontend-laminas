@@ -266,7 +266,6 @@ const LaminasPage: React.FC = () => {
       />
       <WrapperLaminasPage>
         <SectionMax>
-          <CustomTitle title="Selecciona el plan que mejor se adapte a tus necesidades" />
           <FilterContainer>
             <div>
               <div onClick={() => setStatusFilter(true)}>
@@ -326,12 +325,12 @@ const LaminasPage: React.FC = () => {
           </FilterContainer>
           <ListLaminas>
             {(listSheets || []).map((sheet: ISheetDefaultProps) => (
-              <div key={sheet.code}>
+              <div key={sheet.uuid}>
                 <CardLamina
+                  uuid={sheet.uuid}
                   image={sheet.tira}
                   nroLamina={sheet.code}
                   name={sheet.name}
-                  uuid={sheet.uuid}
                   isFavourite={sheet.isFavorite}
                   nroDownloads={200}
                   nroView={sheet.numberOfViews}

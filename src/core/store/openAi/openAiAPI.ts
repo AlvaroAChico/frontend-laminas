@@ -25,9 +25,9 @@ export const openAiAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLOpenIA,
     prepareHeaders: (headers) => {
-      const token = "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";
+      const token = "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";
       if (token) {
-        headers.set("authorization", `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
         headers.set("Content-Type", "application/json");
         headers.set("Accept", "text/html,image/apng,application/pdf");
       }

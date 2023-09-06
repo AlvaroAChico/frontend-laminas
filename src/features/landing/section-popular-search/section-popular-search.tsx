@@ -7,6 +7,8 @@ import SectionMax from "../../../components/section-max/section-max";
 import BookImg from "../../../assets//img/book_icon.png";
 import { useGetPopularSheetsQuery } from "../../../core/store/sheets/sheetsAPI";
 import SectionPopularSearchSkeleton from "./skeleton/section-popular-search-skeleton";
+import { useAppDispatch } from "../../../app/hooks";
+import { updateCurrentSearchWord } from "../../../core/store/sheets/sheetsSlice";
 
 const WrapperPopularSearch = styled.div`
   display: flex;
@@ -34,6 +36,11 @@ const WrapperBookImg = styled.img`
 
 const SectionPopularSearch: React.FC = () => {
   const { data, isLoading } = useGetPopularSheetsQuery("");
+  const dispatch = useAppDispatch();
+
+  const handleSearchPopular = (word: string) => {
+    dispatch(updateCurrentSearchWord(word));
+  };
 
   return (
     <WrapperPopularSearch>
@@ -44,7 +51,10 @@ const SectionPopularSearch: React.FC = () => {
       <SectionMax>
         <WrapperPopularSearch>
           {(data || []).map((search) => (
-            <ItemPopular key={Date.now()}>
+            <ItemPopular
+              key={Date.now()}
+              onClick={() => handleSearchPopular(search.name)}
+            >
               <Typography variant="body1" component="span" textAlign={"center"}>
                 {search.name}
               </Typography>

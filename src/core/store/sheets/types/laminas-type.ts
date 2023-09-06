@@ -63,9 +63,8 @@ export interface ICategory {
 }
 export interface ITag {
   id: number;
-  name: string;
-  image: string;
-  status: string;
+  description: string;
+  isRecommend: boolean;
   isActive: boolean;
   createdAt: string;
 }

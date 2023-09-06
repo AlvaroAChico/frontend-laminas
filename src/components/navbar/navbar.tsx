@@ -28,7 +28,10 @@ import {
 import { NavLink } from "react-router-dom";
 import AvatarImg from "../../assets/img/avatar_nav.png";
 import { customPalette } from "../../config/theme/theme";
-import { useStartLogoutMutation } from "../../core/store/auth/authAPI";
+import {
+  useStartLogoutMutation,
+  useStartValidationMeMutation,
+} from "../../core/store/auth/authAPI";
 import { IAuthData } from "../../core/store/auth/types/auth-types";
 import "./navbar-styles.css";
 
@@ -118,6 +121,28 @@ const Navbar: React.FC = () => {
   const handleViewRegister = () => dispatch(updateStatusModalRegister(true));
 
   const { handleGetToken } = useDataUser();
+
+  const [validationMe, resultMe] = useStartValidationMeMutation();
+
+  React.useEffect(() => {
+    const user = handleGetToken();
+    if (user.token != null && user.token != "") {
+      if (resultMe.isError) {
+        startLogout("");
+        dispatch(updateStatusAuthenticated(false));
+        Cookies.remove(APP_CONSTANS.AUTH_USER_DATA);
+        localStorage.removeItem(APP_CONSTANS.AUTH_FUNCIONALITIES);
+        location.reload();
+      }
+    }
+  }, [resultMe.isError]);
+
+  React.useEffect(() => {
+    const user = handleGetToken();
+    if (user.token != null && user.token != "") {
+      validationMe(user.token);
+    }
+  }, []);
 
   React.useEffect(() => {
     const user = handleGetToken();

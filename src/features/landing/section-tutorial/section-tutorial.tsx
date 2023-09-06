@@ -91,6 +91,10 @@ const WrapperRuleImg = styled.img`
 `;
 
 const SectionTutorial: React.FC = () => {
+  const handleCallSupport = () => {
+    window.location.href = "tel:+51977431451";
+  };
+
   return (
     <WrapperTutorialMain>
       <WrapperRuleImg src={RuleImg} />
@@ -203,7 +207,7 @@ const SectionTutorial: React.FC = () => {
                   Icon={Phone}
                   style="SECONDARY"
                   borderStyle="OUTLINE"
-                  action={() => null}
+                  action={handleCallSupport}
                   customStyle={`width: fit-content; padding: 10px 30px; margin: auto`}
                 />
               </Grid>

@@ -365,12 +365,15 @@ const ProfileSection: React.FC = () => {
                 {isEditing ? (
                   <ContainerInput>
                     <input
-                      type="text"
+                      type="number"
                       placeholder={"Escribe tu celular"}
                       defaultValue={user?.user.contactNumber}
                       disabled={resultUser.isLoading}
                       {...register("contactNumber")}
                     />
+                    <Typography variant="caption" component="span" color="red">
+                      {errors?.contactNumber?.message || ""}
+                    </Typography>
                   </ContainerInput>
                 ) : (
                   <Typography

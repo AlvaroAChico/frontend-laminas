@@ -197,7 +197,7 @@ const SubscriptionSection: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2" component="p">
-                          {item.plan.totalDownload} / {item.plan.quantity}
+                          {item.download} / {item.plan.quantity}
                         </Typography>
                       </TableCell>
                     </TableRow>

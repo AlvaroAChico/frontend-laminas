@@ -41,6 +41,7 @@ const ListFavourites = styled.div`
 
 const FavouriteSection: React.FC = () => {
   const [favouritesNumber, setFavouritesNumber] = React.useState("");
+  const [currentUUID, setCurrentUUID] = React.useState("");
   const [listFavorites, setListFavorites] = React.useState<
     ISheetDefaultProps[]
   >([]);
@@ -67,8 +68,14 @@ const FavouriteSection: React.FC = () => {
   const [deleteFavoriteSheet, resultDelete] = useDeleteFavoriteSheetMutation();
   const [postAddFavoriteSheet, resultAdd] = usePostAddFavoriteSheetMutation();
 
-  const handleAddFavoriteSheet = (uuid: string) => postAddFavoriteSheet(uuid);
-  const handleDeleteFavoriteSheet = (uuid: string) => deleteFavoriteSheet(uuid);
+  const handleAddFavoriteSheet = (uuid: string) => {
+    setCurrentUUID(uuid);
+    postAddFavoriteSheet(uuid);
+  };
+  const handleDeleteFavoriteSheet = (uuid: string) => {
+    setCurrentUUID(uuid);
+    deleteFavoriteSheet(uuid);
+  };
 
   React.useEffect(() => {
     if (
@@ -139,10 +146,6 @@ const FavouriteSection: React.FC = () => {
         <Grid item xs={12} marginTop={2}>
           <ListFavourites>
             {listFavorites.map((sheet) => {
-              const infoSheet: ISheetDefaultProps = {} as ISheetDefaultProps;
-              infoSheet.tira = sheet.tira;
-              infoSheet.name = sheet.name;
-
               return (
                 <CardLamina
                   key={sheet.uuid}
@@ -153,11 +156,15 @@ const FavouriteSection: React.FC = () => {
                   isFavourite={sheet.isFavorite}
                   nroDownloads={200}
                   nroView={sheet.numberOfViews}
-                  infoSheet={infoSheet}
+                  infoSheet={sheet}
                   handleAddFavoriteSheet={handleAddFavoriteSheet}
                   handleDeleteFavoriteSheet={handleDeleteFavoriteSheet}
-                  isLoadingAdd={resultAdd.isLoading}
-                  isLoadingDelete={resultDelete.isLoading}
+                  isLoadingAdd={
+                    resultAdd.isLoading && currentUUID == sheet.uuid
+                  }
+                  isLoadingDelete={
+                    resultDelete.isLoading && currentUUID == sheet.uuid
+                  }
                 />
               );
             })}

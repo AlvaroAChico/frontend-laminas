@@ -183,14 +183,7 @@ const ModalSheetDetail: React.FC = () => {
   };
 
   const handleDownloadPDF = async (sheetId: string) => {
-    // getDownloadPDF({
-    //   sizePDF: dataDownload.format,
-    //   sheetId: sheetId,
-    //   withRetira: dataDownload.includeRetira,
-    //   settings: dataDownload.includeRetira ? "Imagen + Texto" : "Imagen",
-    // });
     const user = handleGetToken();
-
     if (user.user) {
       dispatch(updateLoadingApp(true));
       axios({
@@ -231,6 +224,14 @@ const ModalSheetDetail: React.FC = () => {
       dispatch(updateStatusModalRegister(true));
     }
   };
+  const ContainerCategoriesResponse = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+  `;
+  const ContainerTagsResponse = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+  `;
 
   const extensions = [
     StarterKit.configure({
@@ -550,26 +551,33 @@ const ModalSheetDetail: React.FC = () => {
                   >
                     Categorias
                   </Typography>
-                  <div>
+                  <ContainerCategoriesResponse>
                     {(currentSheetDetail.categories || []).map(
                       (category: any) => (
-                        <span key={category.id}>{category.name}</span>
+                        <Typography
+                          key={category.id}
+                          variant="caption"
+                          component="span"
+                          sx={{ padding: "5px 8px" }}
+                        >
+                          {category.name}
+                        </Typography>
                       )
                     )}
-                    {(currentSheetDetail.categories != null ||
+                    {currentSheetDetail.categories != null &&
                       ((currentSheetDetail.categories as ICategory[]) || [])
-                        .length == 0) && (
-                      <Typography
-                        component="span"
-                        variant="caption"
-                        color={customPalette.primaryColor}
-                        fontWeight={200}
-                        sx={{ marginTop: "6px", marginBottom: "6px" }}
-                      >
-                        No se encontraron categorias relacionadas
-                      </Typography>
-                    )}
-                  </div>
+                        .length == 0 && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color={customPalette.primaryColor}
+                          fontWeight={200}
+                          sx={{ marginTop: "6px", marginBottom: "6px" }}
+                        >
+                          No se encontraron categorias relacionadas
+                        </Typography>
+                      )}
+                  </ContainerCategoriesResponse>
                 </div>
                 <div>
                   <Typography
@@ -580,24 +588,31 @@ const ModalSheetDetail: React.FC = () => {
                   >
                     Tags
                   </Typography>
-                  <div>
+                  <ContainerTagsResponse>
                     {(currentSheetDetail.tags || []).map((tag) => (
-                      <span key={tag.id}>{tag.name}</span>
-                    ))}
-                    {(currentSheetDetail.tags != null ||
-                      ((currentSheetDetail.tags as ITag[]) || []).length ==
-                        0) && (
                       <Typography
-                        component="span"
+                        key={tag.id}
                         variant="caption"
-                        color={customPalette.primaryColor}
-                        fontWeight={200}
-                        sx={{ marginTop: "6px", marginBottom: "6px" }}
+                        component="span"
+                        sx={{ padding: "5px 8px" }}
                       >
-                        No se encontraron tags relacionados
+                        {tag.description}
                       </Typography>
-                    )}
-                  </div>
+                    ))}
+                    {currentSheetDetail.tags != null &&
+                      ((currentSheetDetail.tags as ITag[]) || []).length ==
+                        0 && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color={customPalette.primaryColor}
+                          fontWeight={200}
+                          sx={{ marginTop: "6px", marginBottom: "6px" }}
+                        >
+                          No se encontraron tags relacionados
+                        </Typography>
+                      )}
+                  </ContainerTagsResponse>
                 </div>
               </Grid>
             </Grid>

@@ -86,7 +86,7 @@ export const sheetsAPI = createApi({
         const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
         const filtersOptions = `?render=paginate&page=${page}${
           size ? `&size=${size}` : ""
-        }${word ? `&filter[name]=${word}` : ""}`;
+        }${word ? `&filter[name]=${word}` : ""}&include=tags,categories`;
 
         if (dataUser != null && dataUser != undefined) {
           return {
