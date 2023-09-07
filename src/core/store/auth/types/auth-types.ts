@@ -83,7 +83,13 @@ export interface IFunctionality {
 export interface IChangePassword {
   oldPassword: string;
   password: string;
+  passConfirmation: string;
 }
+
+export interface IAuthorizationError {
+  error: string;
+}
+
 export interface IGoogleResponseURL {
   message: string;
 }

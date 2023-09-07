@@ -102,14 +102,26 @@ export const authAPI = createApi({
       transformResponse: (response: ILoginResponse) => response,
     }),
     startChangePassword: build.mutation<any, IChangePassword>({
-      query: ({ oldPassword, password }) => ({
-        url: `auth/change-password`,
-        method: "POST",
-        body: {
-          old_password: oldPassword,
-          password: password,
-        },
-      }),
+      query: ({ oldPassword, password, passConfirmation }) => {
+        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+        let headers = {};
+        if (dataUser != null && dataUser != undefined) {
+          const user = JSON.parse(dataUser) as IAuthData;
+          headers = {
+            Authorization: `Bearer ${user.token}`,
+          };
+        }
+        return {
+          url: `auth/change-password`,
+          headers: headers,
+          method: "POST",
+          body: {
+            old_password: oldPassword,
+            password: password,
+            password_confirmation: passConfirmation,
+          },
+        };
+      },
       transformResponse: (response: any) => response,
     }),
     startValidationMe: build.mutation<any, string>({

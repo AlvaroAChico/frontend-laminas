@@ -83,7 +83,7 @@ const WrapperRuleImg = styled.img`
 `;
 
 const FormContainer = styled.div`
-> div:nth-child(1), div:nth-child(2){
+> div:nth-child(1), div:nth-child(2), div:nth-child(3){
   justify-content: center;
     flex-direction: column;
     align-items: left;
@@ -126,7 +126,8 @@ const ErrorMessage = styled.span`
 
 const ModalChangePassword: React.FC = () => {
   const [updatePass, resultPass] = useStartChangePasswordMutation();
-  const [statusSnackbar, setStatusSnackbar] = React.useState(false);
+  const [updatePassError, setUpdatePassError] = React.useState<string>();
+  const [statusSnackbar, setStatusSnackbar] = React.useState<boolean>(false);
   const isStatus = useAppSelector(getStatusModalChangePassword);
   const dispatch = useAppDispatch();
 
@@ -135,6 +136,7 @@ const ModalChangePassword: React.FC = () => {
     defaultValues: {
       oldPassword: "",
       password: "",
+      passConfirmation: "",
       recaptcha: "",
     },
   });
@@ -150,7 +152,12 @@ const ModalChangePassword: React.FC = () => {
     updatePass({
       oldPassword: data.oldPassword,
       password: data.password,
-    });
+      passConfirmation: data.passConfirmation,
+    })
+      .unwrap()
+      .catch((error) => {
+        setUpdatePassError(error.data.message);
+      });
   }, []);
 
   function onChange(value: any) {
@@ -162,7 +169,7 @@ const ModalChangePassword: React.FC = () => {
   React.useEffect(() => {
     if (resultPass.data != null) {
       dispatch(updateStatusModalCoupon(false));
-      toast.success("Cupón canjeado exitosamente");
+      toast.success("Contraseña actualizada exitosamente");
     }
   }, [resultPass.isSuccess]);
 
@@ -235,7 +242,7 @@ const ModalChangePassword: React.FC = () => {
             <Grid item xs={12}>
               <FormContainer>
                 <ContainerOldPassStyle
-                  errorStyle={!!(errors.password as any)?.message}
+                  errorStyle={!!(errors.oldPassword as any)?.message}
                 >
                   <Typography
                     variant="caption"
@@ -272,6 +279,28 @@ const ModalChangePassword: React.FC = () => {
                   />
                   {!!(errors.password as any)?.message && (
                     <ErrorMessage>{errors?.password?.message}</ErrorMessage>
+                  )}
+                </ContainerNewPassStyle>
+                <ContainerNewPassStyle
+                  errorStyle={!!(errors.passConfirmation as any)?.message}
+                >
+                  <Typography
+                    variant="caption"
+                    component="label"
+                    textAlign="left"
+                  >
+                    Repetir Contraseña
+                  </Typography>
+                  <input
+                    placeholder="Repetir contraseña"
+                    type="password"
+                    required
+                    {...register("passConfirmation")}
+                  />
+                  {!!(errors.passConfirmation as any)?.message && (
+                    <ErrorMessage>
+                      {errors?.passConfirmation?.message}
+                    </ErrorMessage>
                   )}
                 </ContainerNewPassStyle>
               </FormContainer>
@@ -342,7 +371,9 @@ const ModalChangePassword: React.FC = () => {
           onClose={() => setStatusSnackbar(false)}
           elevation={6}
         >
-          Hubo un error con el código de cupón
+          {updatePassError != ""
+            ? updatePassError
+            : "Hubo un error al actualizar tus datos. Comunicate con un administrador"}
         </Alert>
       </Snackbar>
     </>

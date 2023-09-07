@@ -20,5 +20,5 @@
     "downloads": "http://localhost:8000/api"
   },
   "i18nDebug": false,
-  "environment": "int"
+  "environment": "dev"
 }
