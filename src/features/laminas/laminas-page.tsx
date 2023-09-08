@@ -18,7 +18,6 @@ import {
 import { Filter } from "@styled-icons/feather/Filter";
 import { ArrowIosDownward } from "@styled-icons/evaicons-solid/ArrowIosDownward";
 import styled from "styled-components";
-import { SelectChangeEvent } from "@mui/material/Select";
 import { useGetAllSheetsPaginateMutation } from "../../core/store/sheets/sheetsAPI";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
@@ -34,12 +33,8 @@ import {
   updateCurrentSize,
   updateDeleteFavoriteSheet,
 } from "../../core/store/sheets/sheetsSlice";
-import {
-  ISheetDefaultProps,
-  ISheets,
-} from "../../core/store/sheets/types/laminas-type";
+import { ISheetDefaultProps } from "../../core/store/sheets/types/laminas-type";
 import CustomButton from "../../components/custom-button/custom-button";
-import { useNavigate } from "react-router-dom";
 import CardLaminaSkeleton from "../../components/card-lamina/card-lamina-skeleton";
 import { APP_CONSTANS } from "../../constants/app";
 import {
@@ -47,6 +42,8 @@ import {
   usePostAddFavoriteSheetMutation,
 } from "../../core/store/favorites/favoritesAPI";
 import { Toaster, toast } from "react-hot-toast";
+import Lottie from "lottie-react";
+import NoResultAnimation from "../../assets/json/no_results_animation.json";
 
 const WrapperLaminasPage = styled.div`
   padding: 20px;
@@ -144,6 +141,27 @@ const BaseAccordion = styled(Accordion)`
 `;
 const SerchAccordion = styled(BaseAccordion)``;
 const CoursesAccordion = styled(BaseAccordion)``;
+
+const NoResultContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+  padding: 20px;
+  gap: 8px;
+
+  > h5 {
+    color: ${customPalette.primaryColor};
+  }
+  > h6 {
+    color: ${customPalette.secondaryColor};
+  }
+`;
 
 const LaminasPage: React.FC = () => {
   const [expanded, setExpanded] = React.useState<string | false>(false);
@@ -266,63 +284,77 @@ const LaminasPage: React.FC = () => {
       />
       <WrapperLaminasPage>
         <SectionMax>
-          <FilterContainer>
-            <div>
-              <div onClick={() => setStatusFilter(true)}>
-                <Filter />
-                <Typography variant="caption" component="span">
-                  Filtros
-                </Typography>
-              </div>
+          {resultSheets.isSuccess && resultSheets.data.total > 0 && (
+            <FilterContainer>
               <div>
-                <Grid item xs={12} md={7} marginTop={2} alignSelf={"center"}>
-                  <Typography
-                    variant="body1"
-                    component="span"
-                    fontWeight={400}
-                    paddingRight={2}
-                  >
-                    Mostrar
+                <div onClick={() => setStatusFilter(true)}>
+                  <Filter />
+                  <Typography variant="caption" component="span">
+                    Filtros
                   </Typography>
-                  <Select
-                    value={currentSize}
-                    onChange={handleChangeSize}
-                    sx={{
-                      width: "fit-content",
-                      padding: "5px",
-                      borderRadius: "20px",
-                      maxHeight: "45px",
-                    }}
-                  >
-                    <MenuItem value={10} selected={currentSize == "10"}>
-                      10
-                    </MenuItem>
-                    <MenuItem value={15} selected={currentSize == "15"}>
-                      15
-                    </MenuItem>
-                    <MenuItem value={20} selected={currentSize == "20"}>
-                      20
-                    </MenuItem>
-                  </Select>
-                </Grid>
+                </div>
+                <div>
+                  <Grid item xs={12} md={7} marginTop={2} alignSelf={"center"}>
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      fontWeight={400}
+                      paddingRight={2}
+                    >
+                      Mostrar
+                    </Typography>
+                    <Select
+                      value={currentSize}
+                      onChange={handleChangeSize}
+                      sx={{
+                        width: "fit-content",
+                        padding: "5px",
+                        borderRadius: "20px",
+                        maxHeight: "45px",
+                      }}
+                    >
+                      <MenuItem value={10} selected={currentSize == "10"}>
+                        10
+                      </MenuItem>
+                      <MenuItem value={15} selected={currentSize == "15"}>
+                        15
+                      </MenuItem>
+                      <MenuItem value={20} selected={currentSize == "20"}>
+                        20
+                      </MenuItem>
+                    </Select>
+                  </Grid>
+                </div>
               </div>
-            </div>
-            {!!resultSheets.data && resultSheets.data.total > 0 && (
+              {!!resultSheets.data && resultSheets.data.total > 0 && (
+                <div>
+                  {!!resultSheets.data && (
+                    <Typography>
+                      Se han encontrado{" "}
+                      <strong>{resultSheets.data.total}</strong> láminas
+                    </Typography>
+                  )}
+                </div>
+              )}
+            </FilterContainer>
+          )}
+          {resultSheets.isSuccess && resultSheets.data.total <= 0 && (
+            <NoResultContainer>
               <div>
-                {!!resultSheets.data && (
-                  <Typography>
-                    Se han encontrado <strong>{resultSheets.data.total}</strong>{" "}
-                    láminas
-                  </Typography>
-                )}
+                <Lottie
+                  animationData={NoResultAnimation}
+                  loop={true}
+                  width={100}
+                />
               </div>
-            )}
-            {resultSheets.isSuccess && resultSheets.data.total <= 0 && (
-              <div>
-                <Typography>No se encontraron resultados</Typography>
-              </div>
-            )}
-          </FilterContainer>
+              <Typography variant="h5" component="h5">
+                No se encontraron resultados para esta búsqueda
+              </Typography>
+              <Typography variant="h6" component="h6">
+                Te invitamos a intentar otra búsqueda
+              </Typography>
+            </NoResultContainer>
+          )}
           <ListLaminas>
             {(listSheets || []).map((sheet: ISheetDefaultProps) => (
               <div key={sheet.uuid}>

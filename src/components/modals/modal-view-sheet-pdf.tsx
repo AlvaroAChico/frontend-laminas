@@ -19,32 +19,48 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { customPalette } from "../../config/theme/theme";
 import styled from "styled-components";
 import { Toaster } from "react-hot-toast";
+import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
   transform: translate(-50%, -50%);
   position: absolute;
-  top: 50%;
+  top: 64%;
   left: 50%;
   width: fit-content;
   min-width: 300px;
-  height: 100%;
+  max-width: 600px;
+  height: fit-content;
+  width: 100%;
+  max-height: 95vh;
   outline: none;
   background: white;
   border-radius: 20px;
   overflow: hidden;
+`;
 
-  > div:nth-child(1) {
-    background: ${customPalette.secondaryColor};
-    width: 3px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    border-radius: 20px;
-    height: 100%;
+const GridPDF = styled(Grid)`
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+
+  > embed {
+    height: fit-content;
+    min-height: 600px;
+    padding: 0 0 30px 0;
+    width: 100%;
   }
+`;
+
+const CloseOutlineStyle = styled(CloseOutline)`
+  border-radius: 20px;
+  position: absolute;
+  cursor: pointer;
+  background: red;
+  color: white;
+  width: 28px;
+  right: 8px;
+  top: 8px;
 `;
 
 const ModalViewSheetPDF: React.FC = () => {
@@ -53,9 +69,6 @@ const ModalViewSheetPDF: React.FC = () => {
   const isStatus = useAppSelector(getStatusValueBlobSheetPDF);
   const dispatch = useAppDispatch();
 
-  // React.useEffect(() => {
-  //   dispatch(updateLoadingApp(false));
-  // }, []);
   dispatch(updateLoadingApp(false));
 
   return (
@@ -78,18 +91,22 @@ const ModalViewSheetPDF: React.FC = () => {
           height: "fit-content",
           minWidth: "300px",
           minHeight: "500px",
+          maxWidth: "800px",
         }}
       >
         <Fade in={isStatus}>
           <BoxStyle>
-            <Grid item xs={12} justifyContent="center" alignItems="center">
+            <CloseOutlineStyle
+              onClick={() => dispatch(updateStatusModalValueBlobPDF(false))}
+            />
+            <GridPDF item xs={12} justifyContent="center" alignItems="center">
               <embed
                 type="application/pdf"
                 width="400px"
                 height="500px"
                 src={`${valueBlobPDF}#view=FitH`}
               ></embed>
-            </Grid>
+            </GridPDF>
           </BoxStyle>
         </Fade>
       </Modal>

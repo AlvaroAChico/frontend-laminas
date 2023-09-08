@@ -9,6 +9,7 @@ import { useGetPopularSheetsQuery } from "../../../core/store/sheets/sheetsAPI";
 import SectionPopularSearchSkeleton from "./skeleton/section-popular-search-skeleton";
 import { useAppDispatch } from "../../../app/hooks";
 import { updateCurrentSearchWord } from "../../../core/store/sheets/sheetsSlice";
+import { useNavigate } from "react-router-dom";
 
 const WrapperPopularSearch = styled.div`
   display: flex;
@@ -37,9 +38,11 @@ const WrapperBookImg = styled.img`
 const SectionPopularSearch: React.FC = () => {
   const { data, isLoading } = useGetPopularSheetsQuery("");
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleSearchPopular = (word: string) => {
     dispatch(updateCurrentSearchWord(word));
+    navigate("/laminas");
   };
 
   return (

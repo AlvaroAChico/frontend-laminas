@@ -30,6 +30,7 @@ import { settingsAPP } from "../../config/environments/settings";
 import { BubbleMenu, EditorProvider } from "@tiptap/react";
 import ListItem from "@tiptap/extension-list-item";
 import StarterKit from "@tiptap/starter-kit";
+import { Toaster, toast } from "react-hot-toast";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -81,7 +82,7 @@ const WrapperRuleImg = styled.img`
 `;
 
 const ContainerImage = styled.div`
-  max-height: 350px;
+  max-height: 420px;
   overflow: hidden;
 
   > img {
@@ -216,7 +217,8 @@ const ModalSheetDetail: React.FC = () => {
         })
         .catch((error: any) => {
           // Maneja cualquier error que pueda ocurrir durante la solicitud
-          console.error("Error al obtener el archivo PDF:", error);
+          // console.error("Error al obtener el archivo PDF:", error.request);
+          toast.error("Lo sentimos, parece que no cuentas con un plan activo");
           dispatch(updateLoadingApp(false));
         });
     } else {
@@ -248,6 +250,7 @@ const ModalSheetDetail: React.FC = () => {
 
   return (
     <>
+      <Toaster />
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"

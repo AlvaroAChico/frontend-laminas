@@ -121,7 +121,7 @@ const SearchLamina: React.FC<IOwnProps> = ({
         value={activeWord}
         onChange={handleChange}
       />
-      <WrappeSearch onClick={handleKeyUp}>
+      <WrappeSearch onClick={() => submitWrapper(handleSubmit)()}>
         {isLoading ? <LoaderStyle></LoaderStyle> : <Search />}
       </WrappeSearch>
     </WrapperSearch>
