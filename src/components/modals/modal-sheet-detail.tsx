@@ -31,6 +31,8 @@ import { BubbleMenu, EditorProvider } from "@tiptap/react";
 import ListItem from "@tiptap/extension-list-item";
 import StarterKit from "@tiptap/starter-kit";
 import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { resetDataKonva } from "../../core/store/konva-editor/konva-editorSlice";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -164,19 +166,17 @@ const ModalSheetDetail: React.FC = () => {
     includeRetira: false,
   });
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { handleGetToken } = useDataUser();
 
   const handleEdit = () => {
     const user = handleGetToken();
     if (user.token) {
+      dispatch(resetDataKonva());
       dispatch(updateCurrentSheetEdit(currentSheetDetail.tira));
       dispatch(updateCurrentSheetEditUUID(currentSheetDetail.uuid));
-      localStorage.setItem(
-        APP_CONSTANS.CURRENT_IMAGE_EDIT,
-        currentSheetDetail.tira
-      );
-      location.href = "/editor";
+      navigate("/editor");
     } else {
       dispatch(updateStatusModalSheetDetail(false));
       dispatch(updateStatusModalRegister(true));

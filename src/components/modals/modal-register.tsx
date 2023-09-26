@@ -35,11 +35,9 @@ import BookImg from "../../assets/img/book_icon.png";
 import LogoImg from "../../assets/img/logo.svg";
 import ReCAPTCHA from "react-google-recaptcha";
 import styled from "styled-components";
-import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../constants/app";
 import useDataUser from "../../utils/hooks/use-data-user";
 import CustomLoader from "../custom-loader/custom-loader";
-import { SerializedError } from "@reduxjs/toolkit";
 import {
   ETemporalActions,
   updateTemporalAction,

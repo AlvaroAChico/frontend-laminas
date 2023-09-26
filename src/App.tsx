@@ -5,16 +5,8 @@ import {
   updateCanvasWidth,
 } from "./core/store/konva-editor/konva-editorSlice";
 import { breakpoints } from "./constants/breakpoints";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { updateValueScroll } from "./core/store/app-store/appSlice";
-import ModalLogin from "./components/modals/modal-login";
-import ModalRegister from "./components/modals/modal-register";
-import ModalCoupon from "./components/modals/modal-coupon";
-import ModalRecover from "./components/modals/modal-recover";
-import ModalSheetDetail from "./components/modals/modal-sheet-detail";
-import ModalPayment from "./components/modals/modal-payment";
-import ModalChangePassword from "./components/modals/modal-change-password";
-import ModalViewSheetPDF from "./components/modals/modal-view-sheet-pdf";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -37,15 +29,6 @@ const App: React.FC = () => {
   return (
     <React.Fragment>
       <Outlet />
-      {/* Section Modals */}
-      <ModalLogin />
-      <ModalRegister />
-      <ModalCoupon />
-      <ModalRecover />
-      <ModalSheetDetail />
-      <ModalPayment />
-      <ModalChangePassword />
-      <ModalViewSheetPDF />
     </React.Fragment>
   );
 };

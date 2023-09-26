@@ -1,13 +1,21 @@
 import React from "react";
 import styled from "styled-components";
 import SectionMax from "../../../components/section-max/section-max";
-import { Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { customPalette } from "../../../config/theme/theme";
 import ReactPlayer from "react-player";
 import WaveIcon from "../../../assets/img/wave_icon.png";
 import CustomButtom from "../../../components/custom-button/custom-button";
 import { Phone } from "styled-icons/boxicons-regular";
 import RuleImg from "../../../assets/img/rule_icon.png";
+import Tutorial01IMG from "../../../assets/img/tutorial_01.png";
+import Tutorial02IMG from "../../../assets/img/tutorial_02.png";
+import { PlayCircleFill } from "@styled-icons/bootstrap/PlayCircleFill";
+import { useAppDispatch } from "../../../app/hooks";
+import {
+  updateCurrentTutorialURI,
+  updateStatusModalTutorial,
+} from "../../../core/store/app-store/appSlice";
 
 const WrapperTutorialMain = styled.div`
   background: rgba(85, 182, 94, 0.19);
@@ -59,10 +67,13 @@ const WrapperVideoPlayer = styled.div`
   backdrop-filter: blur(10px);
 
   > div:nth-child(1) {
+    position: relative;
+  }
+  > div div:nth-child(1) {
     width: inherit !important;
     height: fit-content !important;
 
-    > div iframe {
+    > div div iframe {
       max-height: 200px;
       max-width: 350px;
     }
@@ -77,9 +88,30 @@ const WrapperVideoPlayerSecond = styled(WrapperVideoPlayer)`
   box-shadow: 0px 6px 12px 10px rgba(182, 182, 182, 0.25);
 `;
 
-const CustomReactPlayer = styled(ReactPlayer)`
-  border-radius: 20px;
-  width: inherit;
+const OverlayPlay = styled.div`
+  background: #000000b5;
+  place-items: center;
+  position: absolute;
+  max-height: 170px;
+  display: grid;
+  margin: auto;
+  height: 100%;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+
+  > svg {
+    max-width: 45px;
+    color: white;
+    cursor: pointer;
+    transition: 0.5s;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
 `;
 
 const WrapperRuleImg = styled.img`
@@ -91,6 +123,8 @@ const WrapperRuleImg = styled.img`
 `;
 
 const SectionTutorial: React.FC = () => {
+  const dispatch = useAppDispatch();
+
   const handleCallSupport = () => {
     window.location.href = "tel:+51977431451";
   };
@@ -142,7 +176,26 @@ const SectionTutorial: React.FC = () => {
                 <WrapperPlayerFirst>
                   <img src={WaveIcon} />
                   <WrapperVideoPlayerFirst>
-                    <CustomReactPlayer url="https://www.youtube.com/watch?v=1l8HDVmSqTc&ab_channel=elaminas" />
+                    <div>
+                      <Box
+                        component="img"
+                        alt="Tutorial 01"
+                        src={Tutorial01IMG}
+                        sx={{ maxWidth: "300px", width: "100%" }}
+                      />
+                      <OverlayPlay>
+                        <PlayCircleFill
+                          onClick={() => {
+                            dispatch(
+                              updateCurrentTutorialURI(
+                                "https://www.youtube.com/watch?v=1l8HDVmSqTc&ab_channel=elaminas"
+                              )
+                            );
+                            dispatch(updateStatusModalTutorial(true));
+                          }}
+                        />
+                      </OverlayPlay>
+                    </div>
                     <Typography
                       variant="h6"
                       component="h6"
@@ -172,7 +225,26 @@ const SectionTutorial: React.FC = () => {
                 <WrapperPlayerSecond>
                   <img src={WaveIcon} />
                   <WrapperVideoPlayerSecond>
-                    <CustomReactPlayer url="https://www.youtube.com/watch?v=axnZpEjJhPw&ab_channel=elaminas" />
+                    <div>
+                      <Box
+                        component="img"
+                        alt="Tutorial 02"
+                        src={Tutorial02IMG}
+                        sx={{ maxWidth: "300px", width: "100%" }}
+                      />
+                      <OverlayPlay>
+                        <PlayCircleFill
+                          onClick={() => {
+                            dispatch(
+                              updateCurrentTutorialURI(
+                                "https://www.youtube.com/watch?v=axnZpEjJhPw&ab_channel=elaminas"
+                              )
+                            );
+                            dispatch(updateStatusModalTutorial(true));
+                          }}
+                        />
+                      </OverlayPlay>
+                    </div>
                     <Typography
                       variant="h6"
                       component="h6"

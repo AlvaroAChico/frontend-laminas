@@ -17,7 +17,6 @@ import {
   getOldPropertiesTextEditing,
   getStatusApplication,
   getStatusCursorCanva,
-  unselectObjectKonva,
   updateActiveIDKonva,
   updateActiveMenuOption,
   updateComponentKonva,
@@ -25,7 +24,6 @@ import {
   updateStageZoom,
 } from "../../core/store/konva-editor/konva-editorSlice";
 import MenuOptions from "./components/menu-options/menu-options";
-import SelectedOptions from "./components/selected-options/selected-options";
 import ZoomOptions from "./components/alternative-options/zoom-options";
 import GlobalItemKonva, {
   KonvaTypeItem,
@@ -37,10 +35,7 @@ import MenuBarOptions from "./components/menu-bar-options/menu-bar-options";
 import downloadAnimation from "../../assets/json/download_animation.json";
 import Lottie from "lottie-react";
 import BottomNavigationPanel from "./components/bottom-navigation-panel/bottom-navigation-panel";
-import Cookies from "js-cookie";
-import { usePostLaminasByUUIDMutation } from "../../core/store/editor/editorAPI";
 import WebFont from "webfontloader";
-import useAuth from "../../utils/hooks/use-auth";
 import useDataUser from "../../utils/hooks/use-data-user";
 import { EFuncionality } from "../../core/store/auth/types/auth-types";
 import {

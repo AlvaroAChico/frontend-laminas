@@ -16,6 +16,10 @@ import SectionMax from "../../../components/section-max/section-max";
 import { settings } from "./config-slider";
 import { ISheetDefaultProps } from "../../../core/store/sheets/types/laminas-type";
 import SectionLaminasSkeleton from "./skeleton/section-laminas-skeleton";
+import {
+  useDeleteFavoriteSheetMutation,
+  usePostAddFavoriteSheetMutation,
+} from "../../../core/store/favorites/favoritesAPI";
 
 const WrapperSlider = styled.div`
   height: 100%;
@@ -75,9 +79,39 @@ const WrapperPencilImg = styled.img`
 `;
 
 const SectionLaminas: React.FC = () => {
+  const [currentUUID, setCurrentUUID] = React.useState("");
   const sliderRef = React.useRef<any>(null);
 
-  const { data, isLoading } = useGetRecommendedSheetsQuery("");
+  const { data, isLoading, refetch } = useGetRecommendedSheetsQuery("");
+
+  const [deleteFavoriteSheet, resultDelete] = useDeleteFavoriteSheetMutation();
+  const [postAddFavoriteSheet, resultAdd] = usePostAddFavoriteSheetMutation();
+
+  const handleAddFavoriteSheet = (uuid: string) => {
+    setCurrentUUID(uuid);
+    postAddFavoriteSheet(uuid);
+  };
+
+  const handleDeleteFavoriteSheet = (uuid: string) => {
+    setCurrentUUID(uuid);
+    deleteFavoriteSheet(uuid);
+  };
+
+  React.useEffect(() => {
+    if (
+      resultDelete != null &&
+      resultDelete != undefined &&
+      resultDelete.isSuccess
+    ) {
+      refetch();
+    }
+  }, [resultDelete]);
+
+  React.useEffect(() => {
+    if (resultAdd != null && resultAdd != undefined && resultAdd.isSuccess) {
+      refetch();
+    }
+  }, [resultAdd]);
 
   return (
     <>
@@ -121,10 +155,14 @@ const SectionLaminas: React.FC = () => {
                     nroDownloads={100}
                     nroView={sheet.numberOfViews}
                     infoSheet={sheet}
-                    handleAddFavoriteSheet={() => null}
-                    handleDeleteFavoriteSheet={() => null}
-                    isLoadingAdd={false}
-                    isLoadingDelete={false}
+                    handleAddFavoriteSheet={handleAddFavoriteSheet}
+                    handleDeleteFavoriteSheet={handleDeleteFavoriteSheet}
+                    isLoadingAdd={
+                      resultAdd.isLoading && currentUUID == sheet.uuid
+                    }
+                    isLoadingDelete={
+                      resultDelete.isLoading && currentUUID == sheet.uuid
+                    }
                   />
                 </ItemSlick>
               );

@@ -58,16 +58,8 @@ export const sheetsAPI = createApi({
   endpoints: (build) => ({
     getRecommendedSheets: build.query<ISheetDefaultProps[], any>({
       query: () => {
-        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-
-        if (dataUser != null && dataUser != undefined) {
-          return {
-            url: `/sheets?filter[is_recommended]=1`,
-            method: "GET",
-          };
-        }
         return {
-          url: `/free-sheets?filter[is_recommended]=1`,
+          url: `/sheets?filter[is_recommended]=1`,
           method: "GET",
         };
       },
@@ -83,19 +75,12 @@ export const sheetsAPI = createApi({
     }),
     getAllSheetsPaginate: build.mutation<ISheetsResponse, ISheets>({
       query: ({ page, size, word }) => {
-        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
         const filtersOptions = `?render=paginate&page=${page}${
           size ? `&size=${size}` : ""
         }${word ? `&filter[name]=${word}` : ""}&include=tags,categories`;
 
-        if (dataUser != null && dataUser != undefined) {
-          return {
-            url: `/sheets${filtersOptions}`,
-            method: "GET",
-          };
-        }
         return {
-          url: `/free-sheets${filtersOptions}`,
+          url: `/sheets${filtersOptions}`,
           method: "GET",
         };
       },
@@ -108,7 +93,7 @@ export const sheetsAPI = createApi({
         }${word ? `&filter[name]=${word}` : ""}`;
 
         return {
-          url: `/free-sheets/editor${filtersOptions}`,
+          url: `/laminas/editor${filtersOptions}`,
           method: "GET",
         };
       },

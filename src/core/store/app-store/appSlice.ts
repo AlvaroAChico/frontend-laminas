@@ -15,6 +15,7 @@ export interface LandingState {
   statusModalPayment: boolean;
   statusModalChangePassword: boolean;
   statusModalValueBlobPDF: boolean;
+  statusModalViewTutorial: boolean;
   statusIframePayment: boolean;
   dataUserAuth: IAuthData;
   tokenUserAuth: string;
@@ -25,6 +26,7 @@ export interface LandingState {
   statusStepPayment: number;
   valuePlanPay: number;
   valueBlobSheetPDF: any;
+  currentTutorialURI: string;
 }
 
 const initialState: LandingState = {
@@ -39,6 +41,7 @@ const initialState: LandingState = {
   statusModalPayment: false,
   statusModalChangePassword: false,
   statusModalValueBlobPDF: false,
+  statusModalViewTutorial: false,
   statusIframePayment: false,
   dataUserAuth: {} as IAuthData,
   tokenUserAuth: "",
@@ -49,6 +52,7 @@ const initialState: LandingState = {
   valuePlanPay: 0,
   valueBlobSheetPDF: null,
   currentSheetEditUUID: "",
+  currentTutorialURI: "",
 };
 
 export const appSlice = createSlice({
@@ -81,6 +85,9 @@ export const appSlice = createSlice({
     },
     updateStatusModalPayment: (state, action: PayloadAction<boolean>) => {
       state.statusModalPayment = action.payload;
+    },
+    updateStatusModalTutorial: (state, action: PayloadAction<boolean>) => {
+      state.statusModalViewTutorial = action.payload;
     },
     updateStatusIframePayment: (state, action: PayloadAction<boolean>) => {
       state.statusIframePayment = action.payload;
@@ -127,6 +134,9 @@ export const appSlice = createSlice({
     updateValueBlobSheetPDF: (state, action: PayloadAction<any>) => {
       state.valueBlobSheetPDF = action.payload;
     },
+    updateCurrentTutorialURI: (state, action: PayloadAction<string>) => {
+      state.currentTutorialURI = action.payload;
+    },
   },
 });
 
@@ -142,6 +152,7 @@ export const {
   updateCurrentSheetDetail,
   updateStatusModalPayment,
   updateStatusModalChangePassword,
+  updateStatusModalTutorial,
   updateDataFunctionality,
   updateDataToken,
   updateStatusIframePayment,
@@ -152,6 +163,7 @@ export const {
   updateValueBlobSheetPDF,
   updateStatusModalValueBlobPDF,
   updateCurrentSheetEditUUID,
+  updateCurrentTutorialURI,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
@@ -170,6 +182,8 @@ export const getStatusModalPayment = (state: RootState) =>
   state.app.statusModalPayment;
 export const getStatusModalChangePassword = (state: RootState) =>
   state.app.statusModalChangePassword;
+export const getStatusModalTutorial = (state: RootState) =>
+  state.app.statusModalViewTutorial;
 export const getStatusValueBlobSheetPDF = (state: RootState) =>
   state.app.statusModalValueBlobPDF;
 export const getStatusIframePayment = (state: RootState) =>
@@ -191,5 +205,7 @@ export const getStatusStepPayment = (state: RootState) =>
 export const getValuePlanPay = (state: RootState) => state.app.valuePlanPay;
 export const getValueBlobSheetPDF = (state: RootState) =>
   state.app.valueBlobSheetPDF;
+export const getCurrentTutorialURI = (state: RootState) =>
+  state.app.currentTutorialURI;
 
 export default appSlice.reducer;

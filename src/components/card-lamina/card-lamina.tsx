@@ -142,6 +142,17 @@ const LoaderStyle = styled.span`
   box-sizing: border-box;
   animation: ${rotate} 1s linear infinite;
 `;
+const ContainerFavourite = styled.div`
+  position: relative;
+`;
+const CustomStarFill = styled(StarFill)`
+  position: absolute;
+  z-index: 10;
+`;
+const CustomStar = styled(Star)`
+  position: absolute;
+  z-index: 10;
+`;
 
 interface IOwnProps {
   id?: number;
@@ -192,7 +203,7 @@ const CardLamina: React.FC<IOwnProps> = ({
         createdAt: infoSheet.createdAt,
         categories: infoSheet.categories,
         tags: infoSheet.tags,
-        tira: blobImage,
+        tira: image,
       } as ISheetDefaultProps)
     );
     dispatch(updateStatusModalSheetDetail(true));
@@ -200,48 +211,41 @@ const CardLamina: React.FC<IOwnProps> = ({
 
   const handleLoaded = () => setStatusLoading(false);
 
-  const [blobImage, setBlobImage] = React.useState<any>();
-
   const { handleGetToken } = useDataUser();
 
   const handleEdit = React.useCallback(() => {
     const user = handleGetToken();
     if (user.token) {
       dispatch(resetDataKonva());
-      dispatch(updateCurrentSheetEdit(blobImage));
+      dispatch(updateCurrentSheetEdit(image));
       dispatch(updateCurrentSheetEditUUID(uuid));
       navigate("/editor");
     } else {
       dispatch(updateStatusModalRegister(true));
     }
-  }, [blobImage]);
+  }, [image]);
 
-  async function fetchBlob() {
-    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-    let token = "";
-    if (dataUser != null && dataUser != undefined) {
-      const user = JSON.parse(dataUser) as IAuthData;
-      token = user.token;
-    }
+  // async function fetchBlob() {
+  //   const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+  //   let token = "";
+  //   if (dataUser != null && dataUser != undefined) {
+  //     const user = JSON.parse(dataUser) as IAuthData;
+  //     token = user.token;
+  //   }
 
-    const response = await fetch(image, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  //   const response = await fetch(image, {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
 
-    if (response.status === 200) {
-      const imageBlob = await response.blob();
-      const imageObjectURL = URL.createObjectURL(imageBlob);
-      setBlobImage(imageObjectURL);
-    }
-  }
-
-  React.useEffect(() => {
-    fetchBlob();
-  }, []);
-
+  //   if (response.status === 200) {
+  //     const imageBlob = await response.blob();
+  //     const imageObjectURL = URL.createObjectURL(imageBlob);
+  //     setBlobImage(imageObjectURL);
+  //   }
+  // }
   return (
     <>
       <Card
@@ -260,7 +264,7 @@ const CardLamina: React.FC<IOwnProps> = ({
       >
         <CardMedia
           component="img"
-          image={blobImage}
+          image={image}
           sx={{ maxHeight: "225px", objectPosition: "top", cursor: "pointer" }}
           onLoad={handleLoaded}
           onClick={handleView}
@@ -277,12 +281,17 @@ const CardLamina: React.FC<IOwnProps> = ({
             </div>
             {isFavourite != null && (
               <>
-                <div>
+                <ContainerFavourite>
                   {isFavourite ? (
                     <>
                       {!isLoadingDelete ? (
-                        <StarFill
-                          onClick={() => handleDeleteFavoriteSheet(uuid)}
+                        <CustomStarFill
+                          onClick={() => {
+                            handleDeleteFavoriteSheet(uuid);
+                            setTimeout(() => {
+                              dispatch(updateStatusModalSheetDetail(false));
+                            }, 10);
+                          }}
                         />
                       ) : (
                         <LoaderStyle></LoaderStyle>
@@ -291,13 +300,20 @@ const CardLamina: React.FC<IOwnProps> = ({
                   ) : (
                     <>
                       {!isLoadingAdd ? (
-                        <Star onClick={() => handleAddFavoriteSheet(uuid)} />
+                        <CustomStar
+                          onClick={() => {
+                            handleAddFavoriteSheet(uuid);
+                            setTimeout(() => {
+                              dispatch(updateStatusModalSheetDetail(false));
+                            }, 10);
+                          }}
+                        />
                       ) : (
                         <LoaderStyle></LoaderStyle>
                       )}
                     </>
                   )}
-                </div>
+                </ContainerFavourite>
               </>
             )}
           </WrapperNroLamina>

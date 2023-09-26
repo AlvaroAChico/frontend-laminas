@@ -171,7 +171,7 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
         currentSize ? `&size=${currentSize}` : ""
       }${currentWord ? `&filter[name]=${currentWord}` : ""}`;
       axios({
-        url: `${settingsAPP.api.sheets}/free-sheets/editor${filtersOptions}`,
+        url: `${settingsAPP.api.sheets}/laminas/editor${filtersOptions}`,
         method: "GET",
         headers: {
           ContentType: "application/json",
