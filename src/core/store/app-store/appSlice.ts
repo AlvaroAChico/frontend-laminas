@@ -27,6 +27,8 @@ export interface LandingState {
   valuePlanPay: number;
   valueBlobSheetPDF: any;
   currentTutorialURI: string;
+  currentImageAvatar: string;
+  userHavePlan: boolean;
 }
 
 const initialState: LandingState = {
@@ -53,6 +55,8 @@ const initialState: LandingState = {
   valueBlobSheetPDF: null,
   currentSheetEditUUID: "",
   currentTutorialURI: "",
+  currentImageAvatar: "",
+  userHavePlan: false,
 };
 
 export const appSlice = createSlice({
@@ -137,6 +141,12 @@ export const appSlice = createSlice({
     updateCurrentTutorialURI: (state, action: PayloadAction<string>) => {
       state.currentTutorialURI = action.payload;
     },
+    updateCurrentImageAvatar: (state, action: PayloadAction<string>) => {
+      state.currentImageAvatar = action.payload;
+    },
+    updateCurrentPlan: (state, action: PayloadAction<boolean>) => {
+      state.userHavePlan = action.payload;
+    },
   },
 });
 
@@ -164,6 +174,8 @@ export const {
   updateStatusModalValueBlobPDF,
   updateCurrentSheetEditUUID,
   updateCurrentTutorialURI,
+  updateCurrentImageAvatar,
+  updateCurrentPlan,
 } = appSlice.actions;
 
 export const getValueScroll = (state: RootState) => state.app.valueScroll;
@@ -207,5 +219,8 @@ export const getValueBlobSheetPDF = (state: RootState) =>
   state.app.valueBlobSheetPDF;
 export const getCurrentTutorialURI = (state: RootState) =>
   state.app.currentTutorialURI;
+export const getCurrentImageAvatar = (state: RootState) =>
+  state.app.currentImageAvatar;
+export const getUserHavePlan = (state: RootState) => state.app.userHavePlan;
 
 export default appSlice.reducer;

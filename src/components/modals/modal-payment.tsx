@@ -18,6 +18,9 @@ import {
   updateStatusModalPayment,
   updateStatusStepPayment,
   updateValuePlanPay,
+  getStatusAuthenticated,
+  getUserHavePlan,
+  updateCurrentPlan,
 } from "../../core/store/app-store/appSlice";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { CheckCircle } from "@styled-icons/bootstrap/CheckCircle";
@@ -37,6 +40,12 @@ import { settingsAPP } from "../../config/environments/settings";
 import { IAuthorizationError } from "../../core/store/plans/types/plans-types";
 import NiubizPaymentIMG from "../../assets/img/niubiz_payment.png";
 import PaymentSkeleton from "./skeletons/payment-skeleton";
+import { breakpoints } from "../../constants/breakpoints";
+import { customPalette } from "../../config/theme/theme";
+import axios from "axios";
+import { IAuthData } from "../../core/store/auth/types/auth-types";
+import Cookies from "js-cookie";
+import { Toaster, toast } from "react-hot-toast";
 
 const BoxStyle = styled(Box)`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -67,20 +76,39 @@ const ContainerFormats = styled.div`
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+
+  > div {
+    width: 30%;
+
+    ${breakpoints.tabletS} {
+      width: 48%;
+    }
+    ${breakpoints.phoneL} {
+      width: 100%;
+    }
+  }
+  ${breakpoints.tabletS} {
+    justify-content: space-around;
+  }
+  ${breakpoints.phoneL} {
+    justify-content: space-between;
+  }
 `;
 
 const ItemFormatDownload = styled.div<{ selected: boolean }>`
   border: 1px solid ${(p) => (p.selected ? "#55B65E" : "transparent")};
   box-shadow: 0px 4px 10px 2px rgba(155, 155, 155, 0.25);
-  justify-content: space-betwen;
+  justify-content: center;
   border-radius: 10px;
   align-items: center;
   row-gap: 10px;
   background: #fff;
   display: flex;
   padding: 5px 8px;
-  width: fit-content;
+  width: 100%;
   cursor: pointer;
+  text-align: center;
+  column-gap: 10px;
 
   > div svg {
     width: ${(p) => (p.selected ? "16px" : "0px")};
@@ -98,15 +126,14 @@ const BodyDetailPlan = styled.div`
     width: 100%;
   }
   > table thead tr {
-    background: #fc4a41;
-    border-radius: 20px;
-    color: white;
+    background: #ff999333;
+    border-radius: 10px;
+    color: black;
   }
   > table thead tr td {
+    border-radius: 10px;
     text-align: center;
-    border-bottom: 1px solid #fc4a41;
     padding: 10px;
-    border-radius: 20px;
   }
   > table tbody tr td {
     text-align: center;
@@ -123,10 +150,11 @@ const WrapperButtonsDetail = styled.div`
   gap: 10px;
 `;
 const ContainerAddNiubiz = styled.div`
-  padding: 20px;
-  border-radius: 20px;
-  margin: 15px 0px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+  border-radius: 20px;
+  max-width: 600px;
+  padding: 20px;
+  margin: auto;
 
   > img {
     width: 100%;
@@ -137,10 +165,47 @@ const ContainerTDTotal = styled.td`
   text-transform: uppercase;
 `;
 
+const ContainerSuccess = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 5px;
+`;
+
+const ContainerTitle = styled.div`
+  display: grid;
+  place-items: center;
+  margin-bottom: 20px;
+`;
+
+const ItemTrx = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  > p {
+    width: fit-content;
+
+    ${breakpoints.phoneL} {
+      width: 100%;
+    }
+  }
+  > p:nth-child(1) {
+    color: #0066ff;
+  }
+`;
+
 const ModalPayment: React.FC = () => {
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
   const [txkNiubiz, setTxkNiubiz] = React.useState("");
+  const [isLoadingFreePlan, setIsLoadingFreePlan] =
+    React.useState<boolean>(false);
   const [paymentError, setPaymentError] = React.useState<IAuthorizationError>();
+  const isAuthenticated = useAppSelector(getStatusAuthenticated);
+  const userHavePlan = useAppSelector(getUserHavePlan);
   const isStatus = useAppSelector(getStatusModalPayment);
   const queryParams = window.location.search;
   const steps = ["Plan", "Detalle", "Finalizar"];
@@ -183,6 +248,37 @@ const ModalPayment: React.FC = () => {
     useGetAuthorizationPaymentMutation();
 
   const handleNextStepPay = () => {
+    if (!userHavePlan && isAuthenticated && valuePlanPay == 0) {
+      setIsLoadingFreePlan(true);
+      const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+      if (dataUser != null && dataUser != undefined) {
+        const user = JSON.parse(dataUser) as IAuthData;
+        axios({
+          url: `${settingsAPP.api.user}/users/plan-free`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            ContentType: "application/json",
+            Accept: "application/json",
+          },
+        })
+          .then((result: any) => {
+            setIsLoadingFreePlan(false);
+            toast.success(result.data.message);
+            dispatch(updateCurrentPlan(true));
+            dispatch(updateStatusModalPayment(false));
+          })
+          .catch((err) => {
+            setIsLoadingFreePlan(false);
+            toast.error(
+              err.response.data.message != null
+                ? err.response.data.message
+                : "Ha ocurrido un error. Por favor contacta con el administrador"
+            );
+          });
+      }
+      return true;
+    }
     if (valuePlanPay != 0) {
       getAccessToken("");
     }
@@ -212,7 +308,7 @@ const ModalPayment: React.FC = () => {
   }, [resultSessionToken]);
 
   React.useEffect(() => {
-    const txkConstans = queryParams.split("&")[0].split("=")[0];
+    const txkConstans = queryParams?.split("?")[1]?.split("=")[0];
     const txk = queryParams.split("&")[0].split("=")[1];
     if (!!txk && txk != null && txk != "" && txkConstans == "txk") {
       window.history.pushState({}, document.title, "/planes");
@@ -239,17 +335,20 @@ const ModalPayment: React.FC = () => {
 
   return (
     <>
+      <Toaster />
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={isStatus}
         onClose={() => {
-          const buttonClearStyles = document.getElementById(
-            "button-clear-niubiz"
-          );
-          if (buttonClearStyles) {
-            buttonClearStyles.click();
-            dispatch(updateStatusModalPayment(false));
+          if (userHavePlan) {
+            const buttonClearStyles = document.getElementById(
+              "button-clear-niubiz"
+            );
+            if (buttonClearStyles) {
+              buttonClearStyles.click();
+              dispatch(updateStatusModalPayment(false));
+            }
           }
         }}
         closeAfterTransition
@@ -262,7 +361,9 @@ const ModalPayment: React.FC = () => {
       >
         <Fade in={isStatus}>
           <BoxStyle>
-            <Box sx={{ width: "80vw", minHeight: "60vh" }}>
+            <Box
+              sx={{ width: "80vw", height: "fit-content", maxWidth: "800px" }}
+            >
               <Stepper activeStep={statusStepPay} alternativeLabel>
                 {steps.map((label) => (
                   <Step key={label}>
@@ -409,7 +510,7 @@ const ModalPayment: React.FC = () => {
                       />
                     </Box>
                   )}
-                  {valuePlanPay == 0 && (
+                  {userHavePlan && isAuthenticated && valuePlanPay == 0 && (
                     <Typography
                       component="p"
                       variant="caption"
@@ -426,12 +527,15 @@ const ModalPayment: React.FC = () => {
                     borderStyle="NONE"
                     action={handleNextStepPay}
                     isLoading={
+                      isLoadingFreePlan ||
                       resultAccessToken.isLoading ||
                       resultSessionToken.isLoading
                     }
                     customStyle={`
                       width: "fit-content";
                       ${
+                        userHavePlan &&
+                        isAuthenticated &&
                         valuePlanPay == 0 &&
                         `
                         background: gray;
@@ -495,87 +599,131 @@ const ModalPayment: React.FC = () => {
                 <ContainerFinishPay>
                   <div>
                     {resultAuthorization.isLoading && <PaymentSkeleton />}
-                    {paymentError == null && !resultAuthorization.isLoading ? (
-                      <>
-                        <div>
+                    {paymentError == null && !resultAuthorization.isLoading && (
+                      <ContainerSuccess>
+                        <ContainerTitle>
+                          <Typography
+                            variant="h5"
+                            component="h5"
+                            fontWeight={600}
+                            color={"#55B65E"}
+                          >
+                            ¡ Felicidades !
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            component="h6"
+                            color={"#55B65E"}
+                          >
+                            Tu transacción fue procesada con éxito
+                          </Typography>
+                        </ContainerTitle>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Código de transacción:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {resultAuthorization.data?.fulfillment}
                           </Typography>
-                        </div>
-                        <div>
-                          <Typography variant="body2" component="p">
-                            ID de Transacción:
-                            {resultAuthorization.data?.transactionUUID}
-                          </Typography>
-                        </div>
-                        <div>
-                          <Typography variant="body2" component="p">
-                            ID Token:
-                            {resultAuthorization.data?.tokenId}
-                          </Typography>
-                        </div>
+                        </ItemTrx>
                         {resultAuthorization.data?.yapeId != null &&
                           resultAuthorization.data?.yapeId != "" && (
-                            <div>
+                            <ItemTrx>
                               <Typography variant="body2" component="p">
                                 ID Transacción Yape:
+                              </Typography>
+                              <Typography variant="body2" component="p">
                                 {resultAuthorization.data?.yapeId}
                               </Typography>
-                            </div>
+                            </ItemTrx>
                           )}
-                        <div>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Número de Orden:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {resultAuthorization.data?.purchaseNumber}
                           </Typography>
-                        </div>
-                        <div>
+                        </ItemTrx>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Tarjeta:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {resultAuthorization.data?.card}
                           </Typography>
-                        </div>
-                        <div>
+                        </ItemTrx>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Marca:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {resultAuthorization.data?.brand}
                           </Typography>
-                        </div>
-                        <div>
+                        </ItemTrx>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Monto:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {resultAuthorization.data?.amount}
                           </Typography>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>
+                        </ItemTrx>
+                      </ContainerSuccess>
+                    )}
+                    {paymentError != null && !resultAuthorization.isLoading && (
+                      <ContainerSuccess>
+                        <ContainerTitle>
+                          <Typography
+                            variant="h5"
+                            component="h5"
+                            fontWeight={600}
+                            color={"#ed6e6e"}
+                          >
+                            ¡ Lo Sentimos !
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            component="h6"
+                            color={"#ed6e6e"}
+                          >
+                            La transacción no pudo ser procesada. Por favor
+                            contacta con tu administrador
+                          </Typography>
+                        </ContainerTitle>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             ID Transacción:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {paymentError?.transactionUUID || ""}
                           </Typography>
-                        </div>
-                        <div>
+                        </ItemTrx>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Monto:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {paymentError?.amount || ""}
                           </Typography>
-                        </div>
-                        <div>
+                        </ItemTrx>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Tarjeta:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {paymentError?.card || ""}
                           </Typography>
-                        </div>
-                        <div>
+                        </ItemTrx>
+                        <ItemTrx>
                           <Typography variant="body2" component="p">
                             Marca:
+                          </Typography>
+                          <Typography variant="body2" component="p">
                             {paymentError?.brand || ""}
                           </Typography>
-                        </div>
-                      </>
+                        </ItemTrx>
+                      </ContainerSuccess>
                     )}
                   </div>
                 </ContainerFinishPay>

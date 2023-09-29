@@ -317,13 +317,12 @@ const SubMenuTexto: React.FC<IOwnProps> = ({ isVisible, layerRef }) => {
             )}
           </LoadingArturito>
           <WrapperResponseIA>
-            {responseOpenAi.data != null &&
-              responseOpenAi.data!.choices.length > 0 && (
-                <>{responseOpenAi.data!.choices[0].text}</>
-              )}
+            {responseOpenAi.data != null && !!responseOpenAi.data!.message && (
+              <>{responseOpenAi.data!.message}</>
+            )}
           </WrapperResponseIA>
           <ButtonAddResponse
-            onClick={() => handleAddText(responseOpenAi.data!.choices[0].text)}
+            onClick={() => handleAddText(responseOpenAi.data!.message)}
           >
             Agregar al editor
           </ButtonAddResponse>

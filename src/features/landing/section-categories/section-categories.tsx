@@ -136,7 +136,7 @@ const SectionCategories: React.FC = () => {
             <ItemSlick key={Date.now()}>
               <CardCategory
                 id={category.id}
-                image={category.image}
+                image={category.picture}
                 name={category.name}
               />
             </ItemSlick>

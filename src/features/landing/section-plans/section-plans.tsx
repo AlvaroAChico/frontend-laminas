@@ -7,8 +7,19 @@ import CustomButtom from "../../../components/custom-button/custom-button";
 import { Phone } from "styled-icons/boxicons-solid";
 import Plans from "../../../components/plans/plans";
 import PlansMobile from "../../../components/plans/plans-mobile";
-import { updateStatusModalPayment } from "../../../core/store/app-store/appSlice";
+import {
+  updateStatusModalLogin,
+  updateStatusModalPayment,
+  updateStatusStepPayment,
+  updateValuePlanPay,
+} from "../../../core/store/app-store/appSlice";
 import { useAppDispatch } from "../../../app/hooks";
+import useDataUser from "../../../utils/hooks/use-data-user";
+import { APP_CONSTANS } from "../../../constants/app";
+import {
+  ETemporalActions,
+  updateTemporalAction,
+} from "../../../core/store/temporal/temporalSlice";
 
 const WrapperPlans = styled.div`
   display: flex;
@@ -25,6 +36,33 @@ const SectionPlans: React.FC = () => {
 
   const handleCallSupport = () => {
     window.location.href = "tel:+51977431451";
+  };
+
+  const clearDataPayment = () => {
+    localStorage.removeItem(APP_CONSTANS.ACTION_PAGE_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.ACCESS_TOKEN_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.PURCHASE_NUMBER_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.SESSION_TOKEN_NIUBIZ);
+    localStorage.removeItem(APP_CONSTANS.AMOUNT_NIUBIZ);
+  };
+
+  const { handleGetToken } = useDataUser();
+
+  const handleOpenModalPay = (step: number) => {
+    const user = handleGetToken();
+    if (user.token) {
+      if (step == 1) {
+        clearDataPayment();
+      }
+      dispatch(updateStatusStepPayment(0));
+      dispatch(updateValuePlanPay(step));
+      dispatch(updateStatusModalPayment(true));
+    } else {
+      if (step != 0) {
+        dispatch(updateTemporalAction(ETemporalActions.OPEN_PAYMENT));
+      }
+      dispatch(updateStatusModalLogin(true));
+    }
   };
 
   return (
@@ -77,16 +115,16 @@ const SectionPlans: React.FC = () => {
           <Grid item xs={12} justifyContent={"center"} alignItems={"center"}>
             {QueriePhone && (
               <Plans
-                basicAction={() => dispatch(updateStatusModalPayment(true))}
-                mediumAction={() => dispatch(updateStatusModalPayment(true))}
-                premiumAction={() => dispatch(updateStatusModalPayment(true))}
+                basicAction={() => handleOpenModalPay(1)}
+                mediumAction={() => handleOpenModalPay(2)}
+                premiumAction={() => handleOpenModalPay(3)}
               />
             )}
             {!QueriePhone && (
               <PlansMobile
-                basicAction={() => dispatch(updateStatusModalPayment(true))}
-                mediumAction={() => dispatch(updateStatusModalPayment(true))}
-                premiumAction={() => dispatch(updateStatusModalPayment(true))}
+                basicAction={() => handleOpenModalPay(1)}
+                mediumAction={() => handleOpenModalPay(2)}
+                premiumAction={() => handleOpenModalPay(3)}
               />
             )}
           </Grid>

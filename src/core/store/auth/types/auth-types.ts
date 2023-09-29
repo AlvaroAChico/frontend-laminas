@@ -48,7 +48,7 @@ export interface UserDTO {
   city: string;
   email: string;
   contactNumber: string;
-  picture: string;
+  image: string;
   googleId: string;
   facebookId: string;
   status: string;
@@ -96,6 +96,22 @@ export interface IGoogleResponseURL {
 export interface ISocialRequest {
   params: string;
   social: string;
+}
+
+export interface IAuthMe {
+  id: number;
+  address: string;
+  city: string;
+  contactNumber: string;
+  createdAt: string;
+  email: string;
+  firstName: string;
+  image: string;
+  isActive: boolean;
+  lastNam: string;
+  plans: string;
+  statu: string;
+  usernam: string;
 }
 
 export enum EFuncionality {

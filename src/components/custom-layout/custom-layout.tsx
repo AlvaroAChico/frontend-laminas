@@ -189,7 +189,7 @@ const CustomLayout: React.FC = () => {
       <ModalRegister />
       <ModalCoupon />
       <ModalRecover />
-      <ModalPayment />
+      {/* <ModalPayment /> */}
       <ModalSheetDetail />
       <ModalChangePassword />
       <ModalViewSheetPDF />

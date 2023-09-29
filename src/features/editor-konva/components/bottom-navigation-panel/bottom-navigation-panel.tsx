@@ -428,17 +428,15 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
                 </p>
               )}
               <ButtonAddResponse
-                onClick={() =>
-                  handleAddText(responseOpenAi.data!.choices[0].text)
-                }
+                onClick={() => handleAddText(responseOpenAi.data!.message)}
               >
                 Agregar
               </ButtonAddResponse>
             </LoadingArturito>
             <WrapperResponseIA>
               {responseOpenAi.data != null &&
-                responseOpenAi.data!.choices.length > 0 && (
-                  <>{responseOpenAi.data!.choices[0].text}</>
+                !!responseOpenAi.data!.message && (
+                  <>{responseOpenAi.data!.message}</>
                 )}
             </WrapperResponseIA>
           </BodyCardArturito>

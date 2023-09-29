@@ -11,8 +11,8 @@ import { useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import useSearchSheet from "../../utils/hooks/use-search-sheet";
 import {
+  updateStatusModalLogin,
   updateStatusModalPayment,
-  updateStatusModalRegister,
   updateStatusStepPayment,
   updateValuePlanPay,
 } from "../../core/store/app-store/appSlice";
@@ -69,7 +69,7 @@ const PlansPage: React.FC = () => {
       if (step != 0) {
         dispatch(updateTemporalAction(ETemporalActions.OPEN_PAYMENT));
       }
-      dispatch(updateStatusModalRegister(true));
+      dispatch(updateStatusModalLogin(true));
     }
   };
 

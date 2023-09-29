@@ -6,7 +6,7 @@ import {
   updateCurrentSheetEdit,
   updateCurrentSheetEditUUID,
   updateLoadingApp,
-  updateStatusModalRegister,
+  updateStatusModalLogin,
   updateStatusModalSheetDetail,
   updateStatusModalValueBlobPDF,
   updateValueBlobSheetPDF,
@@ -23,12 +23,10 @@ import styled from "styled-components";
 import CustomButton from "../custom-button/custom-button";
 import { ICategory, ITag } from "../../core/store/sheets/types/laminas-type";
 import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
-import { APP_CONSTANS } from "../../constants/app";
 import useDataUser from "../../utils/hooks/use-data-user";
 import axios from "axios";
 import { settingsAPP } from "../../config/environments/settings";
 import { BubbleMenu, EditorProvider } from "@tiptap/react";
-import ListItem from "@tiptap/extension-list-item";
 import StarterKit from "@tiptap/starter-kit";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -179,7 +177,7 @@ const ModalSheetDetail: React.FC = () => {
       navigate("/editor");
     } else {
       dispatch(updateStatusModalSheetDetail(false));
-      dispatch(updateStatusModalRegister(true));
+      dispatch(updateStatusModalLogin(true));
     }
   };
 
@@ -215,15 +213,19 @@ const ModalSheetDetail: React.FC = () => {
           dispatch(updateStatusModalSheetDetail(false));
           dispatch(updateStatusModalValueBlobPDF(true));
         })
-        .catch((error: any) => {
-          // Maneja cualquier error que pueda ocurrir durante la solicitud
-          // console.error("Error al obtener el archivo PDF:", error.request);
-          toast.error("Lo sentimos, parece que no cuentas con un plan activo");
+        .catch(async (error: any) => {
+          let errorString = error.response.data;
+          errorString = JSON.parse(await error.response.data.text());
+          toast.error(
+            errorString.message
+              ? errorString.message
+              : "Lo sentimos, hubo un error con la descarga. Por favor contacta con tu administrador"
+          );
           dispatch(updateLoadingApp(false));
         });
     } else {
       dispatch(updateStatusModalSheetDetail(false));
-      dispatch(updateStatusModalRegister(true));
+      dispatch(updateStatusModalLogin(true));
     }
   };
   const ContainerCategoriesResponse = styled.div`

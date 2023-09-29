@@ -41,16 +41,12 @@ import { Cursor } from "@styled-icons/fluentui-system-filled/Cursor";
 import LogoElaminas from "../../../../assets/img/logo.svg";
 import { breakpoints } from "../../../../constants/breakpoints";
 import { Tooltip } from "@mui/material";
-import {
-  getStatusAuthenticated,
-  updateStatusModalLogin,
-  updateStatusModalRegister,
-} from "../../../../core/store/app-store/appSlice";
+import { updateStatusModalLogin } from "../../../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../../../constants/app";
 import { useGetAuthorizationDownloadMutation } from "../../../../core/store/downloads/downloadsAPI";
 import { ComponentKonvaItem } from "../../editor-konva";
-import { Toast, Toaster, toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 const baseCenter = styled.div`
   display: flex;
@@ -307,7 +303,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
         sheets: sheets,
       });
     } else {
-      dispatch(updateStatusModalRegister(true));
+      dispatch(updateStatusModalLogin(true));
     }
   };
 

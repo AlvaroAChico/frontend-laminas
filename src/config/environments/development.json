@@ -10,7 +10,7 @@
     "g_secret_id": "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"
   },
   "api": {
-    "openai": "https://api.openai.com/v1",
+    "openai": "http://localhost:8000/api",
     "landing": "https://landing.elaminas.com/api",
     "laminas": "http://localhost:8000/api",
     "auth": "http://localhost:8000/api",

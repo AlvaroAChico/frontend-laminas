@@ -87,6 +87,13 @@ const SectionBannerRegister: React.FC = () => {
   const splitParams = new URLSearchParams(queryParams);
   const dispatch = useAppDispatch();
 
+  const { handleGetToken } = useDataUser();
+
+  const user = handleGetToken();
+  if (user.token != null && user.token != "") {
+    return null;
+  }
+
   const handleOpenRegister = () => dispatch(updateStatusModalRegister(true));
 
   const { handleUpdateUserAuth, handleUpdateFunctionalities } = useDataUser();

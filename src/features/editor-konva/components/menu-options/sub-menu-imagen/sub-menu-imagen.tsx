@@ -10,7 +10,10 @@ import {
 import { KonvaTypeItem } from "../../global-item-konva/global-item-konva";
 import { ComponentKonvaItem } from "../../../editor-konva";
 import Cookies from "js-cookie";
-import { updateStatusModalRegister } from "../../../../../core/store/app-store/appSlice";
+import {
+  updateStatusModalLogin,
+  updateStatusModalRegister,
+} from "../../../../../core/store/app-store/appSlice";
 import {
   EFuncionality,
   IAuthData,
@@ -118,7 +121,7 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
         handleAddImage(imageObjectURL);
       }
     } else {
-      dispatch(updateStatusModalRegister(true));
+      dispatch(updateStatusModalLogin(true));
     }
   };
 
@@ -310,7 +313,7 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
                       toast.error("Extensión no permitida");
                     }
                   } else {
-                    dispatch(updateStatusModalRegister(true));
+                    dispatch(updateStatusModalLogin(true));
                   }
                 }
               };
@@ -357,7 +360,7 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
                           toast.error("Extensión no permitida");
                         }
                       } else {
-                        dispatch(updateStatusModalRegister(true));
+                        dispatch(updateStatusModalLogin(true));
                       }
                     };
                     reader.readAsDataURL(e!.target!.files[0]);

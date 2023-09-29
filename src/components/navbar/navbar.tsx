@@ -24,6 +24,10 @@ import {
   updateStatusAuthenticated,
   updateStatusModalCoupon,
   updateStatusModalPayment,
+  getCurrentImageAvatar,
+  updateCurrentImageAvatar,
+  getUserHavePlan,
+  updateCurrentPlan,
 } from "../../core/store/app-store/appSlice";
 import { NavLink } from "react-router-dom";
 import AvatarImg from "../../assets/img/avatar_nav.png";
@@ -32,7 +36,6 @@ import {
   useStartLogoutMutation,
   useStartValidationMeMutation,
 } from "../../core/store/auth/authAPI";
-import { IAuthData } from "../../core/store/auth/types/auth-types";
 import "./navbar-styles.css";
 
 import { Bars } from "@styled-icons/fa-solid/Bars";
@@ -50,6 +53,8 @@ import {
   ETemporalActions,
   updateTemporalAction,
 } from "../../core/store/temporal/temporalSlice";
+import BaseAvatarImg from "../../assets/img/avatar_base.png";
+import { IAuthMe } from "../../core/store/auth/types/auth-types";
 
 const WrapperNavbar = styled.div<{ valueScroll: number }>`
   position: fixed;
@@ -105,10 +110,20 @@ const Navbar: React.FC = () => {
   const [statusNavMobile, setStatusNavMobile] = React.useState(false);
   const QueriePhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isAuthenticated = useAppSelector(getStatusAuthenticated);
+  const userHavePlan = useAppSelector(getUserHavePlan);
   const [startLogout, resultLogout] = useStartLogoutMutation();
   const valueScroll = useAppSelector(getValueScroll);
+  const currentAvatar = useAppSelector(getCurrentImageAvatar);
   const open = Boolean(anchorEl);
   const dispatch = useAppDispatch();
+
+  // React.useEffect(() => {
+  //   const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+  //   if (dataUser != null && dataUser != undefined) {
+  //     const user = JSON.parse(dataUser) as IAuthData;
+  //     dispatch(updateCurrentImageAvatar(user.user.image));
+  //   }
+  // }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -123,6 +138,18 @@ const Navbar: React.FC = () => {
   const { handleGetToken } = useDataUser();
 
   const [validationMe, resultMe] = useStartValidationMeMutation();
+
+  React.useEffect(() => {
+    if (resultMe?.data as IAuthMe) {
+      dispatch(updateCurrentImageAvatar(resultMe?.data?.image || ""));
+      if (resultMe.data?.plans) {
+        dispatch(updateCurrentPlan(true));
+      } else {
+        dispatch(updateCurrentPlan(false));
+        dispatch(updateStatusModalPayment(true));
+      }
+    }
+  }, [resultMe.isSuccess]);
 
   React.useEffect(() => {
     const user = handleGetToken();
@@ -272,7 +299,7 @@ const Navbar: React.FC = () => {
                   <Grid item xs={1}>
                     <Avatar
                       alt="Avatar"
-                      src={AvatarImg}
+                      src={currentAvatar ? currentAvatar : BaseAvatarImg}
                       onClick={handleClick}
                     />
                     <Menu

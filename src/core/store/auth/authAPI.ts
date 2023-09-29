@@ -10,6 +10,7 @@ import {
   IChangePassword,
   IGoogleResponseURL,
   ISocialRequest,
+  IAuthMe,
 } from "./types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
 
@@ -124,7 +125,7 @@ export const authAPI = createApi({
       },
       transformResponse: (response: any) => response,
     }),
-    startValidationMe: build.mutation<any, string>({
+    startValidationMe: build.mutation<IAuthMe, string>({
       query: (token) => ({
         headers: {
           Authorization: `Bearer ${token}`,
@@ -132,7 +133,7 @@ export const authAPI = createApi({
         url: "/auth/me",
         method: "GET",
       }),
-      transformResponse: (response: any) => response,
+      transformResponse: (response: IAuthMe) => response,
     }),
   }),
 });

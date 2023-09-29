@@ -71,7 +71,7 @@
           expirationminutes: "20",
           timeouturl: "about:blank",
           merchantlogo:
-            "https://test-editor.elaminas.com//static/media/logo.463949c6e2d9dabce55b4d261639d947.svg",
+            "https://test-editor.elaminas.com/static/media/logo.463949c6e2d9dabce55b4d261639d947.svg",
           formbuttoncolor: "#000000",
           action: `https://test-editor.elaminas.com/api/niubiz/response`,
           complete: function (params) {
@@ -80,6 +80,8 @@
         });
         VisanetCheckout.open();
       };
+      // action: `http://localhost:8000/api/niubiz/response`,
+      // action: `https://test-editor.elaminas.com/api/niubiz/response`,
       const clearStylesIFrame = () => {
         setTimeout(() => {
           document.getElementById("html-id-general").style =

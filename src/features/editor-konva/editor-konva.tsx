@@ -37,13 +37,16 @@ import Lottie from "lottie-react";
 import BottomNavigationPanel from "./components/bottom-navigation-panel/bottom-navigation-panel";
 import WebFont from "webfontloader";
 import useDataUser from "../../utils/hooks/use-data-user";
-import { EFuncionality } from "../../core/store/auth/types/auth-types";
+import { EFuncionality, IAuthMe } from "../../core/store/auth/types/auth-types";
 import {
   getCurrentSheetEdit,
   getCurrentSheetEditUUID,
+  updateCurrentPlan,
   updateCurrentSheetEdit,
+  updateStatusModalPayment,
 } from "../../core/store/app-store/appSlice";
 import { APP_CONSTANS } from "../../constants/app";
+import { useStartValidationMeMutation } from "../../core/store/auth/authAPI";
 
 const WrapperPage = styled.div`
   position: relative;
@@ -257,7 +260,7 @@ const EditorKonva: React.FC = () => {
     }
   };
 
-  const { handleGetFuncionalities } = useDataUser();
+  const { handleGetToken, handleGetFuncionalities } = useDataUser();
 
   React.useEffect(() => {
     const listFunc = handleGetFuncionalities();
@@ -280,6 +283,26 @@ const EditorKonva: React.FC = () => {
           families: ["Arial", "Baskerville", "Calibri", "Cambria"],
         },
       });
+    }
+  }, []);
+
+  const [validationMe, resultMe] = useStartValidationMeMutation();
+
+  React.useEffect(() => {
+    if (resultMe?.data as IAuthMe) {
+      if (resultMe.data?.plans) {
+        dispatch(updateCurrentPlan(true));
+      } else {
+        dispatch(updateCurrentPlan(false));
+        dispatch(updateStatusModalPayment(true));
+      }
+    }
+  }, [resultMe.isSuccess]);
+
+  React.useEffect(() => {
+    const user = handleGetToken();
+    if (user.token != null && user.token != "") {
+      validationMe(user.token);
     }
   }, []);
 

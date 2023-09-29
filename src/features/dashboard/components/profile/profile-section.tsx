@@ -18,8 +18,14 @@ import { Toaster, toast } from "react-hot-toast";
 import useLogger from "../../../../utils/hooks/use-logger";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../../../constants/app";
-import { updateStatusModalChangePassword } from "../../../../core/store/app-store/appSlice";
-import { useAppDispatch } from "../../../../app/hooks";
+import {
+  getCurrentImageAvatar,
+  updateCurrentImageAvatar,
+  updateStatusModalChangePassword,
+} from "../../../../core/store/app-store/appSlice";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
+import { settingsAPP } from "../../../../config/environments/settings";
+import axios from "axios";
 
 const WrapperProfile = styled.div`
   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
@@ -92,6 +98,7 @@ const ProfileSection: React.FC = () => {
   const [user, setUser] = React.useState<IAuthData>();
   const handleInitEditing = () => setIsEditing(true);
   const handleCancelEditing = () => setIsEditing(false);
+  const currentAvatar = useAppSelector(getCurrentImageAvatar);
   const dispatch = useAppDispatch();
 
   const handleFinishEditing = () => {
@@ -166,6 +173,40 @@ const ProfileSection: React.FC = () => {
     document.getElementById("input-file-image")?.click();
   };
 
+  const handleChangeAvatarAPI = (image: Blob) => {
+    const data = new FormData();
+    data.append("picture", image);
+
+    const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+    if (dataUser != null && dataUser != undefined) {
+      const user = JSON.parse(dataUser) as IAuthData;
+      axios({
+        url: `${settingsAPP.api.user}/users/${user.user.id}?_method=PATCH`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          ContentType: "multipart/form-data",
+          Accept: "multipart/form-data",
+        },
+        data: data,
+      })
+        .then((result: any) => {
+          // toast.success(result);
+          console.log("DD -> ", result);
+          dispatch(updateCurrentImageAvatar(result.data.image));
+        })
+        .catch((err) => {
+          toast.error(
+            "Ha ocurrido un error. Por favor contacta con el administrador"
+          );
+        });
+    } else {
+      toast.error(
+        "No se pudo realizar la operación. Contactar con el administrador"
+      );
+    }
+  };
+
   return (
     <WrapperProfile>
       <Toaster />
@@ -189,7 +230,7 @@ const ProfileSection: React.FC = () => {
                 maxWidth: { xs: 160, sm: 140, md: 160 },
               }}
               alt="Avatar"
-              src={BaseAvatarImg}
+              src={currentAvatar ? currentAvatar : BaseAvatarImg}
             />
             <WrapperEdit onClick={handleChangeAvatar}>
               <Edit />
@@ -205,20 +246,12 @@ const ProfileSection: React.FC = () => {
                         .target!.files[0].name.split(".")
                         .pop()
                         .toLowerCase();
-                      if (["PNG", "JPG", "JPEG"].includes(ext!.toUpperCase())) {
-                        Logger("Avatar", evt!.target!.result);
-                        // Crear el Blob a partir del string BLOB
-                        const blob = new Blob([evt!.target!.result], {
-                          type: "image/jpeg",
-                        });
-                        // Crear el objeto File a partir del Blob
-                        const file = new File([blob], "image.jpg", {
-                          type: "image/jpeg",
-                        });
-                      } else {
-                        toast.error("Extensión no permitida");
-                      }
+                      // if (["PNG", "JPG", "JPEG"].includes(ext!.toUpperCase())) {
+                      // } else {
+                      //   toast.error("Extensión no permitida");
+                      // }
                     };
+                    handleChangeAvatarAPI(e!.target!.files[0]);
                     reader.readAsDataURL(e!.target!.files[0]);
                   }
                 }}

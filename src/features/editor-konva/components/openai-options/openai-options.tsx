@@ -14,6 +14,7 @@ import { ComponentKonvaItem } from "../../editor-konva";
 import { breakpoints } from "../../../../constants/breakpoints";
 import { usePostIAForAppMutation } from "../../../../core/store/openAi/openAiAPI";
 import useLogger from "../../../../utils/hooks/use-logger";
+import { Toaster, toast } from "react-hot-toast";
 
 const WrapperOptions = styled.div`
   position: absolute;
@@ -151,7 +152,11 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
   const [postIAForApp, responseOpenAi] = usePostIAForAppMutation();
 
   const handleQuestionArturito = (text: string) => {
-    postIAForApp(text);
+    postIAForApp(text)
+      .unwrap()
+      .catch((error) => {
+        toast.error(error.data.message);
+      });
   };
 
   const handleAddText = (text?: string) => {
@@ -189,8 +194,10 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
     setStatusOpenIA(!statusOpenIA);
     dispatch(changeActivePanelEditor(false));
   };
+
   return (
     <WrapperOptions>
+      <Toaster />
       <ContainerButton onClick={handleShowOpenIA}>
         <img src={ArturitoIMG} />
       </ContainerButton>
@@ -217,14 +224,12 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
             </LoadingArturito>
             <WrapperResponseIA>
               {responseOpenAi.data != null &&
-                responseOpenAi.data!.choices.length > 0 && (
-                  <>{responseOpenAi.data!.choices[0].text}</>
+                !!responseOpenAi.data!.message && (
+                  <>{responseOpenAi.data!.message}</>
                 )}
             </WrapperResponseIA>
             <ButtonAddResponse
-              onClick={() =>
-                handleAddText(responseOpenAi.data!.choices[0].text)
-              }
+              onClick={() => handleAddText(responseOpenAi.data!.message)}
             >
               Agregar al editor
             </ButtonAddResponse>

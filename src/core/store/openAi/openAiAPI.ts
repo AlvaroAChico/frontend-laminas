@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { settingsAPP } from "../../../config/environments/settings";
+import Cookies from "js-cookie";
+import { APP_CONSTANS } from "../../../constants/app";
+import { IAuthData } from "../auth/types/auth-types";
 
 const baseURLOpenIA = settingsAPP.api.openai;
 
@@ -8,16 +11,7 @@ export interface ArturitoChoicesResponse {
   text: string;
 }
 export interface ArturitoResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: ArturitoChoicesResponse[];
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
+  message: string;
 }
 
 export const openAiAPI = createApi({
@@ -25,12 +19,13 @@ export const openAiAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: baseURLOpenIA,
     prepareHeaders: (headers) => {
-      const token = "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";
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-        headers.set("Content-Type", "application/json");
-        headers.set("Accept", "text/html,image/apng,application/pdf");
+      const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
+      if (dataUser != null && dataUser != undefined) {
+        const user = JSON.parse(dataUser) as IAuthData;
+        headers.set("Authorization", `Bearer ${user.token}`);
       }
+      headers.set("Content-Type", "application/json");
+      headers.set("Accept", "application/json");
 
       return headers;
     },
@@ -38,13 +33,10 @@ export const openAiAPI = createApi({
   endpoints: (build) => ({
     postIAForApp: build.mutation<ArturitoResponse, string>({
       query: (text) => ({
-        url: `/completions`,
+        url: `/arturito/completions`,
         method: "POST",
         body: {
-          model: "text-davinci-003",
-          prompt: text,
-          max_tokens: 250,
-          temperature: 0.7,
+          consulta: text,
         },
       }),
       transformResponse: (response: ArturitoResponse) => response,

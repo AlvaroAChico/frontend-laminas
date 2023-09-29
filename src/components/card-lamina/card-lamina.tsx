@@ -19,7 +19,7 @@ import {
   updateCurrentSheetDetail,
   updateCurrentSheetEdit,
   updateCurrentSheetEditUUID,
-  updateStatusModalRegister,
+  updateStatusModalLogin,
   updateStatusModalSheetDetail,
 } from "../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
@@ -221,7 +221,7 @@ const CardLamina: React.FC<IOwnProps> = ({
       dispatch(updateCurrentSheetEditUUID(uuid));
       navigate("/editor");
     } else {
-      dispatch(updateStatusModalRegister(true));
+      dispatch(updateStatusModalLogin(true));
     }
   }, [image]);
 
