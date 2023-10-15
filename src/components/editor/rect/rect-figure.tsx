@@ -1,5 +1,7 @@
 import React from "react";
 import { Rect, Transformer } from "react-konva";
+import { RotateRight } from "@styled-icons/fa-solid/RotateRight";
+import RotateIMG from "../../../assets/img/arturito-openai.png";
 
 export interface RectInitialProps {
   x: number;
@@ -35,6 +37,17 @@ const RectFigure: React.FC<IOwnProps> = ({
       if (trRef != null) {
         trRef.current!.nodes([shapeRef.current]);
         trRef.current!.getLayer().batchDraw();
+
+        // const rot = trRef.current!.findOne(".rotater");
+
+        // const iconCanvas = document.createElement("canvas");
+        // iconCanvas.width = rot.width();
+        // iconCanvas.height = rot.height();
+
+        // const ctx = iconCanvas.getContext("2d");
+        // ctx!.fillStyle = "white";
+        // ctx!.fillRect(0, 0, iconCanvas.width, iconCanvas.height);
+        // ctx!.drawImage(RotateIMG, 0, 0, iconCanvas.width, iconCanvas.height);
       }
     }
   }, [isSelected]);
@@ -100,7 +113,6 @@ const RectFigure: React.FC<IOwnProps> = ({
             }
             return newBox;
           }}
-          rotateIcon='<svg><rect x="0" y="0" width="100" height="100" fill="red"/></svg>'
         />
       )}
     </React.Fragment>

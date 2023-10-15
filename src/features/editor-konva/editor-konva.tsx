@@ -41,6 +41,7 @@ import { EFuncionality, IAuthMe } from "../../core/store/auth/types/auth-types";
 import {
   getCurrentSheetEdit,
   getCurrentSheetEditUUID,
+  updateCurrentImageAvatar,
   updateCurrentPlan,
   updateCurrentSheetEdit,
   updateStatusModalPayment,
@@ -290,7 +291,8 @@ const EditorKonva: React.FC = () => {
 
   React.useEffect(() => {
     if (resultMe?.data as IAuthMe) {
-      if (resultMe.data?.plans) {
+      dispatch(updateCurrentImageAvatar(resultMe?.data?.image || ""));
+      if ((resultMe.data?.totalPlans || 0) > 0) {
         dispatch(updateCurrentPlan(true));
       } else {
         dispatch(updateCurrentPlan(false));

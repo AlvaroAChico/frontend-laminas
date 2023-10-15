@@ -13,6 +13,7 @@ import FavouritesSection from "../../features/dashboard/components/favourites/fa
 
 import CustomLayout from "../../components/custom-layout/custom-layout";
 import ResponsePayment from "../../features/response-payment/response-payment";
+import RecoveryPassword from "../../features/recovery-password/recovery-password";
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
             element: <FavouritesSection />,
           },
         ],
+      },
+      {
+        path: "recuperar-contraseña",
+        element: <RecoveryPassword />,
       },
     ],
   },

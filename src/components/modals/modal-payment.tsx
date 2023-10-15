@@ -27,8 +27,6 @@ import { CheckCircle } from "@styled-icons/bootstrap/CheckCircle";
 import styled from "styled-components";
 import CustomButtom from "../custom-button/custom-button";
 import BodyPlan from "../plans/body-plan/body-plan";
-import VisaMastercard from "../../assets/img/visa_mastercard.png";
-import YapePlin from "../../assets/img/yape_plin.png";
 import {
   useGetAccessTokenMutation,
   useGetAuthorizationPaymentMutation,
@@ -38,10 +36,10 @@ import { APP_CONSTANS } from "../../constants/app";
 import useLogger from "../../utils/hooks/use-logger";
 import { settingsAPP } from "../../config/environments/settings";
 import { IAuthorizationError } from "../../core/store/plans/types/plans-types";
+import { CloseOutline } from "@styled-icons/evaicons-outline/CloseOutline";
 import NiubizPaymentIMG from "../../assets/img/niubiz_payment.png";
 import PaymentSkeleton from "./skeletons/payment-skeleton";
 import { breakpoints } from "../../constants/breakpoints";
-import { customPalette } from "../../config/theme/theme";
 import axios from "axios";
 import { IAuthData } from "../../core/store/auth/types/auth-types";
 import Cookies from "js-cookie";
@@ -195,6 +193,21 @@ const ItemTrx = styled.div`
   }
   > p:nth-child(1) {
     color: #0066ff;
+  }
+`;
+
+const CloseStyle = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ca3b34;
+  color: white;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+
+  > svg {
+    width: 20px;
   }
 `;
 
@@ -364,6 +377,11 @@ const ModalPayment: React.FC = () => {
             <Box
               sx={{ width: "80vw", height: "fit-content", maxWidth: "800px" }}
             >
+              <CloseStyle
+                onClick={() => dispatch(updateStatusModalPayment(false))}
+              >
+                <CloseOutline />
+              </CloseStyle>
               <Stepper activeStep={statusStepPay} alternativeLabel>
                 {steps.map((label) => (
                   <Step key={label}>

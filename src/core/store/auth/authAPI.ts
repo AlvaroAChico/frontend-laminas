@@ -135,6 +135,14 @@ export const authAPI = createApi({
       }),
       transformResponse: (response: IAuthMe) => response,
     }),
+    startRecoverPass: build.mutation<any, string>({
+      query: (email) => ({
+        url: `auth/recover-password`,
+        method: "POST",
+        body: { email },
+      }),
+      transformResponse: (response: any) => response,
+    }),
   }),
 });
 
@@ -146,4 +154,5 @@ export const {
   useStartLoginSocialMutation,
   useStartSocialCallbackMutation,
   useStartValidationMeMutation,
+  useStartRecoverPassMutation,
 } = authAPI;

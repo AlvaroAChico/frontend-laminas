@@ -110,20 +110,11 @@ const Navbar: React.FC = () => {
   const [statusNavMobile, setStatusNavMobile] = React.useState(false);
   const QueriePhone = useMediaQuery(theme.breakpoints.down("sm"));
   const isAuthenticated = useAppSelector(getStatusAuthenticated);
-  const userHavePlan = useAppSelector(getUserHavePlan);
   const [startLogout, resultLogout] = useStartLogoutMutation();
   const valueScroll = useAppSelector(getValueScroll);
   const currentAvatar = useAppSelector(getCurrentImageAvatar);
   const open = Boolean(anchorEl);
   const dispatch = useAppDispatch();
-
-  // React.useEffect(() => {
-  //   const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-  //   if (dataUser != null && dataUser != undefined) {
-  //     const user = JSON.parse(dataUser) as IAuthData;
-  //     dispatch(updateCurrentImageAvatar(user.user.image));
-  //   }
-  // }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -142,7 +133,7 @@ const Navbar: React.FC = () => {
   React.useEffect(() => {
     if (resultMe?.data as IAuthMe) {
       dispatch(updateCurrentImageAvatar(resultMe?.data?.image || ""));
-      if (resultMe.data?.plans) {
+      if ((resultMe.data?.totalPlans || 0) > 0) {
         dispatch(updateCurrentPlan(true));
       } else {
         dispatch(updateCurrentPlan(false));

@@ -4,7 +4,12 @@ import Cookies from "js-cookie";
 import { settingsAPP } from "../../../config/environments/settings";
 import { APP_CONSTANS } from "../../../constants/app";
 import { IAuthData } from "../auth/types/auth-types";
-import { IUserUpdate, IUserUpdateResponse } from "./types/types";
+import {
+  IResetPassRequest,
+  IResetResponse,
+  IUserUpdate,
+  IUserUpdateResponse,
+} from "./types/types";
 
 const baseURLUser = settingsAPP.api.user;
 
@@ -65,31 +70,23 @@ export const userAPI = createApi({
       },
       transformResponse: (response: IUserUpdateResponse) => response,
     }),
-    updateUserAvatar: build.mutation<any, string>({
-      query: (blobImage) => {
-        const dataUser = Cookies.get(APP_CONSTANS.AUTH_USER_DATA);
-        if (dataUser != null && dataUser != undefined) {
-          const user = JSON.parse(dataUser) as IAuthData;
-          return {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-            url: `/users/${user!.user.id}`,
-            method: "PATCH",
-            body: {},
-          };
-        }
-        return {
-          url: `/users/`,
-          method: "PATCH",
-          body: {
-            picture: blobImage,
-          },
-        };
-      },
-      transformResponse: (response: any) => response,
+    updatePasswordRecovery: build.mutation<IResetResponse, IResetPassRequest>({
+      query: ({ token, email, pass }) => ({
+        url: `/auth/reset-password`,
+        method: "POST",
+        body: {
+          token: token,
+          email: email,
+          password: pass,
+          password_confirmation: pass,
+        },
+      }),
+      transformResponse: (response: IResetResponse) => response,
     }),
   }),
 });
 
-export const { useUpdateBasicDataUserMutation } = userAPI;
+export const {
+  useUpdateBasicDataUserMutation,
+  useUpdatePasswordRecoveryMutation,
+} = userAPI;

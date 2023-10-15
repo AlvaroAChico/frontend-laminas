@@ -11,10 +11,25 @@ export interface ISheets {
   page: number;
   size?: string;
   word?: string;
+  category?: string;
 }
 export interface ISheetsResponse {
   currentPage: number;
   data: ISheetDefaultProps[];
+  firstPageUrl: string;
+  from: number;
+  lastPage: number;
+  lastPageUrl: string;
+  nextPageUrl: string;
+  path: string;
+  perPage: number;
+  prevPageUrl: string;
+  to: number;
+  total: number;
+}
+export interface ISheetsEditorResponse {
+  currentPage: number;
+  data: ISheetDefaultEditor[];
   firstPageUrl: string;
   from: number;
   lastPage: number;

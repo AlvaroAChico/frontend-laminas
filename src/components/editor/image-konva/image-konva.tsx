@@ -28,6 +28,7 @@ const ImageKonva: React.FC<IOwnProps> = ({
   const trRef = React.useRef<any>();
   const img = new window.Image();
   img.src = shapeProps.image;
+  img.crossOrigin = "Anonymous";
 
   React.useEffect(() => {
     if (isSelected) {

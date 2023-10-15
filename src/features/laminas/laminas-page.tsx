@@ -18,17 +18,22 @@ import {
 import { Filter } from "@styled-icons/feather/Filter";
 import { ArrowIosDownward } from "@styled-icons/evaicons-solid/ArrowIosDownward";
 import styled from "styled-components";
-import { useGetAllSheetsPaginateMutation } from "../../core/store/sheets/sheetsAPI";
+import {
+  useGetAllSheetsPaginateMutation,
+  useGetPopularSheetsQuery,
+} from "../../core/store/sheets/sheetsAPI";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   clearAllDataSheets,
   getCurrentPage,
+  getCurrentSearchCategory,
   getCurrentSearchWord,
   getCurrentSize,
   getListSheets,
   updateAddFavoriteSheet,
   updateAllSheets,
   updateCurrentPage,
+  updateCurrentSearchCategory,
   updateCurrentSearchWord,
   updateCurrentSize,
   updateDeleteFavoriteSheet,
@@ -44,6 +49,7 @@ import {
 import { Toaster, toast } from "react-hot-toast";
 import Lottie from "lottie-react";
 import NoResultAnimation from "../../assets/json/no_results_animation.json";
+import { useGetCategoriesQuery } from "../../core/store/categories/categoriesAPI";
 
 const WrapperLaminasPage = styled.div`
   padding: 20px;
@@ -103,12 +109,15 @@ const ListLaminas = styled.div`
 `;
 const WrapperFilterMenu = styled.div`
   max-width: 250px;
-  background: #d8e8ff;
+  min-width: 250px;
+  background: #082f76;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 5px;
+  position: relative;
+  overflow: hidden;
 `;
 const ItemCourse = styled.div`
   display: flex;
@@ -169,6 +178,7 @@ const LaminasPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = React.useState(false);
   const [currentUUID, setCurrentUUID] = React.useState("");
   const currentSearchWord = useAppSelector(getCurrentSearchWord);
+  const currentSearchCategory = useAppSelector(getCurrentSearchCategory);
   const currentSize = useAppSelector(getCurrentSize);
   const currentPage = useAppSelector(getCurrentPage);
   const listSheets = useAppSelector(getListSheets);
@@ -223,6 +233,7 @@ const LaminasPage: React.FC = () => {
       page: currentPage,
       size: currentSize,
       word: currentSearchWord,
+      category: currentSearchCategory,
     });
   }, []);
 
@@ -272,6 +283,31 @@ const LaminasPage: React.FC = () => {
       toast.success("Se agregó la lámina a favoritos");
     }
   }, [resultAdd]);
+
+  const { data: dataCategories, isLoading: isLoadingCategories } =
+    useGetCategoriesQuery("");
+  const { data: dataPopularSearch, isLoading: isLoadingPopularSearch } =
+    useGetPopularSheetsQuery("");
+
+  const handleSearchCategory = (category: string) => {
+    dispatch(updateCurrentSearchCategory(category));
+    getAllSheetsPaginate({
+      page: currentPage,
+      size: currentSize,
+      word: currentSearchWord,
+      category: category,
+    });
+  };
+
+  const handleSearchPopular = (word: string) => {
+    dispatch(updateCurrentSearchWord(word));
+    getAllSheetsPaginate({
+      page: currentPage,
+      size: currentSize,
+      word: word,
+      category: currentSearchCategory,
+    });
+  };
 
   return (
     <>
@@ -421,40 +457,21 @@ const LaminasPage: React.FC = () => {
             >
               <AccordionSummary expandIcon={<ArrowIosDownward />}>
                 <Typography sx={{ maxWidth: 200, flexShrink: 0 }}>
-                  Cursos
+                  Categorias
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    EDUCACIÓN CÍVICA
-                  </Typography>
-                  <Chip label="999" />
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    ANATOMÍA
-                  </Typography>
-                  <Chip label="62" />
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    BIOLOGÍA
-                  </Typography>
-                  <Chip label="62" />
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    BOTANICA
-                  </Typography>
-                  <Chip label="62" />
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    ECOLOGIA
-                  </Typography>
-                  <Chip label="62" />
-                </ItemCourse>
+                {(dataCategories || []).map((category) => (
+                  <ItemCourse
+                    key={category.id}
+                    onClick={() => handleSearchCategory(category.name)}
+                  >
+                    <Typography variant="caption" component="span">
+                      {category.name}
+                    </Typography>
+                    {/* <Chip label="999" /> */}
+                  </ItemCourse>
+                ))}
               </AccordionDetails>
             </CoursesAccordion>
             <SerchAccordion
@@ -467,26 +484,17 @@ const LaminasPage: React.FC = () => {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    PERSONAJES ILUSTRES
-                  </Typography>
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    SALUD Y SEXUALIDAD
-                  </Typography>
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    ZOOLOGÍA
-                  </Typography>
-                </ItemCourse>
-                <ItemCourse>
-                  <Typography variant="caption" component="span">
-                    CIENCIAS Y TECNOLOGIA
-                  </Typography>
-                </ItemCourse>
+                {(dataPopularSearch || []).map((popular) => (
+                  <ItemCourse
+                    key={popular.id}
+                    onClick={() => handleSearchPopular(popular.name)}
+                  >
+                    <Typography variant="caption" component="span">
+                      {popular.name}
+                    </Typography>
+                    {/* <Chip label="999" /> */}
+                  </ItemCourse>
+                ))}
               </AccordionDetails>
             </SerchAccordion>
           </div>

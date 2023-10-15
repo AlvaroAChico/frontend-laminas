@@ -30,6 +30,8 @@ import {
   IFunctionality,
 } from "../../../../core/store/auth/types/auth-types";
 import useDataUser from "../../../../utils/hooks/use-data-user";
+import useValidToken from "../../../../utils/hooks/use-valid-token";
+import { updateStatusModalLogin } from "../../../../core/store/app-store/appSlice";
 
 const WrapperBottomNavigation = styled.div`
   width: 100%;
@@ -234,11 +236,12 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
   const [statusText, setStatusText] = React.useState(false);
   const [statusShapes, setStatusShapes] = React.useState(false);
   const [initialQuestion, setInitialQuestion] = React.useState("");
-  const dispatch = useAppDispatch();
   const sheetActive = useAppSelector(getActiveGlobalSheet);
   const [funcSize, setFuncSize] = React.useState<IFunctionality>(
     {} as IFunctionality
   );
+  const { existToken } = useValidToken();
+  const dispatch = useAppDispatch();
 
   const { handleGetFuncionalities } = useDataUser();
 
@@ -269,7 +272,11 @@ const BottomNavigationPanel: React.FC<IOwnProps> = ({
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
       // Logger("KeyUp Arturito", initialQuestion);
-      handleQuestionArturito(initialQuestion);
+      if (existToken) {
+        handleQuestionArturito(initialQuestion);
+      } else {
+        dispatch(updateStatusModalLogin(true));
+      }
     }
   };
 

@@ -12,6 +12,11 @@ const CardCategoryBackground = styled.div<{ cardImage: string }>`
   border-radius: 20px;
   min-height: 200px;
   cursor: pointer;
+  transition: 0.5s;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 `;
 
 const OverlayCategory = styled.div`
@@ -40,9 +45,10 @@ interface IOwnProps {
   id?: number;
   name: string;
   image: string;
+  handleClick: (category: string) => void;
 }
 
-const CardCategory: React.FC<IOwnProps> = ({ name, image }) => {
+const CardCategory: React.FC<IOwnProps> = ({ name, image, handleClick }) => {
   const [loadImage, setLoadImage] = React.useState(false);
   const img = document.createElement("img");
   img.onload = () => setLoadImage(true);
@@ -51,7 +57,10 @@ const CardCategory: React.FC<IOwnProps> = ({ name, image }) => {
   return (
     <>
       {loadImage && (
-        <CardCategoryBackground cardImage={image}>
+        <CardCategoryBackground
+          cardImage={image}
+          onClick={() => handleClick(name)}
+        >
           <OverlayCategory />
           <CategoryBody justifyContent="center" alignItems="center">
             <Typography

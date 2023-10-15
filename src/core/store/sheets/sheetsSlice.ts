@@ -6,6 +6,7 @@ export interface LaminasState {
   currentPage: number;
   currentSize: string;
   currentSearchWord: string;
+  currentSearchCategory: string;
   listSheets: ISheetDefaultProps[];
   // Editor
   currentPageEditor: number;
@@ -18,6 +19,7 @@ const initialState: LaminasState = {
   currentPage: 1,
   currentSize: "10",
   currentSearchWord: "",
+  currentSearchCategory: "",
   listSheets: [],
   // Editor
   currentPageEditor: 1,
@@ -38,6 +40,9 @@ export const sheetsSlice = createSlice({
     },
     updateCurrentSearchWord: (state, action: PayloadAction<string>) => {
       state.currentSearchWord = action.payload;
+    },
+    updateCurrentSearchCategory: (state, action: PayloadAction<string>) => {
+      state.currentSearchCategory = action.payload;
     },
     updateAllSheets: (state, action: PayloadAction<ISheetDefaultProps[]>) => {
       state.listSheets = action.payload;
@@ -105,6 +110,7 @@ export const {
   updateCurrentPage,
   updateCurrentSize,
   updateCurrentSearchWord,
+  updateCurrentSearchCategory,
   updateAllSheets,
   addMoreSheets,
   updateAddFavoriteSheet,
@@ -122,6 +128,8 @@ export const getCurrentPage = (state: RootState) => state.sheets.currentPage;
 export const getCurrentSize = (state: RootState) => state.sheets.currentSize;
 export const getCurrentSearchWord = (state: RootState) =>
   state.sheets.currentSearchWord;
+export const getCurrentSearchCategory = (state: RootState) =>
+  state.sheets.currentSearchCategory;
 export const getListSheets = (state: RootState) => state.sheets.listSheets;
 // Editor
 export const getCurrentPageEditor = (state: RootState) =>

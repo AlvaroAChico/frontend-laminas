@@ -7,6 +7,7 @@ import {
   ISheetsResponse,
   ISheets,
   ISheetDefaultProps,
+  ISheetsEditorResponse,
 } from "./types/laminas-type";
 import { IAuthData } from "../auth/types/auth-types";
 import { APP_CONSTANS } from "../../../constants/app";
@@ -51,6 +52,7 @@ export const sheetsAPI = createApi({
       }
       headers.set("Content-Type", "application/json");
       headers.set("Accept", "*/*");
+      headers.set("Access-Control-Allow-Origin", "*");
 
       return headers;
     },
@@ -74,10 +76,12 @@ export const sheetsAPI = createApi({
       transformResponse: (response: IPopularSearch[]) => response,
     }),
     getAllSheetsPaginate: build.mutation<ISheetsResponse, ISheets>({
-      query: ({ page, size, word }) => {
+      query: ({ page, size, word, category }) => {
         const filtersOptions = `?render=paginate&page=${page}${
           size ? `&size=${size}` : ""
-        }${word ? `&filter[name]=${word}` : ""}&include=tags,categories`;
+        }${word ? `&filter[name]=${word}` : ""}${
+          category ? `&filter[category]=${category}` : ""
+        }&include=tags,categories`;
 
         return {
           url: `/sheets${filtersOptions}`,
@@ -87,18 +91,19 @@ export const sheetsAPI = createApi({
       },
       transformResponse: (response: ISheetsResponse) => response,
     }),
-    getAllEditorSheets: build.mutation<ISheetsResponse, ISheets>({
+    getAllEditorSheets: build.mutation<ISheetsEditorResponse, ISheets>({
       query: ({ page, size, word }) => {
         const filtersOptions = `?render=paginate&page=${page}${
           size ? `&size=${size}` : ""
         }${word ? `&filter[name]=${word}` : ""}`;
 
+        // http://localhost:8000/api/sheets?render=paginate&page=1&size=10&filter[name]=incas&include=tags,categories
         return {
           url: `/laminas/editor${filtersOptions}`,
           method: "GET",
         };
       },
-      transformResponse: (response: ISheetsResponse) => response,
+      transformResponse: (response: ISheetsEditorResponse) => response,
     }),
   }),
 });
@@ -107,4 +112,5 @@ export const {
   useGetRecommendedSheetsQuery,
   useGetPopularSheetsQuery,
   useGetAllSheetsPaginateMutation,
+  useGetAllEditorSheetsMutation,
 } = sheetsAPI;

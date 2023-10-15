@@ -8,6 +8,8 @@ import { breakpoints } from "./constants/breakpoints";
 import { Outlet } from "react-router-dom";
 import { updateValueScroll } from "./core/store/app-store/appSlice";
 import ModalPayment from "./components/modals/modal-payment";
+import ModalLogin from "./components/modals/modal-login";
+import ModalRegister from "./components/modals/modal-register";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +34,8 @@ const App: React.FC = () => {
       <Outlet />
       {/* Modals */}
       <ModalPayment />
+      <ModalLogin />
+      <ModalRegister />
     </React.Fragment>
   );
 };

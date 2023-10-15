@@ -110,7 +110,8 @@ export interface IAuthMe {
   isActive: boolean;
   lastNam: string;
   plans: string;
-  statu: string;
+  status: string;
+  totalPlans: number;
   usernam: string;
 }
 

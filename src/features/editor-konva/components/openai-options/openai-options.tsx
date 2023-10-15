@@ -15,6 +15,8 @@ import { breakpoints } from "../../../../constants/breakpoints";
 import { usePostIAForAppMutation } from "../../../../core/store/openAi/openAiAPI";
 import useLogger from "../../../../utils/hooks/use-logger";
 import { Toaster, toast } from "react-hot-toast";
+import useValidToken from "../../../../utils/hooks/use-valid-token";
+import { updateStatusModalLogin } from "../../../../core/store/app-store/appSlice";
 
 const WrapperOptions = styled.div`
   position: absolute;
@@ -136,6 +138,7 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
   const [statusOpenIA, setStatusOpenIA] = React.useState(false);
   const statusPanelEditor = useAppSelector(getStatusPanelEditor);
   const dispatch = useAppDispatch();
+  const { existToken } = useValidToken();
 
   const { Logger } = useLogger();
 
@@ -144,7 +147,11 @@ const OpenAIOptions: React.FC<IOwnProps> = ({
   const handleKeyUp = (e: any) => {
     if (e.key === "Enter" || e.keyCode === 13) {
       // Logger("KeyUp Arturito", initialQuestion);
-      handleQuestionArturito(initialQuestion);
+      if (existToken) {
+        handleQuestionArturito(initialQuestion);
+      } else {
+        dispatch(updateStatusModalLogin(true));
+      }
     }
   };
 

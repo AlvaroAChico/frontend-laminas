@@ -3,15 +3,8 @@ import HeaderImg from "../../assets/img/header_main.jpg";
 import styled from "styled-components";
 import { Grid, Typography } from "@mui/material";
 import SearchLamina from "../search-lamina/search-lamina";
-import SectionMax from "../section-max/section-max";
-import { useNavigate } from "react-router-dom";
-import {
-  getCurrentSearchWord,
-  updateCurrentSearchWord,
-} from "../../core/store/sheets/sheetsSlice";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { APP_CONSTANS } from "../../constants/app";
 import useSearchSheet from "../../utils/hooks/use-search-sheet";
+import SectionMax from "../section-max/section-max";
 
 const HeaderBackground = styled(Grid)`
   height: 100vh;

@@ -40,13 +40,35 @@ import { Hand } from "@styled-icons/fa-solid/Hand";
 import { Cursor } from "@styled-icons/fluentui-system-filled/Cursor";
 import LogoElaminas from "../../../../assets/img/logo.svg";
 import { breakpoints } from "../../../../constants/breakpoints";
-import { Tooltip } from "@mui/material";
-import { updateStatusModalLogin } from "../../../../core/store/app-store/appSlice";
+import BaseAvatarImg from "../../../../assets/img/avatar_base.png";
+import { Download } from "@styled-icons/evaicons-solid/Download";
+import { Card } from "@styled-icons/ionicons-sharp/Card";
+import { StarFill } from "@styled-icons/bootstrap/StarFill";
+import { LogOut } from "@styled-icons/ionicons-outline/LogOut";
+import {
+  Avatar,
+  Divider,
+  Grid,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import {
+  getCurrentImageAvatar,
+  getStatusAuthenticated,
+  updateStatusAuthenticated,
+  updateStatusModalLogin,
+} from "../../../../core/store/app-store/appSlice";
 import Cookies from "js-cookie";
 import { APP_CONSTANS } from "../../../../constants/app";
 import { useGetAuthorizationDownloadMutation } from "../../../../core/store/downloads/downloadsAPI";
 import { ComponentKonvaItem } from "../../editor-konva";
 import { Toaster, toast } from "react-hot-toast";
+import { useStartLogoutMutation } from "../../../../core/store/auth/authAPI";
+import { PersonCircle } from "@styled-icons/bootstrap/PersonCircle";
+import { NavLink } from "react-router-dom";
 
 const baseCenter = styled.div`
   display: flex;
@@ -236,16 +258,28 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
   canvaGlobalRef,
   layerGlobalRef,
 }) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const activeComponent = useAppSelector(getActiveComponentKonvaID);
   const [statusSubMenuColor, setStatusSubMenuColor] = React.useState(false);
   const [statusSubMenuStroke, setStatusSubMenuStroke] = React.useState(false);
   const [statusMenuPosition, setStatusMenuPosition] = React.useState(false);
+  const [startLogout, resultLogout] = useStartLogoutMutation();
   const sizeGlobalSheet = useAppSelector(getSizeGlobalSheet);
   const activeSheet = useAppSelector(getActiveGlobalSheet);
   const listComponentsKonva = useAppSelector(getListComponentsKonva);
   const statusCursor = useAppSelector(getStatusCursorCanva);
   const listItemsKonva = useAppSelector(getListComponentsKonva);
+  const isAuthenticated = useAppSelector(getStatusAuthenticated);
+  const currentAvatar = useAppSelector(getCurrentImageAvatar);
   const dispatch = useAppDispatch();
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleResetGlobalZoom = () => {
     dispatch(
@@ -297,11 +331,18 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
       if (activeSheet == 3) {
         sizeSheet = "OFICIO";
       }
-
-      getAuthorizationDownload({
-        size: sizeSheet,
-        sheets: sheets,
-      });
+      if (sheets.length > 0) {
+        getAuthorizationDownload({
+          size: sizeSheet,
+          sheets: sheets,
+        })
+          .unwrap()
+          .catch((error) => {
+            toast.error(error.data.message);
+          });
+      } else {
+        downloadActivePanel();
+      }
     } else {
       dispatch(updateStatusModalLogin(true));
     }
@@ -314,12 +355,6 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
       resultAuthorization.isSuccess
     ) {
       downloadActivePanel();
-    }
-
-    if (resultAuthorization.isError) {
-      toast.error(
-        "No se ha podido descargar el marco de trabajo, por favor comunicate con el administrador"
-      );
     }
   }, [resultAuthorization]);
 
@@ -367,7 +402,7 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
           dispatch(changeStatusApplication(false));
         };
       }
-    }, 100);
+    }, 200);
   };
   const handleShowPosition = () => {
     setStatusMenuPosition(true);
@@ -479,6 +514,129 @@ const MenuBarOptions: React.FC<IOwnProps> = ({
               </button>
             </WrapperDownload>
           </ItemGeneralMenu>
+          {isAuthenticated && (
+            <Grid item xs={1}>
+              <Avatar
+                alt="Avatar"
+                src={currentAvatar ? currentAvatar : BaseAvatarImg}
+                onClick={handleClick}
+              />
+              <Menu
+                anchorEl={anchorEl}
+                id="account-menu"
+                open={open}
+                onClose={handleClose}
+                onClick={handleClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    padding: "10px 15px",
+                    borderRadius: "15px",
+                    mt: 1.5,
+                    "& svg": {
+                      width: 16,
+                      height: 16,
+                      ml: -0.5,
+                      mr: 2,
+                      color: customPalette.primaryColor,
+                    },
+                    "&:before": {
+                      content: '""',
+                      display: "block",
+                      position: "absolute",
+                      top: 0,
+                      right: 15,
+                      width: 10,
+                      height: 10,
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
+                      zIndex: 0,
+                    },
+                    "& a": {
+                      color: customPalette.primaryColor,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+              >
+                <MenuItem onClick={handleClose}>
+                  <PersonCircle />
+                  <NavLink
+                    to="/dashboard/perfil"
+                    className={({ isActive }) =>
+                      isActive ? "sidebar-active" : "sidebar-inactive"
+                    }
+                  >
+                    Mi Perfil
+                  </NavLink>
+                </MenuItem>
+                <MenuItem onClick={handleClose}>
+                  <Download />
+                  <NavLink
+                    to="/dashboard/descargas"
+                    className={({ isActive }) =>
+                      isActive ? "sidebar-active" : "sidebar-inactive"
+                    }
+                  >
+                    Descargas
+                  </NavLink>
+                </MenuItem>
+                <MenuItem onClick={handleClose}>
+                  <Card />
+                  <NavLink
+                    to="/dashboard/suscripcion"
+                    className={({ isActive }) =>
+                      isActive ? "sidebar-active" : "sidebar-inactive"
+                    }
+                  >
+                    Suscripción
+                  </NavLink>
+                </MenuItem>
+                <MenuItem onClick={handleClose}>
+                  <StarFill />
+                  <NavLink
+                    to="/dashboard/favoritos"
+                    className={({ isActive }) =>
+                      isActive ? "sidebar-active" : "sidebar-inactive"
+                    }
+                  >
+                    Favoritos
+                  </NavLink>
+                </MenuItem>
+                <Divider />
+                <MenuItem
+                  onClick={handleClose}
+                  sx={{ color: customPalette.secondaryColor }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      "& svg": {
+                        color: customPalette.secondaryColor,
+                        width: "16px",
+                        height: "16px",
+                      },
+                    }}
+                  >
+                    <LogOut />
+                  </ListItemIcon>
+                  <div
+                    onClick={() => {
+                      startLogout("");
+                      dispatch(updateStatusAuthenticated(false));
+                      Cookies.remove(APP_CONSTANS.AUTH_USER_DATA);
+                      localStorage.removeItem(APP_CONSTANS.AUTH_FUNCIONALITIES);
+                      location.reload();
+                    }}
+                  >
+                    Cerrar Sesión
+                  </div>
+                </MenuItem>
+              </Menu>
+            </Grid>
+          )}
         </ItemMenuOption>
       </MenuBarWrapper>
     </>

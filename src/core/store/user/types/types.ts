@@ -11,3 +11,12 @@ export interface IUserUpdateResponse {
   address: string;
   contactNumber: string;
 }
+
+export interface IResetPassRequest {
+  token: string;
+  email: string;
+  pass: string;
+}
+export interface IResetResponse {
+  message: string;
+}

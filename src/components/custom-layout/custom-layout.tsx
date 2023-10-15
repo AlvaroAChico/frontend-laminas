@@ -31,11 +31,8 @@ import {
   updateTemporalAction,
 } from "../../core/store/temporal/temporalSlice";
 import ModalSheetDetail from "../modals/modal-sheet-detail";
-import ModalLogin from "../modals/modal-login";
-import ModalRegister from "../modals/modal-register";
 import ModalCoupon from "../modals/modal-coupon";
 import ModalRecover from "../modals/modal-recover";
-import ModalPayment from "../modals/modal-payment";
 import ModalChangePassword from "../modals/modal-change-password";
 import ModalViewSheetPDF from "../modals/modal-view-sheet-pdf";
 import ModalViewTutorial from "../modals/modal-view-tutorial";
@@ -185,8 +182,6 @@ const CustomLayout: React.FC = () => {
         </CouponButton>
       </Tooltip>
       {/* Section Modals */}
-      <ModalLogin />
-      <ModalRegister />
       <ModalCoupon />
       <ModalRecover />
       {/* <ModalPayment /> */}

@@ -8,11 +8,13 @@ import { ArrowIosForwardOutline } from "@styled-icons/evaicons-outline/ArrowIosF
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { listCategories } from "../../../config/mocks/list-categories";
 import CardCategory from "./components/card-category/card-category";
 import SectionMax from "../../../components/section-max/section-max";
 import { useGetCategoriesQuery } from "../../../core/store/categories/categoriesAPI";
 import SectionCategoriesSkeleton from "./skeleton/section-categories-skeleton";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../../app/hooks";
+import { updateCurrentSearchCategory } from "../../../core/store/sheets/sheetsSlice";
 
 const WrapperCategories = styled.div`
   height: 100%;
@@ -63,8 +65,15 @@ const ItemSlick = styled.div`
 
 const SectionCategories: React.FC = () => {
   const sliderRef = React.useRef<any>(null);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useGetCategoriesQuery("");
+
+  const handleSearchCategory = (category: string) => {
+    dispatch(updateCurrentSearchCategory(category));
+    navigate("/laminas");
+  };
 
   const settings = {
     dots: true,
@@ -138,6 +147,7 @@ const SectionCategories: React.FC = () => {
                 id={category.id}
                 image={category.picture}
                 name={category.name}
+                handleClick={() => handleSearchCategory(category.name)}
               />
             </ItemSlick>
           ))}
