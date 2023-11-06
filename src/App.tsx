@@ -14,6 +14,14 @@ import ModalRegister from "./components/modals/modal-register";
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  window.addEventListener("keydown", (e: any) => {
+    const listBlackListKeyCode = [123];
+    if (listBlackListKeyCode.includes(e.keyCode)) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
   window.addEventListener("resize", () => {
     dispatch(
       updateCanvasHeight(

@@ -64,6 +64,7 @@ export interface ISheetDefaultEditor {
   isFavorite: boolean;
   name: string;
   tira: string;
+  tiraEditor: string;
   tiraTemporary: string;
   uuid: string;
 }

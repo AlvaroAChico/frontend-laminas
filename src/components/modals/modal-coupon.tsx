@@ -119,6 +119,7 @@ const ErrorMessage = styled.span`
 const ModalCoupon: React.FC = () => {
   const [redimirCoupon, resultCoupon] = usePostRedimirCouponMutation();
   const [statusSnackbar, setStatusSnackbar] = React.useState(false);
+  const [msgErrorCoupon, setMsgErrorCoupon] = React.useState<string>("");
   const isStatus = useAppSelector(getStatusModalCoupon);
   const dispatch = useAppDispatch();
 
@@ -138,7 +139,9 @@ const ModalCoupon: React.FC = () => {
   } = methods;
 
   const handleSubmit = React.useCallback((data: any) => {
-    redimirCoupon(data.code);
+    redimirCoupon(data.code)
+      .unwrap()
+      .catch((error) => setMsgErrorCoupon(error.data.message));
   }, []);
 
   function onChange(value: any) {
@@ -293,7 +296,9 @@ const ModalCoupon: React.FC = () => {
           onClose={() => setStatusSnackbar(false)}
           elevation={6}
         >
-          Hubo un error con el código de cupón
+          {msgErrorCoupon
+            ? msgErrorCoupon
+            : "Hubo un error con el código de cupón"}
         </Alert>
       </Snackbar>
     </>

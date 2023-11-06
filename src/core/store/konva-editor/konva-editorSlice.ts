@@ -307,11 +307,6 @@ export const konvaEditorSlice = createSlice({
       const updatingItem = state.listComponentsKonva.filter(
         (component) => component.id == state.activeKonvaComponentID
       );
-      console.log("Data -> ", {
-        activeId: state.activeKonvaComponentID,
-        uuid: updatingItem[0].uuid,
-        image: updatingItem[0].image,
-      });
       state.activeIdImageEditing = state.activeKonvaComponentID;
       state.urlImageActiveEditing = updatingItem[0]!.image!;
     },

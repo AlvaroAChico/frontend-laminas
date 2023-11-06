@@ -290,25 +290,38 @@ const LaminasPage: React.FC = () => {
     useGetPopularSheetsQuery("");
 
   const handleSearchCategory = (category: string) => {
+    dispatch(updateCurrentSearchWord(""));
     dispatch(updateCurrentSearchCategory(category));
-    getAllSheetsPaginate({
-      page: currentPage,
-      size: currentSize,
-      word: currentSearchWord,
-      category: category,
-    });
+    handleCustomGetSheets(currentPage, currentSize, "", category);
   };
 
   const handleSearchPopular = (word: string) => {
+    dispatch(updateCurrentSearchCategory(""));
     dispatch(updateCurrentSearchWord(word));
-    getAllSheetsPaginate({
-      page: currentPage,
-      size: currentSize,
-      word: word,
-      category: currentSearchCategory,
-    });
+    handleCustomGetSheets(currentPage, currentSize, word, "");
   };
 
+  const handleClearFilter = () => {
+    dispatch(updateCurrentSearchCategory(""));
+    dispatch(updateCurrentSearchWord(""));
+    dispatch(updateCurrentPage(1));
+    handleCustomGetSheets(1, "10", "", "");
+  };
+
+  const handleCustomGetSheets = (
+    customPage: number,
+    customSize: string,
+    customWord: string,
+    customCategory: string
+  ) => {
+    getAllSheetsPaginate({
+      page: customPage,
+      size: customSize,
+      word: customWord,
+      category: customCategory,
+    });
+    setStatusFilter(false);
+  };
   return (
     <>
       <Toaster />
@@ -500,7 +513,7 @@ const LaminasPage: React.FC = () => {
           </div>
           <div>
             <Typography
-              color={customPalette.secondaryColor}
+              color={"white"}
               textAlign="right"
               sx={{
                 cursor: "pointer",
@@ -510,6 +523,7 @@ const LaminasPage: React.FC = () => {
                   textDecorationThickness: "1px",
                 },
               }}
+              onClick={handleClearFilter}
             >
               Limpiar fitros
             </Typography>

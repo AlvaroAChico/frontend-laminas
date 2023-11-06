@@ -192,7 +192,6 @@ const ProfileSection: React.FC = () => {
       })
         .then((result: any) => {
           // toast.success(result);
-          console.log("DD -> ", result);
           dispatch(updateCurrentImageAvatar(result.data.image));
         })
         .catch((err) => {

@@ -99,47 +99,44 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
   const { handleGetToken } = useDataUser();
 
   const getAuthorizedTokenImage = (sheet: string, uuid: string) => {
-    const user = handleGetToken();
-    if (user.token) {
-      handleAddImage(sheet, uuid);
-    } else {
-      dispatch(updateStatusModalLogin(true));
-    }
+    // const user = handleGetToken();
+    // if (user.token) {
+    //   handleAddImage(sheet, uuid);
+    // } else {
+    //   dispatch(updateStatusModalLogin(true));
+    // }
   };
 
   const handleAddImage = (srcImage: string, uuid?: string) => {
-    const imageID = `adapter-new-img_${Date.now()}`;
-    const loadImageToast = toast.loading("Cargando");
-    const imgAdapter = document.createElement("img");
-    imgAdapter.crossOrigin = "Anonymous";
-    imgAdapter.src = srcImage;
-    imgAdapter.id = imageID;
-
-    document.getElementById("root")!.appendChild(imgAdapter);
-    const imgBody: HTMLImageElement = document.getElementById(
-      imageID
-    ) as HTMLImageElement;
-
-    imgBody.onload = () => {
-      toast.dismiss(loadImageToast);
-
-      const newHeight = (300 * imgBody!.height) / imgBody!.width;
-      document.getElementById("root")!.removeChild(imgAdapter);
-      const activeID = Date.now();
-      dispatch(
-        addItemKonva({
-          id: `image${activeID}`,
-          type: KonvaTypeItem.IMAGE,
-          x: layerRef.current.children[0].attrs.x,
-          y: layerRef.current.children[0].attrs.y,
-          width: 300,
-          height: newHeight,
-          image: srcImage,
-          uuid: uuid || "",
-        } as ComponentKonvaItem)
-      );
-      dispatch(updateActiveIDKonva(`image${activeID}`));
-    };
+    // const imageID = `adapter-new-img_${Date.now()}`;
+    // const loadImageToast = toast.loading("Cargando");
+    // const imgAdapter = document.createElement("img");
+    // imgAdapter.crossOrigin = "Anonymous";
+    // imgAdapter.src = srcImage;
+    // imgAdapter.id = imageID;
+    // document.getElementById("root")!.appendChild(imgAdapter);
+    // const imgBody: HTMLImageElement = document.getElementById(
+    //   imageID
+    // ) as HTMLImageElement;
+    // imgBody.onload = () => {
+    //   toast.dismiss(loadImageToast);
+    //   const newHeight = (300 * imgBody!.height) / imgBody!.width;
+    //   document.getElementById("root")!.removeChild(imgAdapter);
+    //   const activeID = Date.now();
+    //   dispatch(
+    //     addItemKonva({
+    //       id: `image${activeID}`,
+    //       type: KonvaTypeItem.IMAGE,
+    //       x: layerRef.current.children[0].attrs.x,
+    //       y: layerRef.current.children[0].attrs.y,
+    //       width: 300,
+    //       height: newHeight,
+    //       image: srcImage,
+    //       uuid: uuid || "",
+    //     } as ComponentKonvaItem)
+    //   );
+    //   dispatch(updateActiveIDKonva(`image${activeID}`));
+    // };
   };
 
   // LOGIC GET SHEETS
@@ -238,8 +235,11 @@ const SubMenuImagen: React.FC<IOwnProps> = ({
                     key={`${Date.now()}_${sheet.uuid}`}
                     name={sheet.name}
                     image={sheet.tiraTemporary}
+                    displayImage={sheet.tiraEditor}
+                    uuidImage={sheet.uuid}
+                    layerRef={layerRef}
                     handleAddImage={() =>
-                      getAuthorizedTokenImage(sheet.tira, sheet.uuid)
+                      getAuthorizedTokenImage(sheet.tiraEditor, sheet.uuid)
                     }
                   />
                 );
