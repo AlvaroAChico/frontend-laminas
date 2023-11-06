@@ -200,7 +200,7 @@ const EditorKonva: React.FC = () => {
       validationMe(user.token);
     }
   }, []);
-
+  // console.log
   return (
     <WrapperPage>
       <MenuBarOptions canvaGlobalRef={canvaRef} layerGlobalRef={layerRef} />
