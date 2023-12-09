@@ -19,7 +19,7 @@ import useValidToken from "../../../../utils/hooks/use-valid-token";
 import { updateStatusModalLogin } from "../../../../core/store/app-store/appSlice";
 
 const WrapperOptions = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 15px;
   right: 15px;
   display: flex;

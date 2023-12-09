@@ -19,7 +19,7 @@ import { breakpoints } from "../../../../constants/breakpoints";
 import { getDataUserAuth } from "../../../../core/store/app-store/appSlice";
 
 const WrapperMenu = styled.div`
-  position: absolute;
+  position: fixed;
   top: 12%;
   left: 2%;
   background: ${customPalette.primaryColor};

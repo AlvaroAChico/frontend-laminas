@@ -22,6 +22,14 @@ export interface ITextAreaCurrentStyle {
   currentTextColor: string;
   currentTextAlign: string;
 }
+
+export interface ICanvasEditorItem {
+  idCanvaEditor: string;
+  listComponentsKonva: ComponentKonvaItem[];
+  canvasWidth: number;
+  canvasHeight: number;
+}
+
 export interface EditorState {
   sizeGlobalSheet: number[][];
   activeGlobalSheet: number;
@@ -45,6 +53,7 @@ export interface EditorState {
   statusBSImage: boolean; // Menu solo para movil
   statusBSText: boolean; // Menu solo para movil
   statusBSShape: boolean; // Menu solo para movil
+  listCanvasEditor: ICanvasEditorItem[]; // Lista de paginas del editor
 }
 
 const initialState: EditorState = {
@@ -96,6 +105,7 @@ const initialState: EditorState = {
   statusBSImage: false,
   statusBSText: false,
   statusBSShape: false,
+  listCanvasEditor: [],
 };
 
 export const konvaEditorSlice = createSlice({
